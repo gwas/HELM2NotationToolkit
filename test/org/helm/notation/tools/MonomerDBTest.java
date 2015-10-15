@@ -1,5 +1,8 @@
 package org.helm.notation.tools;
 
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -12,9 +15,6 @@ import org.helm.notation.StructureException;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
 import org.jdom.JDOMException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class MonomerDBTest {
 

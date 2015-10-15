@@ -1,7 +1,10 @@
 package org.helm.notation.tools;
 
-import static org.junit.Assert.*;
-
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.Assert;
+import org.testng.AssertJUnit;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,10 +17,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import chemaxon.marvin.plugin.PluginException;
 
 public class xHelmNotationParserTest {
@@ -44,17 +43,17 @@ public class xHelmNotationParserTest {
 		MonomerStore store = xHelmNotationParser
 				.getMonomerStore(xHELMRootElement);
 
-		assertEquals(
+		AssertJUnit.assertEquals(
 				"RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|CHEM1{SMCC}$PEPTIDE1,CHEM1,2:R3-1:R2|RNA1,CHEM1,1:R1-1:R1$$$",
 				helmString);
 
-		assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
+		AssertJUnit.assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
 				store));
 
 		String canonicalNotation = ComplexNotationParser.getCanonicalNotation(
 				helmString, true, store);
 
-		assertEquals(
+		AssertJUnit.assertEquals(
 				"CHEM1{SMCC}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}$CHEM1,PEPTIDE1,1:R2-2:R3|CHEM1,RNA1,1:R1-1:R1$$$",
 				canonicalNotation);
 
@@ -64,9 +63,9 @@ public class xHelmNotationParserTest {
 
 		store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
 
-		assertEquals("PEPTIDE1{G.K.A.[A_copy]}$$$$", helmString);
+		AssertJUnit.assertEquals("PEPTIDE1{G.K.A.[A_copy]}$$$$", helmString);
 
-		assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
+		AssertJUnit.assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
 				store));
 
 		/*
@@ -88,11 +87,11 @@ public class xHelmNotationParserTest {
 
 		store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
 
-		assertEquals(
+		AssertJUnit.assertEquals(
 				"PEPTIDE1{A.C.A.C.G.K.E.E}|PEPTIDE2{A.C.A.C.G.K.E.E}|CHEM1{[*]OCCOCCOCCO[*] |$_R1;;;;;;;;;;;_R3$|}|CHEM2{PEG2}$PEPTIDE1+PEPTIDE2,CHEM1,generic:K-1:R1|PEPTIDE1+PEPTIDE2,CHEM2,generic:Q1+Q2-1:R1$$$",
 				helmString);
 
-		assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
+		AssertJUnit.assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
 				store));
 
 		xHELMRootElement = getXHELMRootElement("resources/RNAWithInline.xhelm");
@@ -101,11 +100,11 @@ public class xHelmNotationParserTest {
 
 		store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
 
-		assertEquals(
+		AssertJUnit.assertEquals(
 				"RNA1{[C[C@@]1([*])O[C@H](CO[*])[C@@H](O[*])[C@H]1O |$;;_R3;;;;;_R1;;;_R2;;$|](A)P.RP.[C[C@@]1([*])O[C@H](CO[*])[C@@H](O[*])[C@H]1O |$;;_R3;;;;;_R1;;;_R2;;$|](T)P.R([Cc1nc2c(nc(N)[nH]c2=O)n1[*] |$;;;;;;;;;;;;_R1$|])P.R([Cc1cc(N)nc(=O)n1[*] |$;;;;;;;;;_R1$|])}$$$$",
 				helmString);
 
-		assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
+		AssertJUnit.assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
 				store));
 
 	}
@@ -121,9 +120,9 @@ public class xHelmNotationParserTest {
 		MonomerStore store = xHelmNotationParser
 				.getMonomerStore(xHELMRootElement);
 
-		assertEquals("PEPTIDE1{[QR]}$$$$", helmString);
+		AssertJUnit.assertEquals("PEPTIDE1{[QR]}$$$$", helmString);
 
-		assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
+		AssertJUnit.assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
 				store));
 	}
 
@@ -140,11 +139,11 @@ public class xHelmNotationParserTest {
 
 		boolean valid = ComplexNotationParser.validateComplexNotation(
 				helmString, store);
-		assertTrue(valid);
+		AssertJUnit.assertTrue(valid);
 		String smiles = ComplexNotationParser.getComplexPolymerSMILES(
 				helmString, store);
 
-		assertEquals(
+		AssertJUnit.assertEquals(
 				"[H]NCCCC[C@H](NC(=O)CN[H])C(=O)N[C@@H](C)C(=O)CN[C@@H](C)C(O)=O",
 				smiles);
 
@@ -163,7 +162,7 @@ public class xHelmNotationParserTest {
 
 		boolean valid = ComplexNotationParser.validateComplexNotation(
 				helmString, store);
-		assertTrue(valid);
+		AssertJUnit.assertTrue(valid);
 
 	}
 
@@ -180,7 +179,7 @@ public class xHelmNotationParserTest {
 
 		boolean valid = ComplexNotationParser.validateComplexNotation(
 				helmString, store);
-		assertTrue(valid);
+		AssertJUnit.assertTrue(valid);
 
 	}
 
@@ -197,7 +196,7 @@ public class xHelmNotationParserTest {
 
 		boolean valid = ComplexNotationParser.validateComplexNotation(
 				helmString, store);
-		assertTrue(valid);
+		AssertJUnit.assertTrue(valid);
 
 	}
 
@@ -214,11 +213,11 @@ public class xHelmNotationParserTest {
 
 		try {
 			ComplexNotationParser.validateComplexNotation(helmString, store);
-			fail("xHelm document is not valid-should have thrown exception");
+			Assert.fail("xHelm document is not valid-should have thrown exception");
 		}
 
 		catch (Exception e) {
-			assertTrue("xHelm doc validation failed as expected", true);
+			AssertJUnit.assertTrue("xHelm doc validation failed as expected", true);
 		}
 
 	}

@@ -1,9 +1,7 @@
 package org.helm.notation.tools;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import com.pfizer.pgrd.sdlib.EncoderException;
 
 public class EncoderTest {
@@ -36,7 +34,7 @@ public class EncoderTest {
 
 		String decodeString = MolfileEncoder.decode(encodedMolfile);
 		System.out.println(decodeString);
-		assertEquals(molfile, decodeString);
+		AssertJUnit.assertEquals(molfile, decodeString);
 
 	}
 

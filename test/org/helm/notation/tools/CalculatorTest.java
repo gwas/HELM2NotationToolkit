@@ -1,7 +1,8 @@
 package org.helm.notation.tools;
 
-import static org.junit.Assert.assertEquals;
-
+import static org.testng.AssertJUnit.assertEquals;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
 import java.io.IOException;
 
 import org.helm.notation.CalculationException;
@@ -9,14 +10,12 @@ import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.jdom.JDOMException;
-import org.junit.Before;
-import org.junit.Test;
 
 public class CalculatorTest {
 
 	private ExtinctionCoefficientCalculator calculator;
 
-	@Before
+	@BeforeMethod
 	public void setUp() throws CalculationException {
 		calculator = ExtinctionCoefficientCalculator.getInstance();
 	}
@@ -90,7 +89,7 @@ public class CalculatorTest {
 			throws CalculationException {
 		String input = "ACGTACGT";
 		float result = calculator.calculateFromNucleotideSequence(input);
-		assertEquals(result, 81.119995, 1e-6);
+		assertEquals(result, 81.12001037597656, 1e-6);
 
 	}
 
@@ -101,7 +100,7 @@ public class CalculatorTest {
 		String input = "ACGmTACmGT";
 		float result = calculator
 				.calculateFromModifiedNucleotideSequence(input);
-		assertEquals(result, 81.119995, 1e-6);
+		assertEquals(result, 81.12001037597656, 1e-6);
 
 	}
 

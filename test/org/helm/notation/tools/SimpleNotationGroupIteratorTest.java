@@ -1,10 +1,8 @@
 package org.helm.notation.tools;
 
-import static org.junit.Assert.*;
-
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import java.util.ArrayList;
-
-import org.junit.Test;
 
 public class SimpleNotationGroupIteratorTest {
 
@@ -19,10 +17,10 @@ public class SimpleNotationGroupIteratorTest {
 			System.out.println(group);
 
 		}
-		assertEquals("there should be three groups!", 3, list.size());
-		assertEquals("A", list.get(0));
-		assertEquals("K", list.get(1));
-		assertEquals("A", list.get(2));
+		AssertJUnit.assertEquals("there should be three groups!", 3, list.size());
+		AssertJUnit.assertEquals("A", list.get(0));
+		AssertJUnit.assertEquals("K", list.get(1));
+		AssertJUnit.assertEquals("A", list.get(2));
 
 	}
 
@@ -38,12 +36,12 @@ public class SimpleNotationGroupIteratorTest {
 			System.out.println(group);
 
 		}
-		assertEquals("there should be five groups!", 5, list.size());
-		assertEquals("P", list.get(0));
-		assertEquals("R(A)[sP]", list.get(1));
-		assertEquals("RP", list.get(2));
-		assertEquals("R(G)P", list.get(3));
-		assertEquals("[LR]([5meC])", list.get(4));
+		AssertJUnit.assertEquals("there should be five groups!", 5, list.size());
+		AssertJUnit.assertEquals("P", list.get(0));
+		AssertJUnit.assertEquals("R(A)[sP]", list.get(1));
+		AssertJUnit.assertEquals("RP", list.get(2));
+		AssertJUnit.assertEquals("R(G)P", list.get(3));
+		AssertJUnit.assertEquals("[LR]([5meC])", list.get(4));
 
 	}
 
@@ -58,8 +56,8 @@ public class SimpleNotationGroupIteratorTest {
 			i++;
 
 		}
-		assertEquals("SMPEG2", group);
-		assertEquals("there should be one group!", 1, i);
+		AssertJUnit.assertEquals("SMPEG2", group);
+		AssertJUnit.assertEquals("there should be one group!", 1, i);
 	}
 
 	@Test
@@ -71,15 +69,15 @@ public class SimpleNotationGroupIteratorTest {
 			String group = iterator.nextGroup();
 			list.add(group);
 		}
-		assertEquals("there should be 7 groups!", 7, list.size());
-		assertEquals("G", list.get(0));
-		assertEquals("G", list.get(1));
-		assertEquals("K", list.get(2));
-		assertEquals("A", list.get(3));
-		assertEquals("A", list.get(4));
-		assertEquals("[[SeH]C[C@H](N[*])C([*])=O |$;;;;_R1;;_R2;$|]",
+		AssertJUnit.assertEquals("there should be 7 groups!", 7, list.size());
+		AssertJUnit.assertEquals("G", list.get(0));
+		AssertJUnit.assertEquals("G", list.get(1));
+		AssertJUnit.assertEquals("K", list.get(2));
+		AssertJUnit.assertEquals("A", list.get(3));
+		AssertJUnit.assertEquals("A", list.get(4));
+		AssertJUnit.assertEquals("[[SeH]C[C@H](N[*])C([*])=O |$;;;;_R1;;_R2;$|]",
 				list.get(5));
-		assertEquals("[meC]", list.get(6));
+		AssertJUnit.assertEquals("[meC]", list.get(6));
 
 	}
 
@@ -95,8 +93,8 @@ public class SimpleNotationGroupIteratorTest {
 			i++;
 
 		}
-		assertEquals("C[C@H](N[*])C([*])=O |$;;;;_R1;;_R2;$|", group);
-		assertEquals("there should be one group!", 1, i);
+		AssertJUnit.assertEquals("C[C@H](N[*])C([*])=O |$;;;;_R1;;_R2;$|", group);
+		AssertJUnit.assertEquals("there should be one group!", 1, i);
 	}
 
 	@Test
@@ -111,14 +109,14 @@ public class SimpleNotationGroupIteratorTest {
 			System.out.println(group);
 
 		}
-		assertEquals("there should be five groups!", 5, list.size());
-		assertEquals("P", list.get(0));
-		assertEquals(
+		AssertJUnit.assertEquals("there should be five groups!", 5, list.size());
+		AssertJUnit.assertEquals("P", list.get(0));
+		AssertJUnit.assertEquals(
 				"[[*]OC[C@@H]1CN([*])C[C@H]([*])O1 |$_R1;;;;;;_R2;;;_R3;$|](A)[sP]",
 				list.get(1));
-		assertEquals("RP", list.get(2));
-		assertEquals("R(G)P", list.get(3));
-		assertEquals("[LR]([5meC])", list.get(4));
+		AssertJUnit.assertEquals("RP", list.get(2));
+		AssertJUnit.assertEquals("R(G)P", list.get(3));
+		AssertJUnit.assertEquals("[LR]([5meC])", list.get(4));
 
 	}
 

@@ -1,8 +1,10 @@
 package org.helm.notation.tools;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -17,10 +19,6 @@ import org.helm.notation.model.MoleculeInfo;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.model.Nucleotide;
 import org.jdom.JDOMException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import chemaxon.marvin.plugin.PluginException;
 
 public class SimpleNotationParserTest {
@@ -73,7 +71,7 @@ public class SimpleNotationParserTest {
 		return "G.G.K.[[Na+].C[C@H](N[*])C([O-])[*] |$;;;;_R1;;;_R2$|].A.[seC]";
 	}
 
-	@Before
+	@BeforeMethod
 	public void init() {
 		try {
 			MonomerFactory.finalizeMonomerCache();
@@ -85,7 +83,7 @@ public class SimpleNotationParserTest {
 		}
 	}
 
-	@After
+	@AfterMethod
 	public void finish() {
 		MonomerFactory.finalizeMonomerCache();
 	}

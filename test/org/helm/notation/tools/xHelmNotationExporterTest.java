@@ -1,7 +1,7 @@
 package org.helm.notation.tools;
 
-import static org.junit.Assert.*;
-
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,8 +18,6 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.junit.Test;
-
 import chemaxon.marvin.plugin.PluginException;
 
 public class xHelmNotationExporterTest {
@@ -46,7 +44,7 @@ public class xHelmNotationExporterTest {
 		String output = xHelmNotationExporter.writeXHELM(helmString,
 				monomerStore);
 
-		assertEquals(expectedDocString.length(), output.length());
+		AssertJUnit.assertEquals(expectedDocString.length(), output.length());
 
 	}
 
