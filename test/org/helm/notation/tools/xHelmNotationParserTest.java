@@ -88,7 +88,7 @@ public class xHelmNotationParserTest {
 		store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
 
 		AssertJUnit.assertEquals(
-				"PEPTIDE1{A.C.A.C.G.K.E.E}|PEPTIDE2{A.C.A.C.G.K.E.E}|CHEM1{[*]OCCOCCOCCO[*] |$_R1;;;;;;;;;;;_R3$|}|CHEM2{PEG2}$PEPTIDE1+PEPTIDE2,CHEM1,generic:K-1:R1|PEPTIDE1+PEPTIDE2,CHEM2,generic:Q1+Q2-1:R1$$$",
+				"PEPTIDE1{A.A.G.[O[C@@H]([C@H](N[*])C([*])=O)c1ccc2ccccc2c1 |$;;;;_R1;;_R2;;;;;;;;;;;$|].C.T.T}$$$$",
 				helmString);
 
 		AssertJUnit.assertTrue(ComplexNotationParser.validateComplexNotation(helmString,
