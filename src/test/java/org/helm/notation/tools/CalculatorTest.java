@@ -26,19 +26,19 @@ public class CalculatorTest {
 
 		String input = "AGGDDDDDDDDDDDDDDDDDDFFFFFFFFFFFFF";
 		float result = calculator.calculateFromAminoAcidSequence(input);
-		assertEquals(result, 0.0, 1e-15);
+		assertEquals(0.0, result, 1e-15);
 
 		input = "AGGCFFFFFFFFFF";
 		result = calculator.calculateFromAminoAcidSequence(input);
-		assertEquals(result, 0.0, 62.5);
+		assertEquals(0.0, result, 62.5);
 
 		input = "AGGYEEEEEEEEEEEEEEEEEEE";
 		result = calculator.calculateFromAminoAcidSequence(input);
-		assertEquals(result, 1490.0, 1e-15);
+		assertEquals(1490.0, result, 1e-15);
 
 		input = "AGGWEEEEEEEEEEEEEEEEEEE";
 		result = calculator.calculateFromAminoAcidSequence(input);
-		assertEquals(result, 5500.0, 1e-15);
+		assertEquals(5500.0, result, 1e-15);
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class CalculatorTest {
 			IOException, JDOMException, StructureException {
 		String input = "A.G.G.W.E.E.E.E.E.W";
 		float result = calculator.calculateFromPeptidePolymerNotation(input);
-		assertEquals(result, 11000.0, 1e-15);
+		assertEquals(11000.0, result, 1e-15);
 
 	}
 
@@ -58,29 +58,29 @@ public class CalculatorTest {
 		String input = "PEPTIDE1{A.G.G.W.E.E.E.E.E.W}$$$$";
 		float result = calculator.calculateFromComplexNotation(input,
 				ExtinctionCoefficientCalculator.PEPTIDE_UNIT_TYPE);
-		assertEquals(result, 11000.0, 1e-15);
+		assertEquals(11000.0, result, 1e-15);
 
 		input = "PEPTIDE1{A.G.G.W.E.E.E.E.E.W}|PEPTIDE2{A.G.G.W.E.Y.E.E.E.E.W}$$$$";
 		result = calculator.calculateFromComplexNotation(input);
-		assertEquals(result, 23.49, 1e-6);
+		assertEquals(23.49, result, 1e-6);
 
 		input = "PEPTIDE1{A.G.G.W.E.E.E.E.E.W}|PEPTIDE2{A.G.G.W.E.Y.E.E.E.E.W}$$$$";
 		result = calculator.calculateFromComplexNotation(input,
 				ExtinctionCoefficientCalculator.PEPTIDE_UNIT_TYPE);
-		assertEquals(result, 23490.0, 1e-15);
+		assertEquals(23490.0, result, 1e-15);
 
 		input = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}$$$$";
 		result = calculator.calculateFromComplexNotation(input);
-		assertEquals(result, 46.200005, 1e-6);
+		assertEquals(46.200005, result, 1e-6);
 
 		input = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}$$$$";
 		result = calculator.calculateFromComplexNotation(input,
 				ExtinctionCoefficientCalculator.PEPTIDE_UNIT_TYPE);
-		assertEquals(result, 46200.004, 1e-4);
+		assertEquals(46200.004, result, 1e-4);
 
 		input = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}|CHEM1{PEG2}|PEPTIDE1{A.G.G.W.E.E.E.E.E.W}|PEPTIDE2{A.G.G.W.E.Y.E.E.E.E.W}$$$$";
 		result = calculator.calculateFromComplexNotation(input);
-		assertEquals(result, 69.69, 1e-5);
+		assertEquals(69.69, result, 1e-5);
 
 	}
 
@@ -89,7 +89,7 @@ public class CalculatorTest {
 			throws CalculationException {
 		String input = "ACGTACGT";
 		float result = calculator.calculateFromNucleotideSequence(input);
-		assertEquals(result, 81.12001037597656, 1e-6);
+		assertEquals(81.1199951171875, result, 1e-6);
 
 	}
 
@@ -100,7 +100,7 @@ public class CalculatorTest {
 		String input = "ACGmTACmGT";
 		float result = calculator
 				.calculateFromModifiedNucleotideSequence(input);
-		assertEquals(result, 81.12001037597656, 1e-6);
+		assertEquals(81.1199951171875, result, 1e-6);
 
 	}
 
@@ -110,7 +110,7 @@ public class CalculatorTest {
 			StructureException {
 		String input = "P.R(A)P.R(C)P.R(G)P.[mR](A)";
 		float result = calculator.calculateFromRnaPolymerNotation(input);
-		assertEquals(result, 46.200005, 1e-6);
+		assertEquals(46.200005, result, 1e-6);
 
 	}
 
