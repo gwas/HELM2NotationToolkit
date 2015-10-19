@@ -165,3 +165,10 @@ pip-log.txt
 # local artifacts
 local
 test-output/
+
+##################
+### Maven
+##################
+
+target/
+
