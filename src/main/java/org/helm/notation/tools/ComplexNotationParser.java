@@ -500,6 +500,7 @@ public class ComplexNotationParser {
 			}
 			l.add(mol);
 		}
+
 		return l;
 	}
 
@@ -827,7 +828,6 @@ public class ComplexNotationParser {
 			Map<String, RgroupStructure> polymerNodeStructureMap)
 			throws NotationException {
 		RgroupStructure rstructure = polymerNodeStructureMap.get(node);
-
 		if (!(nodeMap.containsKey(node))) {
 			throw new NotationException(
 					"Polymer edge contains unknown polymer node ID");
@@ -847,7 +847,7 @@ public class ComplexNotationParser {
 
 	private static void validateGenericAttachment(String[] nodes,
 			Map<String, String> nodeMap) throws NotationException {
-		for (String node : nodes) {
+    for (String node : nodes) {
 			if (!(nodeMap.containsKey(node))) {
 				throw new NotationException(
 						"Polymer edge contains unknown polymer node ID");
