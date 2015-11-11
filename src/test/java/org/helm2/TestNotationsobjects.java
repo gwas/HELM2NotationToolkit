@@ -248,7 +248,7 @@ public class TestNotationsobjects {
 
   }
 
-  @Test
+
   public void testConnectionHELM2Simple() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
