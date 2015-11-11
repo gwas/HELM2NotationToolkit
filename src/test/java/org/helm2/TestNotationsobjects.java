@@ -6,6 +6,8 @@ import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.ExceptionParser.ExceptionState;
+import org.helm2.exception.AttachmentException;
+import org.helm2.exception.PolymerIDsException;
 import org.jdom.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -28,8 +30,9 @@ public class TestNotationsobjects {
     }
     test += "V2.0";
 
-
-    Assert.assertTrue(Notationsobjects.validateGrouping(parser.notationContainer));
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertTrue(Validation.validateGrouping(containerhelm2));
   }
 
   @Test
@@ -48,8 +51,9 @@ public class TestNotationsobjects {
     }
     test += "V2.0";
 
-    // System.out.println(parser.toJSON());
-    Assert.assertFalse(Notationsobjects.validateGrouping(parser.notationContainer));
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertFalse(Validation.validateGrouping(containerhelm2));
   }
 
   @Test
@@ -67,8 +71,9 @@ public class TestNotationsobjects {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-
-    Assert.assertFalse(Notationsobjects.validateGrouping(parser.notationContainer));
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertFalse(Validation.validateGrouping(containerhelm2));
   }
 
   @Test
@@ -86,8 +91,9 @@ public class TestNotationsobjects {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-
-    Assert.assertTrue(Notationsobjects.validateUniquePolymerIDs(parser.notationContainer));
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertTrue(Validation.validateUniquePolymerIDs(containerhelm2));
   }
 
   @Test(expectedExceptions = NotationException.class)
@@ -105,8 +111,9 @@ public class TestNotationsobjects {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-
-    Assert.assertTrue(Notationsobjects.validateUniquePolymerIDs(parser.notationContainer));
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertTrue(Validation.validateUniquePolymerIDs(containerhelm2));
   }
 
   @Test
@@ -125,7 +132,8 @@ public class TestNotationsobjects {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Notationsobjects.getMonomerCount(parser.notationContainer), 16);
+    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 16);
+    
   }
 
   @Test
@@ -144,13 +152,14 @@ public class TestNotationsobjects {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Notationsobjects.getMonomerCount(parser.notationContainer), 27);
+    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 27);
   }
 
   @Test
-  public void testConnection() throws ExceptionState,
+  public void testConnectionRNA() throws ExceptionState,
       MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      AttachmentException, PolymerIDsException
 
   {
     parser = new StateMachineParser();
@@ -163,10 +172,103 @@ public class TestNotationsobjects {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-
-    System.out.println(Notationsobjects.validateConnections(parser.notationContainer));
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    System.out.println(Validation.validateConnections(containerhelm2));
 
   }
 
+  @Test
+  public void testConnection() throws ExceptionState,
+      MonomerException,
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      AttachmentException, PolymerIDsException
+
+  {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{F.L.C}|PEPTIDE2{C.D}$PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
+
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+
+  }
+
+  @Test
+  public void testConnectionMap() throws ExceptionState,
+      MonomerException,
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      AttachmentException, PolymerIDsException
+
+  {
+    parser = new StateMachineParser();
+
+    String test =
+        "RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R(A)}$$$$";
+
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+    parser.notationContainer.getListOfPolymers().get(0).initializeMapOfMonomersAndMapOfIntraConnection();
+    System.out.println(parser.notationContainer.getListOfPolymers().get(0).getMapIntraConnection());
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+
+  }
+
+  @Test(expectedExceptions = AttachmentException.class)
+  public void testConnectionFalse() throws ExceptionState,
+      MonomerException,
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      AttachmentException, PolymerIDsException
+
+  {
+    parser = new StateMachineParser();
+
+    String test =
+        "RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R(A)}|RNA2{R(U)P.R(G)P.R(C)P.R(A)P.R(A)}$RNA1,RNA2,14:pair-2:pair|RNA1,RNA2,11:pair-5:pair|RNA1,RNA2,2:pair-14:pair|RNA1,RNA2,8:pair-14:pair|RNA1,RNA2,5:pair-11:pair$$$";
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Validation.validateConnections(containerhelm2);
+
+  }
+
+  @Test
+  public void testConnectionHELM2Simple() throws ExceptionState,
+      MonomerException,
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      AttachmentException, PolymerIDsException
+
+  {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[[*]SCCCc1ccccc1 |$_R1;;;;;;;;;;$|]}$PEPTIDE1,CHEM1,C:R3-1:R1\"Specific Conjugation\"$$$";
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Assert.assertFalse(Validation.validateConnections(containerhelm2));
+
+  }
 
 }
