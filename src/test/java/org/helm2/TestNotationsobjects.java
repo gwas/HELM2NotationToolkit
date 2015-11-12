@@ -12,6 +12,8 @@ import org.jdom.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import chemaxon.formats.MolFormatException;
+
 public class TestNotationsobjects {
   StateMachineParser parser;
 
@@ -174,7 +176,7 @@ public class TestNotationsobjects {
     test += "V2.0";
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    System.out.println(Validation.validateConnections(containerhelm2));
+    Validation.validateConnections(containerhelm2);
 
   }
 
@@ -218,7 +220,6 @@ public class TestNotationsobjects {
     }
     test += "V2.0";
     parser.notationContainer.getListOfPolymers().get(0).initializeMapOfMonomersAndMapOfIntraConnection();
-    System.out.println(parser.notationContainer.getListOfPolymers().get(0).getMapIntraConnection());
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
     Assert.assertTrue(Validation.validateConnections(containerhelm2));
@@ -248,7 +249,7 @@ public class TestNotationsobjects {
 
   }
 
-
+  @Test
   public void testConnectionHELM2Simple() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
@@ -258,7 +259,7 @@ public class TestNotationsobjects {
     parser = new StateMachineParser();
 
     String test =
-        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[[*]SCCCc1ccccc1 |$_R1;;;;;;;;;;$|]}$PEPTIDE1,CHEM1,C:R3-1:R1\"Specific Conjugation\"$$$";
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,CHEM1,C:R3-1:R1\"Specific Conjugation\"$$$";
     ;
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
@@ -267,7 +268,106 @@ public class TestNotationsobjects {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Assert.assertFalse(Validation.validateConnections(containerhelm2));
+    Validation.validateConnections(containerhelm2);
+
+  }
+
+  @Test
+  public void testConnectionHELM2SimpleWithException() throws ExceptionState,
+      MonomerException,
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      AttachmentException, PolymerIDsException
+
+  {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,CHEM1,C:R3-1:R1\"Specific Conjugation\"$$$";
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Validation.validateConnections(containerhelm2);
+
+  }
+
+  @Test
+  public void testConnectionHELM2Extended() throws ExceptionState,
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,CHEM1,(C,D):R3-1:R1\"Specific Conjugation\"$$$";
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Validation.validateConnections(containerhelm2);
+
+  }
+
+
+  @Test
+  public void testMonomerValidation() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.X.G.C.(_,N).(A:10,G:30,R:30)'4'\"Group is repeated\".T.C.F.D.W\"mutation\".(A:?+G:1.5).C}|RNA1{[am6]P.(R(N)P)'4'.(R(G)P)'3-7'\"mutation\"}|CHEM1{?}|BLOB1{BEAD}\"AnimatedPolystyrene\"$PEPTIDE1,BLOB1,X:R3-?:?\"Specific Conjugation\"|PEPTIDE1,CHEM1,(A+T):R3-?:?|PEPTIDE1,PEPTIDE1,(4,8):pair-12:pair$G1(PEPTIDE1:1+RNA1:2.5-2.7+BLOB1)|G2(G1:45,CHEM1:55)${\"Name\":\"lipidnanoparticle with RNA payload and peptide ligand\"}$";
+    ;
+
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Validation.validateMonomers(containerhelm2.getListOfMonomers());
+
+  }
+
+  @Test(expectedExceptions = MolFormatException.class)
+  public void testMonomerValidationWithException() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{Z.X.G.C.(_,N).(A:10,G:30,R:30)'4'\"Group is repeated\".T.C.F.D.W\"mutation\".(A:?+G:1.5).C}|RNA1{[am6]P.(R(N)P)'4'.(R(G)P)'3-7'\"mutation\"}|CHEM1{?}|BLOB1{BEAD}\"AnimatedPolystyrene\"$PEPTIDE1,BLOB1,X:R3-?:?\"Specific Conjugation\"|PEPTIDE1,CHEM1,(A+T):R3-?:?|PEPTIDE1,PEPTIDE1,(4,8):pair-12:pair$G1(PEPTIDE1:1+RNA1:2.5-2.7+BLOB1)|G2(G1:45,CHEM1:55)${\"Name\":\"lipidnanoparticle with RNA payload and peptide ligand\"}$";
+    ;
+
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+
+    Validation.validateMonomers(containerhelm2.getListOfMonomers());
+
+  }
+
+  @Test(expectedExceptions = MolFormatException.class)
+  public void testMonomerValidationWithException2() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.X.G.C.(_,N).(A:10,Z:30,R:30)'4'\"Group is repeated\".T.C.F.D.W\"mutation\".(A:?+G:1.5).C}|RNA1{[am6]P.(R(N)P)'4'.(R(G)P)'3-7'\"mutation\"}|CHEM1{?}|BLOB1{BEAD}\"AnimatedPolystyrene\"$PEPTIDE1,BLOB1,X:R3-?:?\"Specific Conjugation\"|PEPTIDE1,CHEM1,(A+T):R3-?:?|PEPTIDE1,PEPTIDE1,(4,8):pair-12:pair$G1(PEPTIDE1:1+RNA1:2.5-2.7+BLOB1)|G2(G1:45,CHEM1:55)${\"Name\":\"lipidnanoparticle with RNA payload and peptide ligand\"}$";
+    ;
+
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+
+    Validation.validateMonomers(containerhelm2.getListOfMonomers());
 
   }
 

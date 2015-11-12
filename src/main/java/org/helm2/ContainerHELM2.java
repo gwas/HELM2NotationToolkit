@@ -6,7 +6,10 @@
  */
 package org.helm2;
 
+import java.util.ArrayList;
+
 import org.helm.notation2.parser.Notation.HELM2Notation;
+import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,4 +44,13 @@ public class ContainerHELM2 {
     return interconnection;
   }
 
+  public ArrayList<MonomerNotation> getListOfMonomers() {
+    ArrayList<MonomerNotation> items = new ArrayList<MonomerNotation>();
+    for (int i = 0; i < helm2notation.getListOfPolymers().size(); i++) {
+      items.addAll(helm2notation.getListOfPolymers().get(i).getListMonomers());
+    }
+
+    return items;
+
+  }
 }

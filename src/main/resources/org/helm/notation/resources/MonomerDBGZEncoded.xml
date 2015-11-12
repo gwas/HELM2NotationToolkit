@@ -2848,7 +2848,7 @@
                 </Attachments>
             </Monomer>
             <Monomer>
-                <MonomerID>SMPEG2</MonomerID>
+                
                 <MonomerSmiles>[*]C(=O)CCOCCOCCNC(=O)CCN1C(=O)CC([*])C1=O |$_R1;;;;;;;;;;;;;;;;;;;;;_R2;;$|</MonomerSmiles>
                 <MonomerMolFile>H4sIAAAAAAAAAKWUu1IDMQxF+/0KzUAbjyQ/ZNWEoUpgUtBT0lBQ8P3I6x2yWbsgXo/zOmvfuVexPAGcPr5/Pr8AMLESotrnEf7GNAGHMgFX8zpUFd4ZESf7cWCnmnLh5CSRlG/o7CnCGW4l+nNR4cy+qvigvFJ5+r8KuZik7+UOFXQ5+t1e0LEgVhX1nIbqYjtI8qziHWnVG/ESkee6sBMOYyq2I8YgSyLUMKqSPcXqJeWURlU0CVcvpHGd6PWe88KqUr2olzikYg4S57CoINJK5fLwby/XDrA6c+CxRN4J0e6zG1zgKHv7KDoKyF0vdySK1o1ht5fkgq99RKWj/JiKOIocq0pUzGOJxGmo3WN1ERn0kl1KXpe6ZM1jKmoOst/n5UC2Qzl3vdzRAVcv5aZhP1Jdaz6e32+oId9SQ6GlhmJLpUsN5ZamefmW2kLtru3QDISz640HopYqUDdxuQW2awmoTWyI2myGKLU0AbXZDFFbB0PUZjPE2FBDTC0l4DabIW7/zULDNvEJ4PLyVo9EuX7sNR8rKk+ez8dperQx/QIp5zbREgkAAA==</MonomerMolFile>
                 <MonomerType>Undefined</MonomerType>
@@ -2868,7 +2868,7 @@
                         <CapGroupSmiles>[*][H] |$_R2;$|</CapGroupSmiles>
                     </Attachment>
                 </Attachments>
-            </Monomer>
+            </Monomer><MonomerID>SMPEG2</MonomerID>
             <Monomer>
                 <MonomerID>Alexa</MonomerID>
                 <MonomerType>Undefined</MonomerType>
