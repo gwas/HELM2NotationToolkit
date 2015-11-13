@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import org.helm.notation2.parser.Notation.HELM2Notation;
 import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
+import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,14 @@ public class ContainerHELM2 {
 
   InterConnections interconnection;
 
+  public static final String PEPTIDE = "PEPTIDE";
+
+  public static final String RNA = "RNA";
+
+  public static final String BLOB = "BLOB";
+
+  public static final String CHEM = "CHEM";
+
   public ContainerHELM2(HELM2Notation helm2notation,
       InterConnections interconnection) {
     this.helm2notation = helm2notation;
@@ -44,13 +53,24 @@ public class ContainerHELM2 {
     return interconnection;
   }
 
-  public ArrayList<MonomerNotation> getListOfMonomers() {
+  public ArrayList<MonomerNotation> getListOfMonomers(ArrayList<PolymerNotation> not) {
     ArrayList<MonomerNotation> items = new ArrayList<MonomerNotation>();
-    for (int i = 0; i < helm2notation.getListOfPolymers().size(); i++) {
-      items.addAll(helm2notation.getListOfPolymers().get(i).getListMonomers());
+    for (int i = 0; i < not.size(); i++) {
+      items.addAll(not.get(i).getListMonomers());
     }
 
     return items;
 
   }
+
+  public ArrayList<PolymerNotation> getListOfPolymersSpecificType(String str, ArrayList<PolymerNotation> not) {
+   ArrayList<PolymerNotation> list = new ArrayList<PolymerNotation>();
+    for (int i = 0; i < not.size(); ++i) {
+      if (not.get(i).getPolymerID().getType().equals(str)) {
+        list.add(not.get(i));
+      }
+    }
+    return list;
+  }
+
 }

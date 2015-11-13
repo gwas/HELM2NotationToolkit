@@ -48,9 +48,15 @@ public class Validation {
   private static final Logger logger =
       LoggerFactory.getLogger(BetweenGroupingParser.class);
 
+
+
   /**
-   * method to check if the connections and the grouping are correct
+   * method to check if the generated notation objects by the parser are correct
+   * the polymer ids have to be unique; all monomers have to be valid; all used
+   * polymer ids in the grouping section have to be there; all connections have
+   * to be valid
    * 
+   * @param ContainerHELM2
    * @throws NotationException
    * @throws JDOMException
    * @throws IOException
@@ -76,11 +82,10 @@ public class Validation {
       throw new PolymerIDsException("Polymer IDs have to be unique");
     }
     /* Validation of Monomers */
-    if (!validateMonomers(containerhelm2.getListOfMonomers())) {
+    if (!validateMonomers(containerhelm2.getListOfMonomers(containerhelm2.getHELM2Notation().getListOfPolymers()))) {
       logger.info("Monomers have to be valid");
       throw new MonomerException("Monomers have to be valid");
     }
-
     /* validate the grouping section */
     if (!validateGrouping(containerhelm2)) {
       logger.info("Group information is not valid");
@@ -93,6 +98,16 @@ public class Validation {
     }
   }
 
+  /**
+   * method to validate a list of MonomerNotation objects
+   * 
+   * @param mon List of MonomerNotation objects
+   * @return
+   * @throws IOException
+   * @throws MonomerException
+   * @throws JDOMException
+   * @throws NotationException
+   */
   public static boolean validateMonomers(ArrayList<MonomerNotation> mon) throws IOException, MonomerException, JDOMException, NotationException {
     ArrayList<MonomerNotation> monomers = mon;
     for (int i = 0; i < monomers.size(); i++) {
@@ -104,16 +119,18 @@ public class Validation {
   }
 
   /**
-   * method to validate all connections in the connection section
+   * method to valid all existent connections in the Notation objects
    * 
-   * @throws JDOMException
-   * @throws IOException
+   * @param containerhelm2
+   * @return
    * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    * @throws AttachmentException
    * @throws PolymerIDsException
+   * @throws org.helm.notation2.parser.ExceptionParser.NotationException
    * @throws org.jdom.JDOMException
    * @throws NotationException
-   * @throws org.helm.notation2.parser.ExceptionParser.NotationException
    */
   public static boolean validateConnections(ContainerHELM2 containerhelm2)
       throws MonomerException, IOException, JDOMException, AttachmentException,
@@ -131,168 +148,102 @@ public class Validation {
     boolean specific = true;
     /* check for each single connection */
     for (int i = 0; i < listConnection.size(); i++) {
-      /* the polymer ids have to be there */
-      checkExistenceOfPolymerID(listConnection.get(i).getSourceId().getID(), listPolymerIDs);
-      checkExistenceOfPolymerID(listConnection.get(i).getTargetId().getID(), listPolymerIDs);
-      
+
+      /* check polymer ids */
+      checkPolymerIDSConnection(listConnection.get(i), listPolymerIDs);
+
       /*check for unspecific interaction*/
       if(listConnection.get(i).getSourceId() instanceof GroupEntity || listConnection.get(i).getTargetId() instanceof GroupEntity){
         specific = false;
       }
 
-
-      /* check if the required connection is possible -> look at attachment */
-      /* get the source monomer */
-      PolymerNotation source =
-          containerhelm2.getHELM2Notation().getPolymerNotation(listConnection.get(i).getSourceId().getID());
+      /* check Monomers:-> can be number */
+      PolymerNotation source = containerhelm2.getHELM2Notation().getPolymerNotation(listConnection.get(i).getSourceId().getID());
       String sourceUnit = listConnection.get(i).getSourceUnit();
-      ArrayList<Integer> numberOne = new ArrayList<Integer>();
-      try{
-        numberOne.add(Integer.parseInt(sourceUnit));
-      }
-      catch(NumberFormatException e){
-        specific = false;
-        numberOne =
-            getMonomer(sourceUnit, listConnection.get(i).getSourceId(), containerhelm2);
-      }
+      PolymerNotation target = containerhelm2.getHELM2Notation().getPolymerNotation(listConnection.get(i).getTargetId().getID());
+      String targetUnit = listConnection.get(i).getTargetUnit();
 
-      for (int x = 0; x < numberOne.size(); x++) {
-        MonomerNotation first = source.getMonomer(numberOne.get(x));
+      /* check for specific interactions */
+      if (isConnectionSpecific(listConnection.get(i)) && specific) {
+        /*
+         * interaction seems to be specific: it is given in number -> place of
+         * monomer
+         */
+        /* Get Monomers */
+        specific = true;
+        int numberOne = Integer.parseInt(sourceUnit);
+        int numberTwo = Integer.parseInt(targetUnit);
 
-        /* Get the target monomer */
-        PolymerNotation target =
-            containerhelm2.getHELM2Notation().getPolymerNotation(listConnection.get(i).getTargetId().getID());
-        String targetUnit = listConnection.get(i).getTargetUnit();
-        ArrayList<Integer> numberTwo = new ArrayList<Integer>();
-        try {
-          numberTwo.add(Integer.parseInt(targetUnit));
-        } catch (NumberFormatException e) {
-          specific = false;
-          numberTwo =
-              getMonomer(targetUnit, listConnection.get(i).getTargetId(), containerhelm2);
+        /*
+         * if the monomers are a group or a list of monomers -> is it no more
+         * specific
+         */
+        MonomerNotation first = source.getMonomer(numberOne);
+        MonomerNotation second = target.getMonomer(numberTwo);
+
+        /* can the two form a connection */
+        /**/
+        ArrayList<Monomer> firsts = getAllMonomers(first);
+        ArrayList<Monomer> seconds = getAllMonomers(second);
+
+
+        /* check each single Attachment */
+        checkAttachment(firsts, seconds, listConnection.get(i), containerhelm2, interconnection, specific);
         }
-        for(int y = 0; y < numberTwo.size(); y++){
-          MonomerNotation second =
-              target.getMonomer(numberTwo.get(y));
-
-
-          /* can the two form a connection */
-          MonomerFactory monomerFactory = MonomerFactory.getInstance();
-          /* Search in Database : both have to be the type Branch */
-          MonomerStore monomerStore = monomerFactory.getMonomerStore();
-          String id = first.getID().replace("[", "");
-          id = id.replace("]", "");
-          Monomer one =
-              monomerStore.getMonomer(source.getPolymerID().getType(), id);
-          id = second.getID().replace("[", "");
-          id = id.replace("]", "");
-          Monomer two =
-              monomerStore.getMonomer(target.getPolymerID().getType(), id);
-
-          /* Rna-Basepair-hydrogen bonds */
-          if (source.getPolymerID().getType().equals("RNA")
-              && target.getPolymerID().getType().equals("RNA")
-              && listConnection.get(i).getrGroupSource().equals("pair")
-              && listConnection.get(i).getrGroupTarget().equals("pair")) {
-            logger.info("RNA strand connection");
-
-            if (!(one.getMonomerType().equals("Branch")
-                | two.getMonomerType().equals("Branch"))) {
-              logger.info("RNA strand connection is not valid");
-              throw new AttachmentException(
-                  "RNA strand connection is not valid");
-            }
-
+      /*Unspecific Interaction*/
+        else {
+        ArrayList<Integer> numberOne = getMonomer(sourceUnit,listConnection.get(i).getSourceId(),containerhelm2);
+        ArrayList<Integer> numberTwo = getMonomer(targetUnit, listConnection.get(i).getTargetId(), containerhelm2);
+        /* ? - section has to be included */
+        if (numberOne.isEmpty()) {
+          for (int y = 0; y < numberTwo.size(); y++) {
+            MonomerNotation second = target.getMonomer(numberTwo.get(y));
+            ArrayList<Monomer> seconds = getAllMonomers(second);
+            checkSingleAttachment(seconds, listConnection.get(i).getrGroupTarget(), containerhelm2, listConnection.get(i), interconnection, listConnection.get(i).getTargetId().getID());
           }
-
-          else {
-
-            /* Is the attachment point there */
-            if (!(one.getAttachmentListString().contains(listConnection.get(i).getrGroupSource()))) {
-              logger.info("Attachment point for source is not there");
-              throw new AttachmentException(
-                  "Attachment point for source is not there: "
-                      + listConnection.get(i).getrGroupSource());
-            }
-            if (!(two.getAttachmentListString().contains(listConnection.get(i).getrGroupTarget()))) {
-              logger.info("Attachment point for target is not there");
-              throw new AttachmentException(
-                  "Attachment point for target is not there");
-            }
-
-            /*
-             * are the attachments points valid OH-H or H-OH, H-H and OH-OH are
-             * not allowed
-             */
-            if (!(one.getAttachment(listConnection.get(i).getrGroupSource()).getCapGroupName().equals("H")
-                && two.getAttachment(listConnection.get(i).getrGroupTarget()).getCapGroupName().equals("OH")
-                ||
-                one.getAttachment(listConnection.get(i).getrGroupSource()).getCapGroupName().equals("OH")
-                    && two.getAttachment(listConnection.get(i).getrGroupTarget()).getCapGroupName().equals("H")
-                ||
-                one.getAttachment(listConnection.get(i).getrGroupSource()).getCapGroupName().equals("H")
-                    && two.getAttachment(listConnection.get(i).getrGroupTarget()).getCapGroupName().equals("H")
-                    && one.getAlternateId().equals("C")
-                    && two.getAlternateId().equals("C"))) {
-              logger.info("Attachment points can not form a connection");
-              throw new AttachmentException(
-                  "Attachment points can not form a connectíon");
-            }
-
-          }
-
-          /* is the attachment point already occupied by another monomer? */
-          String detailsource = listConnection.get(i).getSourceUnit() + "$"
-              + listConnection.get(i).getrGroupSource();
-          String detailtarget = listConnection.get(i).getTargetUnit() + "$"
-              + listConnection.get(i).getrGroupSource();
-
-          /* Intra connections */
-          if (containerhelm2.getHELM2Notation().getSimplePolymer(listConnection.get(i).getSourceId().getID()).getMapIntraConnection().containsKey(detailsource)) {
-            throw new AttachmentException(
-                "Attachment point is already occupied");
-          }
-
-          if (containerhelm2.getHELM2Notation().getSimplePolymer(listConnection.get(i).getTargetId().getID()).getMapIntraConnection().containsKey(detailtarget)) {
-            throw new AttachmentException(
-                "Attachment point is already occupied");
-          }
-
-          /* Inter connections */
-          detailsource = listConnection.get(i).getSourceId().getID() + "$"
-              + detailsource;
-          detailtarget = listConnection.get(i).getTargetId().getID() + "$"
-              + detailtarget;
-          /* check */
-          if (interconnection.hasKey(detailsource)) {
-            throw new AttachmentException(
-                "Attachment point is already occupied");
-          }
-
-          if (interconnection.hasKey(detailtarget)) {
-            throw new AttachmentException(
-                "Attachment point is already occupied");
-          }
-
-          /* save only specific interactions */
-          if (specific) {
-            interconnection.addConnection(detailsource, "");
-            interconnection.addConnection(detailtarget, "");
-          }
- else {
-            System.out.println("Unspecific Interaction");
-          }
-
-          specific = true;
         }
+        for (int x = 0; x < numberOne.size(); x++) {
+          /* get Monomers */
+          MonomerNotation first = source.getMonomer(numberOne.get(x));
+          ArrayList<Monomer> firsts = getAllMonomers(first);
+          checkSingleAttachment(firsts, listConnection.get(i).getrGroupSource(), containerhelm2, listConnection.get(i), interconnection, listConnection.get(i).getSourceId().getID());
+          /* check single attachment */
+          for (int y = 0; y < numberTwo.size(); y++) {
+            MonomerNotation second = target.getMonomer(numberTwo.get(y));
+            ArrayList<Monomer> seconds = getAllMonomers(second);
+            checkSingleAttachment(seconds, listConnection.get(i).getrGroupTarget(), containerhelm2, listConnection.get(i), interconnection, listConnection.get(i).getTargetId().getID());
+            checkAttachment(firsts, seconds, listConnection.get(i), containerhelm2, interconnection, false);
 
-      }
+          }
+
+        }
+      
     }
 
+    
+  }
     return true;
   }
 
+
   /**
+   * method to check if the described connection is specific
+   * 
+   * @param connectionNotation
+   * @return
+   */
+  private static boolean isConnectionSpecific(ConnectionNotation connectionNotation) {
+    String connection = connectionNotation.getSourceUnit() + ":" + connectionNotation.getrGroupSource() + "-" + connectionNotation.getTargetUnit() + ":" + connectionNotation.getrGroupTarget();
+    /* check for specific interaction */
+    if (connection.matches("\\d+:R\\d-\\d+:R\\d|\\d+:pair-\\d+:pair")) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * method to get
+   * 
    * @param sourceUnit
    * @param id
    * @param containerhelm2
@@ -303,30 +254,43 @@ public class Validation {
    * @throws IOException
    * @throws MonomerException
    * @throws org.helm.notation2.parser.ExceptionParser.NotationException
+   * @throws AttachmentException
    */
-  private static ArrayList<Integer> getMonomer(String sourceUnit,
-      Entity e,
-      ContainerHELM2 containerhelm2)
-          throws org.helm.notation2.parser.ExceptionParser.NotationException,
-          MonomerException, IOException, org.jdom.JDOMException, JDOMException,
-          NotationException {
-    /* different possibilites are possible */
-    /* first: monomer type */
+  private static ArrayList<Integer> getMonomer(String sourceUnit, Entity e, ContainerHELM2 containerhelm2) throws org.helm.notation2.parser.ExceptionParser.NotationException, MonomerException,
+      IOException, org.jdom.JDOMException, JDOMException, NotationException, AttachmentException {
     ArrayList<Integer> occurences = new ArrayList<Integer>();
-    MonomerNotation mon =
-        new ValidationMethod().decideWhichMonomerNotation(sourceUnit, e.getType());
-    if (mon instanceof MonomerNotationUnit) {
-      PolymerNotation polymerNotation =
-          containerhelm2.getHELM2Notation().getPolymerNotation(e.getID());
-    for(int i = 0; i < polymerNotation.getPolymerElements().getListOfElements().size(); i++){
-        if (polymerNotation.getPolymerElements().getListOfElements().get(i).getID().equals(sourceUnit)) {
-          occurences.add(i + 1);
-      }
+    
+    /* The monomer's position in the polymer is specified */
+    try{
+      occurences.add(Integer.parseInt(sourceUnit));
+      return occurences;  
+    }
+    /*
+     * The monomer is described through a group/mixture or a monomer unit e.g.
+     * specific amino acid, the monomer can also be unknown
+     */
+    catch (NumberFormatException ex) {
+      MonomerNotation mon = new ValidationMethod().decideWhichMonomerNotation(sourceUnit, e.getType());
+      /* it is only one monomer e.g. C */
+      if (mon instanceof MonomerNotationUnit) {
+        PolymerNotation polymerNotation = containerhelm2.getHELM2Notation().getPolymerNotation(e.getID());
+        /* monomer can also be unknown */
+        if (sourceUnit.equals("?")) {
+          return occurences;
+        }
+        for (int i = 0; i < polymerNotation.getPolymerElements().getListOfElements().size(); i++) {
+          if (polymerNotation.getPolymerElements().getListOfElements().get(i).getID().equals(sourceUnit)) {
+            occurences.add(i + 1);
+          }
+        }
+
+        /* the specified monomer does not exist in the polymer */
+        if (occurences.isEmpty()) {
+          throw new AttachmentException("Monomer is not there");
+        }
     }
 
-    }
-
-    /* second: group (mixture or or)*/
+      /* second: group (mixture or or) or list */
     else if (mon instanceof MonomerNotationGroup || mon instanceof MonomerNotationList) {
       PolymerNotation polymerNotation =
           containerhelm2.getHELM2Notation().getPolymerNotation(e.getID());
@@ -334,33 +298,27 @@ public class Validation {
       for(int i = 0; i < ((MonomerNotationGroupOr) mon).getListOfElements().size(); i ++){
         elements.put(((MonomerNotationGroupOr) mon).getListOfElements().get(i).getMonomer().getID(),"");
       }
-        
-          
-      for (int i =
-          0; i < polymerNotation.getPolymerElements().getListOfElements().size(); i++) {
-        if (polymerNotation.getPolymerElements().getListOfElements().get(i).getID().equals(sourceUnit)) {
 
-          MonomerNotationGroupOr monj =
-              (MonomerNotationGroupOr) polymerNotation.getPolymerElements().getListOfElements().get(i);
-          for (int j = 0; j < monj.getListOfElements().size(); ++j) {
-
-
+        for (int i = 0; i < polymerNotation.getPolymerElements().getListOfElements().size(); i++) {
+        if (elements.containsKey(polymerNotation.getPolymerElements().getListOfElements().get(i).getID())) {
+          elements.put(polymerNotation.getPolymerElements().getListOfElements().get(i).getID(), "1");
+          occurences.add(i + 1);
           }
         }
+      if (occurences.size() < elements.size() || elements.containsValue("")) {
+        throw new AttachmentException("Not all Monomers are there");
+      }
     }
-
-    }
-      
-
-    
-
-
-    /* third: group and */
     return occurences;
+    }
   }
 
+
   /**
-   * method to validate the grouping
+   * method to validate every GroupNotation from the Notation objects
+   * 
+   * @param containerhelm2
+   * @return
    */
   public static boolean validateGrouping(ContainerHELM2 containerhelm2) {
     ArrayList<GroupingNotation> listGroupings =
@@ -446,16 +404,36 @@ public class Validation {
 
   }
 
+  /**
+   * method to check if the given polymer id exists in the given list of polymer
+   * ids
+   * 
+   * @param str
+   * @param listPolymerIDs
+   * @return
+   * @throws PolymerIDsException
+   */
   public static boolean checkExistenceOfPolymerID(String str, ArrayList<String> listPolymerIDs) throws PolymerIDsException {
     if (listPolymerIDs.contains(str)) {
       return true;
     }
-    logger.info("Polymer Id is not there");
+    logger.info("Polymer Id does not exist");
     throw new PolymerIDsException("Polymer ID does not exist");
   }
 
 
 
+  /**
+   * method to check for one given monomer the existence in the given type
+   * 
+   * @param str
+   * @param type
+   * @return
+   * @throws IOException
+   * @throws MonomerException
+   * @throws JDOMException
+   * @throws NotationException
+   */
   public static boolean isMonomerValid(String str, String type) throws IOException, MonomerException, JDOMException, NotationException {
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
     /* Search in Database */
@@ -515,5 +493,250 @@ public class Validation {
   }
 
 
+  /**
+   * method to check for one connection if the two polymer ids exist
+   * 
+   * @param not
+   * @param listIDs
+   * @return
+   * @throws PolymerIDsException
+   */
+  private static boolean checkPolymerIDSConnection(ConnectionNotation not, ArrayList<String> listIDs) throws PolymerIDsException {
+    /* the polymer ids have to be there */
+    return checkExistenceOfPolymerID(not.getSourceId().getID(), listIDs) && checkExistenceOfPolymerID(not.getTargetId().getID(), listIDs);
+
+  }
+
+  /**
+   * method to get for one MonomerNotation all valid contained monomers
+   * 
+   * @param not
+   * @return
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
+   */
+  private static ArrayList<Monomer> getAllMonomers(MonomerNotation not) throws MonomerException, IOException, JDOMException {
+    ArrayList<Monomer> monomers = new ArrayList<Monomer>();
+
+    MonomerFactory monomerFactory = MonomerFactory.getInstance();
+    MonomerStore monomerStore = monomerFactory.getMonomerStore();
+
+    if(not instanceof MonomerNotationUnit){
+      String id = not.getID().replace("[", "");
+      id = id.replace("]", "");
+      monomers.add(monomerStore.getMonomer(not.getType(), id));
+    }
+ else if (not instanceof MonomerNotationGroup) {
+      for (int i = 0; i < ((MonomerNotationGroup) not).getListOfElements().size(); i++) {
+        String id = ((MonomerNotationGroup) not).getListOfElements().get(i).getMonomer().getID().replace("[", "");
+        id = id.replace("]", "");
+        monomers.add(monomerStore.getMonomer(not.getType(), id));
+      }
+    } else if (not instanceof MonomerNotationList) {
+      for (int i = 0; i < ((MonomerNotationList) not).getListofMonomerUnits().size(); i++) {
+        String id = ((MonomerNotationList) not).getListofMonomerUnits().get(i).getID().replace("[", "");
+        id = id.replace("]", "");
+        monomers.add(monomerStore.getMonomer(not.getType(), id));
+      }
+
+    }
+    return monomers;
+  }
+
+  private static boolean checkAttachmentPoint(Monomer mon, String str) throws AttachmentException {
+    if (!(mon.getAttachmentListString().contains(str))) {
+      if (!(str.equals("?"))) {
+        logger.info("Attachment point for source is not there");
+        throw new AttachmentException(
+            "Attachment point for source is not there: "
+                + str);
+      }
+    }
+    return true;
+  }
+
+  /**
+   * method to check if the two attachment points can form a connection
+   * 
+   * @param first
+   * @param second
+   * @param one
+   * @param two
+   * @return
+   * @throws AttachmentException
+   */
+  private static boolean validAttachmentPoints(Monomer first, Monomer second, String one, String two) throws AttachmentException {
+    if (one.equals("?") || two.equals("?")) {
+      return true;
+    }
+    if (!(first.getAttachment(one).getCapGroupName().equals("H")
+        && second.getAttachment(two).getCapGroupName().equals("OH")
+        ||
+        first.getAttachment(one).getCapGroupName().equals("OH")
+            && second.getAttachment(two).getCapGroupName().equals("H")
+        ||
+        first.getAttachment(one).getCapGroupName().equals("H")
+            && second.getAttachment(two).getCapGroupName().equals("H")
+            && first.getAlternateId().equals("C")
+            && second.getAlternateId().equals("C") )) {
+      logger.info("Attachment points can not form a connection");
+      throw new AttachmentException(
+          "Attachment points can not form a connectíon");
+    }
+    return true;
+  }
+
+  /**
+   * method to check if the described attachment is valid
+   * 
+   * @param firsts
+   * @param seconds
+   * @param not
+   * @param containerhelm2
+   * @param interconnection
+   * @param spec
+   * @return
+   * @throws AttachmentException
+   */
+  private static boolean checkAttachment(ArrayList<Monomer> firsts, ArrayList<Monomer> seconds, ConnectionNotation not, ContainerHELM2 containerhelm2, InterConnections interconnection,
+      boolean spec)
+      throws AttachmentException {
+    boolean specific = spec;
+    if (firsts.size() > 1 || seconds.size() > 1) {
+      specific = false;
+    }
+    for(int x  = 0; x < firsts.size(); x ++){
+      for(int y = 0; y < seconds.size(); y ++){
+        /* Rna-Basepair-hydrogen bonds */
+        if (firsts.get(x).getPolymerType().equals("RNA")
+            && seconds.get(x).getPolymerType().equals("RNA")
+            && not.getrGroupSource().equals("pair")
+            && not.getrGroupTarget().equals("pair")) {
+          logger.info("RNA strand connection");
+
+          if (!(firsts.get(x).getMonomerType().equals("Branch")
+              | seconds.get(x).getMonomerType().equals("Branch"))) {
+            logger.info("RNA strand connection is not valid");
+            throw new AttachmentException(
+                "RNA strand connection is not valid");
+          }
+
+          /* is the attachment point already occupied by another monomer? */
+          String detailsource = not.getSourceUnit() + "$"
+              + not.getrGroupSource();
+          String detailtarget = not.getTargetUnit() + "$" + not.getrGroupTarget();
+
+          /* Is the attachment point already occupied by another monomer */
+          /* Intra connections */
+          if (containerhelm2.getHELM2Notation().getSimplePolymer(not.getSourceId().getID()).getMapIntraConnection().containsKey(detailsource)) {
+            throw new AttachmentException(
+                "Attachment point is already occupied");
+          }
+          if (containerhelm2.getHELM2Notation().getSimplePolymer(not.getTargetId().getID()).getMapIntraConnection().containsKey(detailtarget)) {
+            throw new AttachmentException(
+                "Attachment point is already occupied");
+          }
+
+          /* Inter connections */
+          detailsource = not.getSourceId().getID() + "$"
+              + detailsource;
+
+          detailtarget = not.getTargetId().getID() + "$"
+              + detailtarget;
+
+          /* check */
+          if (interconnection.hasKey(detailsource)) {
+            throw new AttachmentException(
+                "Attachment point is already occupied");
+          }
+
+          if (interconnection.hasKey(detailtarget)) {
+            throw new AttachmentException(
+                "Attachment point is already occupied");
+          }
+
+
+
+        }
+        
+        else{
+    
+          /*
+           * are the attachments points valid OH-H or H-OH, H-H and OH-OH are
+           * not allowed
+           */
+          validAttachmentPoints(firsts.get(x), seconds.get(y),not.getrGroupSource(), not.getrGroupTarget());
+          
+       
+        }
+
+          /* Inter connections */
+        String detailsource = not.getSourceId().getID() + "$" + not.getSourceUnit() + "$"
+            + not.getrGroupSource();
+        String detailtarget = not.getTargetId().getID() + "$" + not.getTargetUnit() + "$"
+            + not.getrGroupTarget();
+        
+
+        if (specific) {
+          /* save only specific interactions */
+          interconnection.addConnection(detailsource, "");
+          interconnection.addConnection(detailtarget, "");
+        }
+          
+
+    
+  }
+        
+      }
+    return true;
 
 }
+
+  /**
+   * method to check for one attachment point the validation
+   * 
+   * @param mon
+   * @param rGroup
+   * @param containerhelm2
+   * @param not
+   * @param interconnection
+   * @param id
+   * @return
+   * @throws AttachmentException
+   */
+  private static boolean checkSingleAttachment(ArrayList<Monomer> mon, String rGroup, ContainerHELM2 containerhelm2, ConnectionNotation not, InterConnections interconnection, String id)
+      throws AttachmentException {
+
+    for (int i = 0; i < mon.size(); ++i) {
+      /* Are the attachment points there */
+      checkAttachmentPoint(mon.get(i), rGroup);
+
+      /* is the attachment point already occupied by another monomer? */
+      String detail = not.getSourceUnit() + "$"
+          + not.getrGroupSource();
+
+      /* Is the attachment point already occupied by another monomer */
+      /* Intra connections */
+      if (containerhelm2.getHELM2Notation().getSimplePolymer(id).getMapIntraConnection().containsKey(detail)) {
+        throw new AttachmentException(
+            "Attachment point is already occupied");
+      }
+
+      /* Inter connections */
+      detail = id + "$"
+          + detail;
+
+      /* check */
+      if (interconnection.hasKey(detail)) {
+        throw new AttachmentException(
+            "Attachment point is already occupied");
+      }
+
+    }
+    return true;
+  }
+
+
+}
+

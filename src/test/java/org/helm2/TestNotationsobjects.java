@@ -272,8 +272,31 @@ public class TestNotationsobjects {
 
   }
 
-  @Test
+  @Test(expectedExceptions = AttachmentException.class)
   public void testConnectionHELM2SimpleWithException() throws ExceptionState,
+      MonomerException,
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      AttachmentException, PolymerIDsException
+
+  {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,CHEM1,G:R3-1:R1\"Specific Conjugation\"$$$";
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Validation.validateConnections(containerhelm2);
+
+  }
+
+  @Test
+  public void testConnectionHELM2SimpleWithExceptio() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
       AttachmentException, PolymerIDsException
@@ -301,7 +324,45 @@ public class TestNotationsobjects {
     parser = new StateMachineParser();
 
     String test =
-        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,CHEM1,(C,D):R3-1:R1\"Specific Conjugation\"$$$";
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{C.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,PEPTIDE2,(C,D):R3-1:R3\"Specific Conjugation\"$$$";
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Validation.validateConnections(containerhelm2);
+
+  }
+
+  @Test(expectedExceptions = AttachmentException.class)
+  public void testConnectionHELM2ExtendedWithException() throws ExceptionState,
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,CHEM1,(C,P):?-1:?\"Specific Conjugation\"$$$";
+    ;
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+    test += "V2.0";
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
+        new InterConnections());
+    Validation.validateConnections(containerhelm2);
+
+  }
+
+  @Test
+  public void testConnectionHELM2Extended2() throws ExceptionState,
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException {
+    parser = new StateMachineParser();
+
+    String test =
+        "PEPTIDE1{A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.A.C.C.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.D.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E.E}|PEPTIDE2{G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.G.C.S.S.S.S.S.S.S.S.S.P.P.P.P.P.P.P.P.P.K.K.K.K.K.K.K.K.K.K.K.K.K}|CHEM1{[SMPEG2]}$PEPTIDE1,CHEM1,(C,D):?-1:?\"Specific Conjugation\"$$$";
     ;
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
@@ -329,7 +390,7 @@ public class TestNotationsobjects {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateMonomers(containerhelm2.getListOfMonomers());
+    Validation.validateMonomers(containerhelm2.getListOfMonomers(containerhelm2.getHELM2Notation().getListOfPolymers()));
 
   }
 
@@ -348,7 +409,7 @@ public class TestNotationsobjects {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Validation.validateMonomers(containerhelm2.getListOfMonomers());
+    Validation.validateMonomers(containerhelm2.getListOfMonomers(containerhelm2.getHELM2Notation().getListOfPolymers()));
 
   }
 
@@ -367,8 +428,9 @@ public class TestNotationsobjects {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Validation.validateMonomers(containerhelm2.getListOfMonomers());
+    Validation.validateMonomers(containerhelm2.getListOfMonomers(containerhelm2.getHELM2Notation().getListOfPolymers()));
 
   }
+
 
 }
