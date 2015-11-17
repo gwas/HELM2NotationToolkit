@@ -32,5 +32,43 @@ public class ChangeObjects {
 
   }
 
+  /* method to change monomer */
+
+  public void changeMonomerNotationUnit() {
+
+  }
+
+  /* method to remove monomer */
+
+  /* method to add monomer */
+
+  /* method to add annotation to monomer */
+
+  /* method to remove annotion from monomer */
+
+  /* method to set count to monomer */
+
+
+
+  /* method to remove connection */
+  /* method to remove all connections */
+  /* method to add connection */
+
+  /* method to change connection */
+
+  /* method to add polymer */
+  /* method to remove polymer */
+
+  /* method to add annotation to polymer */
+
+  /* method to change annotation to polymer */
+
+  /* method to remove annotaiton from polymer */
+
+  /* method to add a group */
+  /* method to change a group */
+  /* method to remove a group */
+  /* method to remove all groups */
+
 
 }

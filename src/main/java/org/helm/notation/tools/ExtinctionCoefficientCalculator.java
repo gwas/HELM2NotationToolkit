@@ -204,7 +204,7 @@ public class ExtinctionCoefficientCalculator {
 			float ext = 0.0f;
 			if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
 				ext = calculateFromRnaPolymerNotation(notation, monomerStore);
-				if (unitType == PEPTIDE_UNIT_TYPE) {
+        if (unitType == PEPTIDE_UNIT_TYPE) {
 					ext = ext * 1000;
 				}
 			} else if (polymerType.equals(Monomer.PEPTIDE_POLYMER_TYPE)) {
@@ -312,6 +312,7 @@ public class ExtinctionCoefficientCalculator {
 			Map<String, Integer> diMap = new HashMap<String, Integer>();
 			String di;
 			for (int i = 0; i < sequence.length() - 1; i++) {
+
 				di = sequence.substring(i, i + 2);
 				if (diNucleotideMap.containsKey(di)) {
 					if (diMap.containsKey(di)) {

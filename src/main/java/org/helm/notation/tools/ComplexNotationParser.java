@@ -291,7 +291,6 @@ public class ComplexNotationParser {
 
 		ComplexPolymer complexPolymer = parse(extendedNotation, monomerStore);
 		validateComplexPolymer(complexPolymer, monomerStore);
-
 		List<PolymerNode> nodeList = complexPolymer.getPolymerNodeList();
 		List<PolymerEdge> edgeList = complexPolymer.getPolymerEdgeList();
 
@@ -313,6 +312,7 @@ public class ComplexNotationParser {
 				nodeList, monomerStore);
 		for (String nodeID : nodeStrucMap.keySet()) {
 			RgroupStructure struc = nodeStrucMap.get(nodeID);
+      System.out.println(struc.getMolecule().getFormula());
 			Map<String, MolAtom> rgMap = struc.getRgroupMap();
 			Map<String, MolAtom> newRgMap = new HashMap<String, MolAtom>();
 			Set keySet = rgMap.keySet();
@@ -447,6 +447,7 @@ public class ComplexNotationParser {
 		// remove all remaining R groups not used in inter polymer connection
 		List<Molecule> l = getMoleculeList(nodeList, groupStructureMap,
 				monomerStore);
+    System.out.println(l.get(0).getAtomCount());
 		return l;
 	}
 

@@ -7,6 +7,7 @@ import org.helm.notation.NotationException;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.ExceptionParser.ExceptionState;
 import org.helm2.exception.AttachmentException;
+import org.helm2.exception.HELM2HandledException;
 import org.helm2.exception.PolymerIDsException;
 import org.jdom.JDOMException;
 import org.testng.Assert;
@@ -14,7 +15,7 @@ import org.testng.annotations.Test;
 
 import chemaxon.formats.MolFormatException;
 
-public class TestNotationsobjects {
+public class TestValidation {
   StateMachineParser parser;
 
   @Test
@@ -134,7 +135,7 @@ public class TestNotationsobjects {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 16);
+    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 10);
     
   }
 
@@ -154,14 +155,14 @@ public class TestNotationsobjects {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 27);
+    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 11);
   }
 
   @Test
   public void testConnectionRNA() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException
+      AttachmentException, PolymerIDsException, HELM2HandledException
 
   {
     parser = new StateMachineParser();
@@ -184,7 +185,7 @@ public class TestNotationsobjects {
   public void testConnection() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException
+      AttachmentException, PolymerIDsException, HELM2HandledException
 
   {
     parser = new StateMachineParser();
@@ -206,7 +207,7 @@ public class TestNotationsobjects {
   public void testConnectionMap() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException
+      AttachmentException, PolymerIDsException, HELM2HandledException
 
   {
     parser = new StateMachineParser();
@@ -230,7 +231,7 @@ public class TestNotationsobjects {
   public void testConnectionFalse() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException
+      AttachmentException, PolymerIDsException, HELM2HandledException
 
   {
     parser = new StateMachineParser();
@@ -253,7 +254,7 @@ public class TestNotationsobjects {
   public void testConnectionHELM2Simple() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException
+      AttachmentException, PolymerIDsException, HELM2HandledException
 
   {
     parser = new StateMachineParser();
@@ -276,7 +277,7 @@ public class TestNotationsobjects {
   public void testConnectionHELM2SimpleWithException() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException
+      AttachmentException, PolymerIDsException, HELM2HandledException
 
   {
     parser = new StateMachineParser();
@@ -299,7 +300,7 @@ public class TestNotationsobjects {
   public void testConnectionHELM2SimpleWithExceptio() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException
+      AttachmentException, PolymerIDsException, HELM2HandledException
 
   {
     parser = new StateMachineParser();
@@ -320,7 +321,7 @@ public class TestNotationsobjects {
 
   @Test
   public void testConnectionHELM2Extended() throws ExceptionState,
-      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException {
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException {
     parser = new StateMachineParser();
 
     String test =
@@ -339,7 +340,7 @@ public class TestNotationsobjects {
 
   @Test(expectedExceptions = AttachmentException.class)
   public void testConnectionHELM2ExtendedWithException() throws ExceptionState,
-      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException {
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException {
     parser = new StateMachineParser();
 
     String test =
@@ -358,7 +359,7 @@ public class TestNotationsobjects {
 
   @Test
   public void testConnectionHELM2Extended2() throws ExceptionState,
-      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException {
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException {
     parser = new StateMachineParser();
 
     String test =
@@ -390,7 +391,7 @@ public class TestNotationsobjects {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateMonomers(containerhelm2.getListOfMonomers(containerhelm2.getHELM2Notation().getListOfPolymers()));
+    Validation.validateMonomers(containerhelm2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()));
 
   }
 
@@ -409,7 +410,7 @@ public class TestNotationsobjects {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Validation.validateMonomers(containerhelm2.getListOfMonomers(containerhelm2.getHELM2Notation().getListOfPolymers()));
+    Validation.validateMonomers(containerhelm2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()));
 
   }
 
@@ -428,9 +429,10 @@ public class TestNotationsobjects {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Validation.validateMonomers(containerhelm2.getListOfMonomers(containerhelm2.getHELM2Notation().getListOfPolymers()));
+    Validation.validateMonomers(containerhelm2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()));
 
   }
+
 
 
 }
