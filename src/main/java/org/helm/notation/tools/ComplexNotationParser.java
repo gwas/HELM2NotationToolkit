@@ -312,7 +312,6 @@ public class ComplexNotationParser {
 				nodeList, monomerStore);
 		for (String nodeID : nodeStrucMap.keySet()) {
 			RgroupStructure struc = nodeStrucMap.get(nodeID);
-      System.out.println(struc.getMolecule().getFormula());
 			Map<String, MolAtom> rgMap = struc.getRgroupMap();
 			Map<String, MolAtom> newRgMap = new HashMap<String, MolAtom>();
 			Set keySet = rgMap.keySet();
@@ -322,6 +321,7 @@ public class ComplexNotationParser {
 			}
 			struc.setRgroupMap(newRgMap);
 		}
+
 
 		// list string could be duplicating for self-connection and multiple
 		// connections
@@ -341,9 +341,7 @@ public class ComplexNotationParser {
 			} else {
 				List<PolymerEdge> connEdgeList = getConnectedEdgeList(nList,
 						edgeList);
-
 				Map<List<String>, RgroupStructure> mergedNodeStrucMap = new HashMap<List<String>, RgroupStructure>();
-
 				// reduce the number of edges to 0 by merging the two nodes into
 				// a new node, and updating mergedNodeStrucMap
 				// final merged node structure map size is one since all nodes
@@ -363,6 +361,8 @@ public class ComplexNotationParser {
 						sourceStruc = sourceEntry.getValue();
 					}
 
+
+
 					List<String> targetIDList = new ArrayList<String>();
 					RgroupStructure targetStruc;
 					Entry<List<String>, RgroupStructure> targetEntry = getStructureEntry(
@@ -376,10 +376,12 @@ public class ComplexNotationParser {
 
 					String sourceR = edge.getSourceUID(); // e.g. RNA1:5:R1
 					String targetR = edge.getTargetUID();
+
 					Map<String, MolAtom> sourceAtomMap = sourceStruc
 							.getRgroupMap();
 					Map<String, MolAtom> targetAtomMap = targetStruc
 							.getRgroupMap();
+
 
 					Molecule tempMol = sourceStruc.getMolecule();
 					StructureParser.merge(tempMol,
@@ -447,7 +449,6 @@ public class ComplexNotationParser {
 		// remove all remaining R groups not used in inter polymer connection
 		List<Molecule> l = getMoleculeList(nodeList, groupStructureMap,
 				monomerStore);
-    System.out.println(l.get(0).getAtomCount());
 		return l;
 	}
 
@@ -1563,6 +1564,7 @@ public class ComplexNotationParser {
 		}
 
 		List<PolymerNode> nodeList = cp.getPolymerNodeList();
+    System.out.println(nodeList.toString());
 		List<PolymerEdge> edgeList = cp.getPolymerEdgeList();
 		// deal with ad hoc CHEM monomer here, use smiles instead of temp ID
 		for (PolymerNode node : nodeList) {
@@ -2652,6 +2654,7 @@ public class ComplexNotationParser {
 			}
 			nodeStrucMap.put(nodeId, struc);
 		}
+
 		return nodeStrucMap;
 	}
 

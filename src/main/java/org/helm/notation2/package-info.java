@@ -11,4 +11,4 @@
  * @author 
  * @version $Id$
  */
-package org.helm2;
+package org.helm.notation2;

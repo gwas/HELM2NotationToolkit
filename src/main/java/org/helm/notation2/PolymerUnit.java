@@ -4,7 +4,7 @@
  *
  *
  */
-package org.helm2;
+package org.helm.notation2;
 
 import java.util.ArrayList;
 

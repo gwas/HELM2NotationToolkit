@@ -1,37 +1,53 @@
-/*--
+/**
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
  *
- * @(#) Calculation.java
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *****************************************************************************
  */
-package org.helm2.Calculation;
+package org.helm.notation2.Calculation;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnitRNA;
+import org.helm.notation2.ContainerHELM2;
+import org.helm.notation2.MethodsForContainerHELM2;
+import org.helm.notation2.Exception.HELM2HandledException;
 import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
-import org.helm2.ContainerHELM2;
-import org.helm2.exception.HELM2HandledException;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * Calculation
+ * ExtinctionCoefficient
  * 
  * @author hecht
  */
@@ -146,12 +162,12 @@ public class ExtinctionCoefficient {
       ArrayList<PolymerNotation> not = new ArrayList<PolymerNotation>();
       not.add(polymerNode);
       if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
-        ext = calculateExtinctionFromRNA(helm2container.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+        ext = calculateExtinctionFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
         if (unitType == PEPTIDE_UNIT_TYPE) {
           ext = ext * 1000;
         }
       } else if (polymerType.equals(Monomer.PEPTIDE_POLYMER_TYPE)) {
-        ext = calculateExtinctionFromPeptide(helm2container.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+        ext = calculateExtinctionFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
         if (unitType == RNA_UNIT_TYPE) {
           ext = ext / 1000;
         }

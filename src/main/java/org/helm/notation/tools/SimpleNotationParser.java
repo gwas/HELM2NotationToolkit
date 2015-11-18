@@ -360,8 +360,8 @@ public class SimpleNotationParser {
 		if (monomerList == null || monomerList.size() == 0) {
 			throw new NotationException("Polymer notation contains no monomer");
 		}
-		List<RgroupStructure> structureList = getMonomerStructureList(monomerList);
 
+		List<RgroupStructure> structureList = getMonomerStructureList(monomerList);
 		if (monomerList.size() == structureList.size()) {
 
 			Molecule molecule = null;
@@ -379,7 +379,6 @@ public class SimpleNotationParser {
 				}
 
 			} else {
-
 				int prevMonomerIndex = -1;
 				// Map<String, MolAtom> rgroupMap = null;
 

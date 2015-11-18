@@ -4,4 +4,4 @@
  * 
  * @author hecht
  */
-package org.helm2.exception;
+package org.helm.notation2.Exception;

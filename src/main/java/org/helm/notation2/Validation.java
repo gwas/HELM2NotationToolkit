@@ -1,5 +1,27 @@
-
-package org.helm2;
+/**
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *****************************************************************************
+ */
+package org.helm.notation2;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +37,11 @@ import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation.tools.StructureParser;
+import org.helm.notation2.Exception.AttachmentException;
+import org.helm.notation2.Exception.ConnectionNotationException;
+import org.helm.notation2.Exception.GroupingNotationException;
+import org.helm.notation2.Exception.HELM2HandledException;
+import org.helm.notation2.Exception.PolymerIDsException;
 import org.helm.notation2.parser.GroupingSection.BetweenGroupingParser;
 import org.helm.notation2.parser.Notation.HELM2Notation;
 import org.helm.notation2.parser.Notation.ValidationMethod;
@@ -28,11 +55,6 @@ import org.helm.notation2.parser.Notation.Polymer.MonomerNotationList;
 import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnitRNA;
 import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
-import org.helm2.exception.AttachmentException;
-import org.helm2.exception.ConnectionNotationException;
-import org.helm2.exception.GroupingNotationException;
-import org.helm2.exception.HELM2HandledException;
-import org.helm2.exception.PolymerIDsException;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +105,7 @@ public class Validation {
       throw new PolymerIDsException("Polymer IDs have to be unique");
     }
     /* Validation of Monomers */
-    if (!validateMonomers(containerhelm2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()))) {
+    if (!validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()))) {
       logger.info("Monomers have to be valid");
       throw new MonomerException("Monomers have to be valid");
     }
@@ -272,7 +294,7 @@ public class Validation {
      * specific amino acid, the monomer can also be unknown
      */
     catch (NumberFormatException ex) {
-      MonomerNotation mon = new ValidationMethod().decideWhichMonomerNotation(sourceUnit, e.getType());
+      MonomerNotation mon = ValidationMethod.decideWhichMonomerNotation(sourceUnit, e.getType());
       /* it is only one monomer e.g. C */
       if (mon instanceof MonomerNotationUnit) {
         PolymerNotation polymerNotation = containerhelm2.getHELM2Notation().getPolymerNotation(e.getID());

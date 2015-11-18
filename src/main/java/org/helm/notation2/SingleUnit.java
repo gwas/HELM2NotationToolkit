@@ -4,7 +4,7 @@
  *
  *
  */
-package org.helm2;
+package org.helm.notation2;
 
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
