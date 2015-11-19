@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
@@ -58,6 +59,8 @@ import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
 /**
@@ -90,13 +93,14 @@ public class Validation {
    * @throws org.helm.notation2.parser.ExceptionParser.NotationException
    * @throws org.jdom.JDOMException
    * @throws HELM2HandledException
+   * @throws CTKException
    */
   public void validateNotationObjects(ContainerHELM2 containerhelm2)
       throws NotationException, MonomerException, IOException, JDOMException,
       GroupingNotationException, ConnectionNotationException,
       PolymerIDsException, AttachmentException,
       org.helm.notation2.parser.ExceptionParser.NotationException,
-      org.jdom.JDOMException, HELM2HandledException {
+      org.jdom.JDOMException, HELM2HandledException, CTKException {
 
 
     /*all polymer ids have to be unique*/
@@ -155,12 +159,13 @@ public class Validation {
    * @throws org.jdom.JDOMException
    * @throws NotationException
    * @throws HELM2HandledException
+   * @throws CTKException
    */
   public static boolean validateConnections(ContainerHELM2 containerhelm2)
       throws MonomerException, IOException, JDOMException, AttachmentException,
       PolymerIDsException,
       org.helm.notation2.parser.ExceptionParser.NotationException,
-      org.jdom.JDOMException, NotationException, HELM2HandledException {
+      org.jdom.JDOMException, NotationException, HELM2HandledException, CTKException {
 
     ArrayList<ConnectionNotation> listConnection =
         containerhelm2.getHELM2Notation().getListOfConnections();
@@ -512,8 +517,9 @@ public class Validation {
    * @throws IOException
    * @throws JDOMException
    * @throws HELM2HandledException
+   * @throws CTKException
    */
-  public static ArrayList<Monomer> getAllMonomers(MonomerNotation not) throws MonomerException, IOException, JDOMException, HELM2HandledException {
+  public static ArrayList<Monomer> getAllMonomers(MonomerNotation not) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
     ArrayList<Monomer> monomers = new ArrayList<Monomer>();
 
 
@@ -524,15 +530,19 @@ public class Validation {
 
     }
       else if (not instanceof MonomerNotationUnit){
-      String id = not.getID().replace("[", "");
-      id = id.replace("]", "");
-      monomers.add(monomerStore.getMonomer(not.getType(), id));
+      String id = not.getID();
+      if (id.startsWith("[") && id.endsWith("]")) {
+        id = id.substring(1, id.length() - 1);
+      }
+      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
     }
  else if (not instanceof MonomerNotationGroup) {
       for (int i = 0; i < ((MonomerNotationGroup) not).getListOfElements().size(); i++) {
-        String id = ((MonomerNotationGroup) not).getListOfElements().get(i).getMonomer().getID().replace("[", "");
-        id = id.replace("]", "");
-        monomers.add(monomerStore.getMonomer(not.getType(), id));
+        String id = ((MonomerNotationGroup) not).getListOfElements().get(i).getMonomer().getID();
+        if (id.startsWith("[") && id.endsWith("]")) {
+          id = id.substring(1, id.length() - 1);
+        }
+        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
       }
     } else if (not instanceof MonomerNotationList) {
       for (int i = 0; i < ((MonomerNotationList) not).getListofMonomerUnits().size(); i++) {
@@ -540,9 +550,11 @@ public class Validation {
           monomers.addAll(getMonomersRNA(((MonomerNotationUnitRNA) ((MonomerNotationList) not).getListofMonomerUnits().get(i)), monomerStore));
         }
  else {
-          String id = ((MonomerNotationList) not).getListofMonomerUnits().get(i).getID().replace("[", "");
-          id = id.replace("]", "");
-          monomers.add(monomerStore.getMonomer(not.getType(), id));
+          String id = ((MonomerNotationList) not).getListofMonomerUnits().get(i).getID();
+          if (id.startsWith("[") && id.endsWith("]")) {
+            id = id.substring(1, id.length() - 1);
+          }
+          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
         }
       }
 
@@ -563,36 +575,7 @@ public class Validation {
     return true;
   }
 
-  /**
-   * method to check if the two attachment points can form a connection
-   * 
-   * @param first
-   * @param second
-   * @param one
-   * @param two
-   * @return
-   * @throws AttachmentException
-   */
-  private static boolean validAttachmentPoints(Monomer first, Monomer second, String one, String two) throws AttachmentException {
-    if (one.equals("?") || two.equals("?")) {
-      return true;
-    }
-    if (!(first.getAttachment(one).getCapGroupName().equals("H")
-        && second.getAttachment(two).getCapGroupName().equals("OH")
-        ||
-        first.getAttachment(one).getCapGroupName().equals("OH")
-            && second.getAttachment(two).getCapGroupName().equals("H")
-        ||
-        first.getAttachment(one).getCapGroupName().equals("H")
-            && second.getAttachment(two).getCapGroupName().equals("H")
-            && first.getAlternateId().equals("C")
-            && second.getAlternateId().equals("C") )) {
-      logger.info("Attachment points can not form a connection");
-      throw new AttachmentException(
-          "Attachment points can not form a connectíon");
-    }
-    return true;
-  }
+
 
   /**
    * method to check if the described attachment is valid
@@ -645,43 +628,37 @@ public class Validation {
                 "Attachment point is already occupied");
           }
 
-          /* Inter connections */
-          detailsource = not.getSourceId().getID() + "$"
-              + detailsource;
 
-          detailtarget = not.getTargetId().getID() + "$"
-              + detailtarget;
-
-          /* check */
-          if (interconnection.hasKey(detailsource)) {
-            throw new AttachmentException(
-                "Attachment point is already occupied");
-          }
-
-          if (interconnection.hasKey(detailtarget)) {
-            throw new AttachmentException(
-                "Attachment point is already occupied");
-          }
 
 
 
         }
-        
-        else{
-    
-          /*
-           * are the attachments points valid OH-H or H-OH, H-H and OH-OH are
-           * not allowed
-           */
-          validAttachmentPoints(firsts.get(x), seconds.get(y),not.getrGroupSource(), not.getrGroupTarget());
-          
-       
-        }
 
-          /* Inter connections */
-        String detailsource = not.getSourceId().getID() + "$" + not.getSourceUnit() + "$"
+        String detailsource = not.getSourceUnit() + "$"
             + not.getrGroupSource();
-        String detailtarget = not.getTargetId().getID() + "$" + not.getTargetUnit() + "$"
+        String detailtarget = not.getTargetUnit() + "$" + not.getrGroupTarget();
+
+        /* Inter connections */
+        detailsource = not.getSourceId().getID() + "$"
+            + detailsource;
+
+        detailtarget = not.getTargetId().getID() + "$"
+            + detailtarget;
+
+        /* check */
+        if (interconnection.hasKey(detailsource)) {
+          throw new AttachmentException(
+              "Attachment point is already occupied");
+        }
+
+        if (interconnection.hasKey(detailtarget)) {
+          throw new AttachmentException(
+              "Attachment point is already occupied");
+        }
+          /* Inter connections */
+        detailsource = not.getSourceId().getID() + "$" + not.getSourceUnit() + "$"
+            + not.getrGroupSource();
+        detailtarget = not.getTargetId().getID() + "$" + not.getTargetUnit() + "$"
             + not.getrGroupTarget();
         
 
@@ -745,16 +722,16 @@ public class Validation {
   }
 
 
-  private static ArrayList<Monomer> getMonomersRNA(MonomerNotationUnitRNA rna, MonomerStore monomerStore) throws HELM2HandledException {
+  private static ArrayList<Monomer> getMonomersRNA(MonomerNotationUnitRNA rna, MonomerStore monomerStore) throws HELM2HandledException, MonomerException, IOException, JDOMException, CTKException {
     ArrayList<Monomer> monomers = new ArrayList<Monomer>();
       for(int i = 0; i < rna.getContents().size(); i ++){
         String id = rna.getContents().get(i).getID().replace("[", "");
         id = id.replace("]", "");
-        Monomer mon = monomerStore.getMonomer(rna.getType(), id);
+      Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id);
       try {
         String detail = mon.getMonomerType();
         if (detail.equals("Branch")) {
-          monomers.add(monomerStore.getMonomer(rna.getType(), id));
+          monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id));
         }
       } catch (NullPointerException e) {
         throw new HELM2HandledException("Functions can't be called for HELM2 objects");

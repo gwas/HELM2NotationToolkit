@@ -25,16 +25,36 @@ package org.helm.notation2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
+import org.helm.chemtoolkit.CTKException;
+import org.helm.chemtoolkit.ChemicalToolKit;
+import org.helm.chemtoolkit.ChemistryManipulator;
 import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerStore;
+import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
+import org.helm.notation.model.PolymerEdge;
+import org.helm.notation.model.PolymerNode;
+import org.helm.notation.tools.PermutationAndExpansion;
+import org.helm.notation.tools.SimpleNotationParser;
+import org.helm.notation.tools.StructureParser;
 import org.helm.notation2.Exception.HELM2HandledException;
+import org.helm.notation2.parser.Notation.HELM2Notation;
 import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
 import org.helm.notation2.parser.Notation.Polymer.MonomerNotationGroup;
+import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 
 /**
  * MethodsForContainerHELM2
@@ -55,8 +75,9 @@ public final class MethodsForContainerHELM2 {
    * @throws IOException
    * @throws JDOMException
    * @throws HELM2HandledException
+   * @throws CTKException
    */
-  public static ArrayList<Monomer> getListOfHandledMonomers(ArrayList<MonomerNotation> not) throws MonomerException, IOException, JDOMException, HELM2HandledException {
+  public static ArrayList<Monomer> getListOfHandledMonomers(ArrayList<MonomerNotation> not) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
     ArrayList<Monomer> items = new ArrayList<Monomer>();
     for (int i = 0; i < not.size(); i++) {
       /* group element */
@@ -95,7 +116,7 @@ public final class MethodsForContainerHELM2 {
 
   }
 
-  public static ArrayList<Monomer> getListOfMonomer(ArrayList<MonomerNotation> not) throws MonomerException, IOException, JDOMException, HELM2HandledException {
+  public static ArrayList<Monomer> getListOfMonomer(ArrayList<MonomerNotation> not) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
     ArrayList<Monomer> items = new ArrayList<Monomer>();
     for (int i = 0; i < not.size(); i++) {
       items.addAll(Validation.getAllMonomers(not.get(i)));
@@ -119,7 +140,59 @@ public final class MethodsForContainerHELM2 {
 
   }
 
-  public static String getCanonicalHELM() {
+  public static String getCanonicalHELM(HELM2Notation not) throws MonomerException, IOException, JDOMException, StructureException, HELM2HandledException, ClassNotFoundException {
+
+    
     return null;
+  }
+
+  public static String convertToHELM1(HELM2Notation not) throws HELM2HandledException {
+    /* Grouping section is additional! */
+    if (not.getListOfGroupings() != null) {
+      throw new HELM2HandledException("Functions can't be called for HELM2 objects");
+    }
+
+    /* Connection ambiguity check */
+
+    /* valid Monomers -> */
+
+    /* Annotation checks */
+
+    String notation = "";
+
+    return notation;
+  }
+
+  public static boolean isMonomerSpecific(PolymerNotation not, int position) {
+
+    if (not.getPolymerElements().getListOfElements().get(position) instanceof MonomerNotationUnit) {
+      return true;
+    }
+ else {
+      return false;
+    }
+  }
+
+  public static Monomer getMonomer(String type, String id) throws MonomerException, IOException, JDOMException, CTKException {
+    MonomerFactory monomerFactory = MonomerFactory.getInstance();
+    MonomerStore monomerStore = monomerFactory.getMonomerStore();
+    Monomer monomer;
+    monomer = monomerStore.getMonomer(type, id);
+    if (monomer == null) {
+      ChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
+      try {
+        System.out.println(id);
+        manipulator.validateSMILES(id);
+        monomer = new Monomer(type, "UnDefined","","");
+        monomer.setAdHocMonomer(true);
+        monomer.setCanSMILES(manipulator.canonicalize(id));
+      } catch (CTKException e) {
+        System.out.println(manipulator.validateSMILES(id));
+        /*monomer is not in the database and also not a valid SMILES -> throw exception*/
+        throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES");
+      }
+    }
+   
+    return monomer;
   }
 }

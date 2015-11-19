@@ -25,6 +25,7 @@ package org.helm.notation2;
 
 import java.io.IOException;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation2.ContainerHELM2;
@@ -193,7 +194,7 @@ public class TestValidation {
   public void testConnectionRNA() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
 
   {
     parser = new StateMachineParser();
@@ -216,7 +217,7 @@ public class TestValidation {
   public void testConnection() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
 
   {
     parser = new StateMachineParser();
@@ -238,7 +239,7 @@ public class TestValidation {
   public void testConnectionMap() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
 
   {
     parser = new StateMachineParser();
@@ -262,7 +263,7 @@ public class TestValidation {
   public void testConnectionFalse() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
 
   {
     parser = new StateMachineParser();
@@ -285,7 +286,7 @@ public class TestValidation {
   public void testConnectionHELM2Simple() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
 
   {
     parser = new StateMachineParser();
@@ -308,7 +309,7 @@ public class TestValidation {
   public void testConnectionHELM2SimpleWithException() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
 
   {
     parser = new StateMachineParser();
@@ -331,7 +332,7 @@ public class TestValidation {
   public void testConnectionHELM2SimpleWithExceptio() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
 
   {
     parser = new StateMachineParser();
@@ -352,7 +353,7 @@ public class TestValidation {
 
   @Test
   public void testConnectionHELM2Extended() throws ExceptionState,
-      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException {
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException, CTKException {
     parser = new StateMachineParser();
 
     String test =
@@ -371,7 +372,7 @@ public class TestValidation {
 
   @Test(expectedExceptions = AttachmentException.class)
   public void testConnectionHELM2ExtendedWithException() throws ExceptionState,
-      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException {
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException, CTKException {
     parser = new StateMachineParser();
 
     String test =
@@ -390,7 +391,7 @@ public class TestValidation {
 
   @Test
   public void testConnectionHELM2Extended2() throws ExceptionState,
-      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException {
+      MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException, CTKException {
     parser = new StateMachineParser();
 
     String test =

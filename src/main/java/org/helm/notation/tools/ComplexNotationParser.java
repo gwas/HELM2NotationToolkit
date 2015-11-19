@@ -1564,7 +1564,6 @@ public class ComplexNotationParser {
 		}
 
 		List<PolymerNode> nodeList = cp.getPolymerNodeList();
-    System.out.println(nodeList.toString());
 		List<PolymerEdge> edgeList = cp.getPolymerEdgeList();
 		// deal with ad hoc CHEM monomer here, use smiles instead of temp ID
 		for (PolymerNode node : nodeList) {
@@ -1573,6 +1572,7 @@ public class ComplexNotationParser {
 							.startsWith(
 									SimpleNotationParser
 											.getAdHocMonomerIDPrefix(Monomer.CHEMICAL_POLYMER_TYPE))) {
+
 
 				Monomer m = monomerStore.getMonomer(
 						Monomer.CHEMICAL_POLYMER_TYPE, node.getLabel());
@@ -1740,11 +1740,15 @@ public class ComplexNotationParser {
 		List<List<String>> nodeIdPermutations = PermutationAndExpansion
 				.linearize(lol);
 		List<String> notationList = new ArrayList<String>();
+    System.out.println(nodeIdPermutations);
 		for (List<String> sortedIdList : nodeIdPermutations) {
 			String notation = generateNotationBasedNodeOrder(sortedIdList,
 					nodeList, edgeList);
+      System.out.println(notation);
 			notationList.add(notation);
 		}
+    System.out.println(notationList.get(0));
+    System.out.println(notationList.size());
 		Collections.sort(notationList);
 		return notationList.get(0);
 	}

@@ -23,7 +23,10 @@
  */
 package org.helm.notation2;
 
+import org.helm.notation2.parser.Notation.HELM2Notation;
 import org.helm.notation2.parser.Notation.Annotation.AnnotationNotation;
+import org.helm.notation2.parser.Notation.Grouping.GroupingNotation;
+import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author hecht
  */
-public class ChangeObjects {
+public final class ChangeObjects {
 
   /** The Logger for this class */
   private static final Logger LOG =
@@ -44,7 +47,7 @@ public class ChangeObjects {
   }
 
   public void removeAnnotation(String str, ContainerHELM2 containerhelm2) {
-
+    containerhelm2.getHELM2Notation().addAnnotation(null);
   }
 
   /* method to change monomer */
@@ -74,16 +77,62 @@ public class ChangeObjects {
   /* method to add polymer */
   /* method to remove polymer */
 
-  /* method to add annotation to polymer */
 
-  /* method to change annotation to polymer */
+  /**
+   * method to add an annotation to a PolymerNotation
+   * 
+   * @param not
+   * @param annotation
+   * @return
+   */
+  public static PolymerNotation addAnnotationToPolymer(PolymerNotation not, String annotation) {
+    if (not.getAnnotation() != null) {
+      return new PolymerNotation(not.getPolymerID(), not.getPolymerElements(), not.getAnnotation() + " | " + annotation);
+    }
+    return new PolymerNotation(not.getPolymerID(), not.getPolymerElements(), annotation);
+  }
 
-  /* method to remove annotaiton from polymer */
 
-  /* method to add a group */
+  /**
+   * method to change a current annotation to the new annotation
+   * 
+   * @param not
+   * @param annotation
+   * @return
+   */
+  public static PolymerNotation changeAnnotationToPolmyer(PolymerNotation not, String annotation){
+    return new PolymerNotation(not.getPolymerID(), not.getPolymerElements(), annotation);
+  }
+
+  /**
+   * method to remove a current annotation of a polymernotation
+   * 
+   * @param not
+   * @param annotation
+   * @return
+   */
+  public static PolymerNotation removeAnnotationOfPolmyer(PolymerNotation not) {
+    return new PolymerNotation(not.getPolymerID(), not.getPolymerElements(), null);
+  }
+
+  /**
+   * method to add a Group Notation to the ContainerHELM2
+   * 
+   * @param helm2container
+   * @param not
+   */
+  public static void addGroupNotation(ContainerHELM2 helm2container, GroupingNotation not) {
+    helm2container.getHELM2Notation().getListOfGroupings().add(not);
+  }
+
   /* method to change a group */
   /* method to remove a group */
   /* method to remove all groups */
+
+  public static void removeAllGroups(ContainerHELM2 helm2container) {
+
+    HELM2Notation notation = new HELM2Notation();
+  }
 
 
 }

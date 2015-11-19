@@ -25,6 +25,7 @@ package org.helm.notation2;
 
 import java.io.IOException;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerStore;
@@ -54,7 +55,7 @@ public class SMILESTest {
 
   @Test
   public void testSMILES() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException {
+      HELM2HandledException, CTKException {
     parser = new ParserHELM2();
 
     String test = "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
@@ -76,6 +77,28 @@ public class SMILESTest {
 
     String smiles = ComplexNotationParser.getComplexPolymerSMILES(test);
     System.out.println(smiles);
+  }
+
+  @Test
+  public void testcanonical() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
+      HELM2HandledException, ClassNotFoundException {
+
+    String test = "PEPTIDE1{D}|PEPTIDE3{L.R}|PEPTIDE2{E}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
+    MonomerStore store = new MonomerStore();
+    String canonicalNotation = ComplexNotationParser.getCanonicalNotation(test, false, store);
+
+    System.out.println(canonicalNotation);
+  }
+
+
+  public void testcanonicalCHEM() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
+      HELM2HandledException, ClassNotFoundException {
+
+    String test = "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
+    MonomerStore store = new MonomerStore();
+    String canonicalNotation = ComplexNotationParser.getCanonicalNotation(test, true, store);
+
+    System.out.println(test);
   }
 
 }

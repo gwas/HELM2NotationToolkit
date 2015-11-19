@@ -25,12 +25,16 @@ package org.helm.notation2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.Exception.BuilderMoleculeException;
 import org.helm.notation2.Exception.HELM2HandledException;
 import org.helm.notation2.parser.Notation.Connection.ConnectionNotation;
+import org.helm.notation2.parser.Notation.Polymer.Entity;
+import org.helm.notation2.parser.Notation.Polymer.GroupEntity;
 import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -42,19 +46,20 @@ import org.slf4j.LoggerFactory;
  * @author hecht
  */
 public final class BuilderMolecule {
-  String POLYMER_TYPE_BLOB = "BLOB";
+  static String POLYMER_TYPE_BLOB = "BLOB";
 
-  String POLYMER_TYPE_CHEM = "CHEM";
+  static String POLYMER_TYPE_CHEM = "CHEM";
 
-  String POLYMER_TYPE_RNA = "RNA";
+  static String POLYMER_TYPE_RNA = "RNA";
 
-  String POLYMER_TYPE_PEPTIDE = "PEPTIDE";
+  static String POLYMER_TYPE_PEPTIDE = "PEPTIDE";
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(BuilderMolecule.class);
 
 
-  public void buildMoleculefromSinglePolymer(PolymerNotation polymernotation) throws BuilderMoleculeException, MonomerException, IOException, JDOMException, HELM2HandledException {
+  public static void buildMoleculefromSinglePolymer(PolymerNotation polymernotation) throws BuilderMoleculeException, MonomerException, IOException, JDOMException, HELM2HandledException,
+      CTKException {
     /* Case 1: BLOB */
     if (polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_BLOB)) {
       LOG.error("Molecule can't be build for BLOB");
@@ -67,20 +72,28 @@ public final class BuilderMolecule {
 
       /* a chemical molecule should only contain one monomer */
       if (validMonomers.size() == 1) {
-        if (validMonomers.get(0).getCanSMILES() != null) {
-          /* Build monomer + Rgroup information! */
-          System.out.println("Build chemical monomer + Rgroup information");
-        } else {
-          LOG.error("Chemical molecule should have canonical smiles");
-          throw new BuilderMoleculeException("Chemical molecule should have canoncial smiles");
+        /* What to do with SMILES */
+        try{
+          if (validMonomers.get(0).getCanSMILES() != null) {
+            /* Build monomer + Rgroup information! */
+            System.out.println("Build chemical monomer + Rgroup information");
+          } else {
+            LOG.error("Chemical molecule should have canonical smiles");
+            throw new BuilderMoleculeException("Chemical molecule should have canoncial smiles");
+          }
         }
-
-      } else {
-        LOG.error("Chemical molecule should contain exactly one monomer");
-        throw new BuilderMoleculeException("Chemical molecule should contain exactly one monomer");
+          
+          catch(NullPointerException e){
+          throw new BuilderMoleculeException("Monomer is not stored in the monomer database");
+          }
+        }
+         else {
+          LOG.error("Chemical molecule should contain exactly one monomer");
+          throw new BuilderMoleculeException("Chemical molecule should contain exactly one monomer");
+        }
       }
+        
 
-    }
 
     /* Case 3: RNA or PEPTIDE */
     else if(polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_RNA) || polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_CHEM)) {
@@ -95,13 +108,56 @@ public final class BuilderMolecule {
   }
 
 
-  public void buildMoleculefromPolymers(ArrayList<PolymerNotation> notlist, ArrayList<ConnectionNotation> connectionlist) {
-    for (int i = 0; i < connectionlist.size(); i++) {
-      String sourceID = connectionlist.get(i).getSourceId().getID();
-      String targetID = connectionlist.get(i).getTargetId().getID();
-      System.out.println("Group check -> throw exception");
+  public static void buildMoleculefromPolymers(ArrayList<PolymerNotation> notlist, ArrayList<ConnectionNotation> connectionlist) throws BuilderMoleculeException, MonomerException, IOException,
+      JDOMException,
+      HELM2HandledException, CTKException {
+    HashMap <String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
+    
+    
+    /*Build for every single polymer a molecule*/
+    for(PolymerNotation node: notlist){
+      map.put(node.getPolymerID().getID(),node);
+      buildMoleculefromSinglePolymer(node);
+    }
+    
+    
+    
+    for (ConnectionNotation connection : connectionlist) {
+
+      /*Group Id -> throw exception*/
+      if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
+        LOG.error("Molecule can't be build for group connection");
+        throw new BuilderMoleculeException("Molecule can't be build for group connection");
+      }
+      
+      /*Get the source molecule + target molecule*/
       System.out.println("Get Source Molecule + Target Molecule");
-      System.out.println("Get the conneciton -> if HELM2 format -> throw exception");
+      
+      
+      /*
+       * connection details: have to be an integer value + specific
+       * MonomerNotationUnit
+       */
+      int source;
+      int target;
+      try {
+        source = Integer.parseInt(connection.getSourceUnit());
+        target = Integer.parseInt(connection.getTargetUnit());
+      } catch (NumberFormatException e) {
+        throw new BuilderMoleculeException("Connection has to be unambiguous");
+      }
+
+      /*if the */
+      if((MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getSourceId().getID()), source) && MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getTargetId().getID()), target))){
+        throw new BuilderMoleculeException("Connection has to be unambiguous");
+      }
+
+      
+      /* R group of connection is unknown */
+      if (connection.getrGroupSource().equals("?") || connection.getrGroupTarget().equals("?")) {
+        throw new BuilderMoleculeException("Connection's R groups have to be known");
+      }
+
       System.out.println("Build Molecule");
       System.out.println("Update R groups");
 
@@ -109,7 +165,7 @@ public final class BuilderMolecule {
 
   }
 
-  private void buildMoleculefromPeptideOrRNA(ArrayList<Monomer> validMonomers) throws BuilderMoleculeException {
+  private static void buildMoleculefromPeptideOrRNA(ArrayList<Monomer> validMonomers) throws BuilderMoleculeException {
 
     Monomer prevMonomer = null;
     for (int i = 0; i < validMonomers.size(); i++) {

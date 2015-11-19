@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
@@ -149,9 +150,9 @@ public class ExtinctionCoefficient {
     return RNA_UNIT_TYPE;
   }
 
-  public static float calculate(ContainerHELM2 helm2container) throws NotationException,
+  public float calculate(ContainerHELM2 helm2container) throws NotationException,
       MonomerException, IOException, JDOMException, StructureException,
-      CalculationException, HELM2HandledException {
+      CalculationException, HELM2HandledException, CTKException {
     int unitType = 1;
     float result = 0.0f;
     List<PolymerNotation> polymerNodes = helm2container.getHELM2Notation().getListOfPolymers();
@@ -197,8 +198,7 @@ public class ExtinctionCoefficient {
           result = monoNucleotideMap.get(monomers.get(0).getNaturalAnalog()).floatValue();
           return result;
         } else {
-          throw new CalculationException("Unknown nucleotide ["
-              + monomers.get(0).getNaturalAnalog() + "] found");
+          throw new CalculationException("Unknown nucleotide found");
         }
       }
       for (int i = 0; i < monomers.size(); i++) {
