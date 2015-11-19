@@ -31,6 +31,8 @@ import java.util.Map;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
 import org.helm.chemtoolkit.CTKException;
+import org.helm.chemtoolkit.ChemicalToolKit;
+import org.helm.chemtoolkit.ChemistryManipulator;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
@@ -134,8 +136,9 @@ public class Validation {
    * @throws MonomerException
    * @throws JDOMException
    * @throws NotationException
+   * @throws CTKException
    */
-  public static boolean validateMonomers(ArrayList<MonomerNotation> mon) throws IOException, MonomerException, JDOMException, NotationException {
+  public static boolean validateMonomers(ArrayList<MonomerNotation> mon) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
     ArrayList<MonomerNotation> monomers = mon;
     for (int i = 0; i < monomers.size(); i++) {
       if (!(isMonomerValid(monomers.get(i).getID(), monomers.get(i).getType()))) {
@@ -434,8 +437,9 @@ public class Validation {
    * @throws MonomerException
    * @throws JDOMException
    * @throws NotationException
+   * @throws CTKException
    */
-  public static boolean isMonomerValid(String str, String type) throws IOException, MonomerException, JDOMException, NotationException {
+  public static boolean isMonomerValid(String str, String type) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
     /* Search in Database */
     MonomerStore monomerStore = monomerFactory.getMonomerStore();
@@ -488,8 +492,7 @@ public class Validation {
         str = str.substring(1, str.length() - 1);
       }
 
-      return StructureParser.validateSmiles(str);
-
+      return ChemicalToolKit.getTestINSTANCE("").getManipulator().validateSMILES(str);
     }
   }
 

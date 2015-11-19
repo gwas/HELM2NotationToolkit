@@ -410,7 +410,7 @@ public class TestValidation {
 
 
   @Test
-  public void testMonomerValidation() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException {
+  public void testMonomerValidation() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException, CTKException {
     parser = new StateMachineParser();
 
     String test =
@@ -423,12 +423,12 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()));
+    Assert.assertTrue(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
 
   }
 
-  @Test(expectedExceptions = MolFormatException.class)
-  public void testMonomerValidationWithException() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException {
+  @Test
+  public void testMonomerValidationWithException() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException, CTKException {
     parser = new StateMachineParser();
 
     String test =
@@ -442,12 +442,12 @@ public class TestValidation {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()));
+    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
 
   }
 
-  @Test(expectedExceptions = MolFormatException.class)
-  public void testMonomerValidationWithException2() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException {
+  @Test
+  public void testMonomerValidationWithException2() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException, CTKException {
     parser = new StateMachineParser();
 
     String test =
@@ -461,7 +461,7 @@ public class TestValidation {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()));
+    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
 
   }
 
