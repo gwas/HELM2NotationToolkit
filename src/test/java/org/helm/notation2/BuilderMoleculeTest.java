@@ -23,8 +23,9 @@ public class BuilderMoleculeTest {
 
   {
 
-    PolymerNotation node = new PolymerNotation("BLOB1");
-    BuilderMolecule.buildMoleculefromSinglePolymer(node);
+      PolymerNotation node = new PolymerNotation("BLOB1");
+      BuilderMolecule.buildMoleculefromSinglePolymer(node);
+
   }
 
   @Test(expectedExceptions = BuilderMoleculeException.class)
