@@ -63,5 +63,25 @@ public class ContainerHELM2 {
     return interconnection;
   }
 
+  public void buildMolecule() {
+
+  }
   
+  public double getMolecularWeight() {
+    /* First build one big molecule */
+    System.out.println("BuildOneBigMolecule");
+    buildMolecule();
+    System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
+    return 0;
+
+  }
+
+  public static double getExaxtMass() {
+    return 0;
+  }
+
+  public static String getMolecularFormular() {
+    return null;
+  }
+
 }

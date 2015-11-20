@@ -171,11 +171,12 @@ public final class MethodsForContainerHELM2 {
       try {
         System.out.println(id);
         manipulator.validateSMILES(id);
-        monomer = new Monomer(type, "UnDefined","","");
+        monomer = new Monomer(type, "Undefined", "", "");
         monomer.setAdHocMonomer(true);
         monomer.setCanSMILES(manipulator.canonicalize(id));
       } catch (CTKException e) {
         System.out.println(manipulator.validateSMILES(id));
+
         /*monomer is not in the database and also not a valid SMILES -> throw exception*/
         throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES");
       }
@@ -183,4 +184,7 @@ public final class MethodsForContainerHELM2 {
    
     return monomer;
   }
+
+
+
 }

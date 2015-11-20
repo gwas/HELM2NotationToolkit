@@ -64,7 +64,7 @@ public class SMILESTest {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
         new InterConnections());
     SMILES smiles = new SMILES();
-    String smile = smiles.getSMILESForAll(MethodsForContainerHELM2.getListOfHandledMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
+    String smile = smiles.getSMILES(MethodsForContainerHELM2.getListOfHandledMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
     // Assert.assertEquals(smile,
     // "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.[H]N[C@@H](CCC(=O)C(=O)[C@@H](N[H])CC(=O)C(=O)[C@H](CCCNC(N)=N)NC(=O)[C@@H](N[H])CC(C)C)C(O)=O");
   }

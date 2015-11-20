@@ -23,48 +23,40 @@
  */
 package org.helm.notation2;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Map;
 
-import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.StructureParser;
+import org.helm.chemtoolkit.MolAtom;
+import org.helm.chemtoolkit.Molecule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import chemaxon.struc.Molecule;
 
 /**
- * SMILES
- * 
+ * RgroupStructure
  * 
  * @author hecht
  */
-public class SMILES {
+public class RgroupStructure {
 
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
 
-  public String getSMILES(ArrayList<Monomer> monomerlist) throws IOException {
-    StringBuffer sb = new StringBuffer();
-    for (Monomer element : monomerlist) {
-      String smi = element.getCanSMILES();
-      if(sb.length()>0){
-        sb.append(".");
-      }
-      sb.append(smi);
-    }
-    String mixtureSmiles = sb.toString();
-    
-    Molecule mol = StructureParser.getMolecule(mixtureSmiles);
-    return mol.toFormat("smiles:u");
-    
-    
+  private Molecule molecule;
+
+  private Map<String, MolAtom> rgroupMap;
+
+  public Molecule getMolecule() {
+    return molecule;
   }
 
-  public void getCanonicalSmilesForAll() {
-
+  public void setMolecule(Molecule molecule) {
+    this.molecule = molecule;
   }
 
+  public Map<String, MolAtom> getRgroupMap() {
+    return rgroupMap;
+  }
 
+  public void setRgroupMap(Map<String, MolAtom> rgroupMap) {
+    this.rgroupMap = rgroupMap;
+  }
 }
