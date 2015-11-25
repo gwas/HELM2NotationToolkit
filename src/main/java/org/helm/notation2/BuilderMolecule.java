@@ -101,8 +101,6 @@ public final class BuilderMolecule {
 
       }
         
-
-
     /* Case 3: RNA or PEPTIDE */
     else if (polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_RNA) || polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_PEPTIDE)) {
       List<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());

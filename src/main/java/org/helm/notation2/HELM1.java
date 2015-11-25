@@ -58,8 +58,8 @@ public final class HELM1 {
   public String getStandard(HELM2Notation helm2notation) throws CTKSmilesException, HELM1ConverterException, MonomerException, IOException, JDOMException, CTKException {
     this.helm2notation = helm2notation;
     setStandardHELMFirstSection();
-    setStandardHELMSecondSection();
-    setStandardHELMThirdSection();
+    setStandardHELMSecondSectionAndThirdSection(); // -> this methods also sets the
+                                    // thirdSection
     setStandardHELMFourthSection();
     return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$";
   }
@@ -106,33 +106,34 @@ public final class HELM1 {
   }
 
   /* connection section */
-  private void setStandardHELMSecondSection() throws HELM1ConverterException {
-    StringBuilder notation = new StringBuilder();
+  private void setStandardHELMSecondSectionAndThirdSection() throws HELM1ConverterException {
+    StringBuilder notationSecond = new StringBuilder();
+    StringBuilder notationThird = new StringBuilder();
     for (ConnectionNotation connectionNotation : helm2notation.getListOfConnections()) {
       /* pairs will be not shown */
       if (!(connectionNotation.toHELM().equals(""))) {
-        notation.append(connectionNotation.toHELM() + "|");
+        notationSecond.append(connectionNotation.toHELM() + "|");
       }
 
       else {
-        System.out.println("Pairconnections");
+        notationThird.append(connectionNotation.toHELM2() + "|");
       }
     }
-    if (notation.charAt(notation.length() - 1) == '|') {
-      notation.setLength(notation.length() - 1);
+    if (notationSecond.length() > 1) {
+      notationSecond.setLength(notationSecond.length() - 1);
+    }
+    if (notationThird.length() > 1) {
+      notationThird.setLength(notationThird.length() - 1);
     }
 
-    secondSection = notation.toString();
+    secondSection = notationSecond.toString();
+    thirdSection = notationThird.toString();
   }
 
-  /* hydrogenbond section */
-  private void setStandardHELMThirdSection() {
-    thirdSection = "";
-  }
 
   /* annotation section : will be the same of the HELM2 section */
   private void setStandardHELMFourthSection() {
-    fourthSection = helm2notation.getAnnotation().toString();
+    fourthSection = helm2notation.getAnnotation().getAnnotation();
   }
 
   private Map<String, String> setCanonicalHELMFirstSection() throws CTKSmilesException, MonomerException, IOException, JDOMException, CTKException,
@@ -280,7 +281,6 @@ public final class HELM1 {
       } else {
         listMatches.put(matcher.group(0), Monomer.PEPTIDE_POLYMER_TYPE);
       }
-
     }
 
     return listMatches;
@@ -305,8 +305,9 @@ public final class HELM1 {
       Monomer m = MonomerFactory.getInstance().getMonomerStore().getMonomer(element.getValue().toString(), element.getKey().toString());
       String smiles = m.getCanSMILES();
       ChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
-      // String canSmiles = manipulator.canonicalize(smiles);
-      convert.put(element.getKey().toString(), smiles);
+      String canSmiles = manipulator.canonicalize(smiles);
+      // to Do
+      convert.put(element.getKey().toString(), canSmiles);
       /* Rgroups??? */
     }
     return convert;

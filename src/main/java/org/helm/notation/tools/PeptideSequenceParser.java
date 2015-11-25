@@ -89,6 +89,7 @@ public class PeptideSequenceParser {
 			}
 			sb.append(aa);
 		}
+
 		return sb.toString();
 	}
 
