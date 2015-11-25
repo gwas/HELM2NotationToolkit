@@ -1,5 +1,7 @@
 /**
  * *****************************************************************************
+ * /**
+ * *****************************************************************************
  * Copyright C 2015, The Pistoia Alliance
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,9 +27,8 @@ package org.helm.notation2;
 
 
 import java.util.HashMap;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * InterConnections
@@ -36,16 +37,13 @@ import org.slf4j.LoggerFactory;
  */
 public class InterConnections {
 
-  /** The Logger for this class */
-  private static final Logger LOG =
-      LoggerFactory.getLogger(InterConnections.class);
 
-  HashMap<String, String> mapInterConnections = new HashMap<String, String>();
+  Map<String, String> mapInterConnections = new HashMap<String, String>();
 
   public InterConnections(){  
   }
 
-  public InterConnections(HashMap<String, String> map) {
+  public InterConnections(Map<String, String> map) {
     mapInterConnections = map;
   }
   
@@ -60,7 +58,7 @@ public class InterConnections {
     }
   }
 
-  public HashMap<String, String> getInterConnections() {
+  public Map<String, String> getInterConnections() {
     return mapInterConnections;
   }
 

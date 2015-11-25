@@ -60,3 +60,4 @@ public class RgroupStructure {
     this.rgroupMap = rgroupMap;
   }
 }
+

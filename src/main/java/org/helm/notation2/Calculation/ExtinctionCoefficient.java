@@ -41,10 +41,9 @@ import org.helm.notation.model.Monomer;
 import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
 import org.helm.notation2.Exception.HELM2HandledException;
-import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -53,9 +52,6 @@ import org.slf4j.LoggerFactory;
  * @author hecht
  */
 public class ExtinctionCoefficient {
-
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(ExtinctionCoefficient.class);
 
   public static final int RNA_UNIT_TYPE = 1;
 
@@ -158,7 +154,6 @@ public class ExtinctionCoefficient {
     List<PolymerNotation> polymerNodes = helm2container.getHELM2Notation().getListOfPolymers();
     for (PolymerNotation polymerNode : polymerNodes) {
       String polymerType = polymerNode.getPolymerID().getType();
-      String notation = polymerNode.getPolymerID().getID();
       float ext = 0.0f;
       ArrayList<PolymerNotation> not = new ArrayList<PolymerNotation>();
       not.add(polymerNode);
@@ -189,7 +184,6 @@ public class ExtinctionCoefficient {
     float result = 0.0f;
     float resultDi = 0.0f;
     String previous = "";
-    System.out.println(monomers);
     if (monomers.size() == 0) {
       throw new CalculationException("Input sequence cannot be null");
     } else {
@@ -241,8 +235,8 @@ public class ExtinctionCoefficient {
     for (Monomer mon : monomers) {
       try {
         String id = mon.getAlternateId();
-        if (aminoAcidMap.containsKey(mon.getAlternateId())) {
-          float value = aminoAcidMap.get(mon.getAlternateId());
+        if (aminoAcidMap.containsKey(id)) {
+          float value = aminoAcidMap.get(id);
           result = result + value;
         }
       } catch (NullPointerException e) {
@@ -257,5 +251,6 @@ public class ExtinctionCoefficient {
 
 
 }
+
 
 

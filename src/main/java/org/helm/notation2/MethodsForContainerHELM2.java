@@ -25,6 +25,7 @@ package org.helm.notation2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
@@ -35,14 +36,13 @@ import org.helm.notation.MonomerStore;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.Exception.HELM2HandledException;
-import org.helm.notation2.parser.Notation.HELM2Notation;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationGroup;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnit;
-import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
+import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
  * MethodsForContainerHELM2
@@ -51,13 +51,12 @@ import org.slf4j.LoggerFactory;
  */
 public final class MethodsForContainerHELM2 {
 
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(MethodsForContainerHELM2.class);
+
 
   /**
    * Only on these monomers calculation methods, getsmiles should be performed
    * 
-   * @param not
+   * @param monomerNotations
    * @return
    * @throws MonomerException
    * @throws IOException
@@ -65,23 +64,23 @@ public final class MethodsForContainerHELM2 {
    * @throws HELM2HandledException
    * @throws CTKException
    */
-  public static ArrayList<Monomer> getListOfHandledMonomers(ArrayList<MonomerNotation> not) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
-    ArrayList<Monomer> items = new ArrayList<Monomer>();
-    for (int i = 0; i < not.size(); i++) {
+  public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
+    List<Monomer> items = new ArrayList<Monomer>();
+    for (MonomerNotation monomerNotation : monomerNotations) {
       /* group element */
-      if (not.get(i) instanceof MonomerNotationGroup) {
+      if (monomerNotation instanceof MonomerNotationGroup) {
         throw new HELM2HandledException("Functions can't be called for HELM2 objects");
       }
 
       else {
         try {
-          int count = Integer.parseInt(not.get(i).getCount());
+          int count = Integer.parseInt(monomerNotation.getCount());
           if (count == 0) {
             throw new HELM2HandledException("Functions can't be called for HELM2 objects");
           }
 
           for (int j = 0; j < count; j++) {
-            items.addAll(Validation.getAllMonomers(not.get(i)));
+            items.addAll(Validation.getAllMonomers(monomerNotation));
           }
         } catch (NumberFormatException e) {
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
@@ -94,30 +93,30 @@ public final class MethodsForContainerHELM2 {
 
   }
 
-  public static ArrayList<MonomerNotation> getListOfMonomerNotation(ArrayList<PolymerNotation> not) {
-    ArrayList<MonomerNotation> items = new ArrayList<MonomerNotation>();
-    for (int i = 0; i < not.size(); i++) {
-      items.addAll(not.get(i).getListMonomers());
+  public static List<MonomerNotation> getListOfMonomerNotation(List<PolymerNotation> polymers) {
+    List<MonomerNotation> items = new ArrayList<MonomerNotation>();
+    for (PolymerNotation polymer : polymers) {
+      items.addAll(polymer.getListMonomers());
     }
 
     return items;
 
   }
 
-  public static ArrayList<Monomer> getListOfMonomer(ArrayList<MonomerNotation> not) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
-    ArrayList<Monomer> items = new ArrayList<Monomer>();
-    for (int i = 0; i < not.size(); i++) {
-      items.addAll(Validation.getAllMonomers(not.get(i)));
+  public static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
+    List<Monomer> items = new ArrayList<Monomer>();
+    for (MonomerNotation monomerNotation : monomerNotations) {
+      items.addAll(Validation.getAllMonomers(monomerNotation));
     }
     return items;
 
   }
 
-  public static ArrayList<PolymerNotation> getListOfPolymersSpecificType(String str, ArrayList<PolymerNotation> not) {
-    ArrayList<PolymerNotation> list = new ArrayList<PolymerNotation>();
-    for (int i = 0; i < not.size(); ++i) {
-      if (not.get(i).getPolymerID().getType().equals(str)) {
-        list.add(not.get(i));
+  public static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
+    List<PolymerNotation> list = new ArrayList<PolymerNotation>();
+    for (PolymerNotation polymer : polymers) {
+      if (polymer.getPolymerID().getType().equals(str)) {
+        list.add(polymer);
       }
     }
     return list;
@@ -169,7 +168,6 @@ public final class MethodsForContainerHELM2 {
     if (monomer == null) {
       ChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
       try {
-        System.out.println(id);
         manipulator.validateSMILES(id);
         monomer = new Monomer(type, "Undefined", "", "");
         monomer.setAdHocMonomer(true);
@@ -188,3 +186,4 @@ public final class MethodsForContainerHELM2 {
 
 
 }
+

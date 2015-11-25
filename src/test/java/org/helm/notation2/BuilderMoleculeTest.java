@@ -9,9 +9,9 @@ import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation2.Exception.BuilderMoleculeException;
 import org.helm.notation2.Exception.HELM2HandledException;
-import org.helm.notation2.parser.ExceptionParser.ExceptionState;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnit;
-import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
+import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom.JDOMException;
 import org.testng.annotations.Test;
 

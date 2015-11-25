@@ -1,5 +1,7 @@
 /**
  * *****************************************************************************
+ * /**
+ * *****************************************************************************
  * Copyright C 2015, The Pistoia Alliance
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,43 +28,43 @@ package org.helm.notation2;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
-import org.helm.chemtoolkit.ChemistryManipulator;
+
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.SimpleNotationParser;
-import org.helm.notation.tools.StructureParser;
 import org.helm.notation2.Exception.AttachmentException;
 import org.helm.notation2.Exception.ConnectionNotationException;
 import org.helm.notation2.Exception.GroupingNotationException;
 import org.helm.notation2.Exception.HELM2HandledException;
 import org.helm.notation2.Exception.PolymerIDsException;
-import org.helm.notation2.parser.GroupingSection.BetweenGroupingParser;
-import org.helm.notation2.parser.Notation.HELM2Notation;
-import org.helm.notation2.parser.Notation.ValidationMethod;
-import org.helm.notation2.parser.Notation.Connection.ConnectionNotation;
-import org.helm.notation2.parser.Notation.Grouping.GroupingNotation;
-import org.helm.notation2.parser.Notation.Polymer.Entity;
-import org.helm.notation2.parser.Notation.Polymer.GroupEntity;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationGroup;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationList;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnit;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotationUnitRNA;
-import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
+import org.helm.notation2.parser.groupingsection.BetweenGroupingParser;
+import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.ValidationMethod;
+import org.helm.notation2.parser.notation.connection.ConnectionNotation;
+import org.helm.notation2.parser.notation.grouping.GroupingElement;
+import org.helm.notation2.parser.notation.grouping.GroupingNotation;
+import org.helm.notation2.parser.notation.polymer.HELMEntity;
+import org.helm.notation2.parser.notation.polymer.GroupEntity;
+import org.helm.notation2.parser.notation.polymer.MonomerNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupElement;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 
 /**
@@ -72,7 +74,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
  */
 public class Validation {
 
-  private static final Logger logger =
+  private static final Logger LOG =
       LoggerFactory.getLogger(BetweenGroupingParser.class);
 
 
@@ -101,28 +103,28 @@ public class Validation {
       throws NotationException, MonomerException, IOException, JDOMException,
       GroupingNotationException, ConnectionNotationException,
       PolymerIDsException, AttachmentException,
-      org.helm.notation2.parser.ExceptionParser.NotationException,
+      org.helm.notation2.parser.exceptionparser.NotationException,
       org.jdom.JDOMException, HELM2HandledException, CTKException {
 
 
     /*all polymer ids have to be unique*/
     if (!validateUniquePolymerIDs(containerhelm2)) {
-      logger.info("Polymer ids have to be unique");
+      LOG.info("Polymer ids have to be unique");
       throw new PolymerIDsException("Polymer IDs have to be unique");
     }
     /* Validation of Monomers */
     if (!validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers()))) {
-      logger.info("Monomers have to be valid");
+      LOG.info("Monomers have to be valid");
       throw new MonomerException("Monomers have to be valid");
     }
     /* validate the grouping section */
     if (!validateGrouping(containerhelm2)) {
-      logger.info("Group information is not valid");
+      LOG.info("Group information is not valid");
       throw new GroupingNotationException("Group notation is not valid");
     }
     /* validate the connection */
     if (!validateConnections(containerhelm2)) {
-      logger.info("Connection information is not valid");
+      LOG.info("Connection information is not valid");
       throw new ConnectionNotationException("Connection notation is not valid");
     }
   }
@@ -138,10 +140,10 @@ public class Validation {
    * @throws NotationException
    * @throws CTKException
    */
-  public static boolean validateMonomers(ArrayList<MonomerNotation> mon) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
-    ArrayList<MonomerNotation> monomers = mon;
-    for (int i = 0; i < monomers.size(); i++) {
-      if (!(isMonomerValid(monomers.get(i).getID(), monomers.get(i).getType()))) {
+  protected static boolean validateMonomers(List<MonomerNotation> mon) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
+    List<MonomerNotation> monomerNotations = mon;
+    for (MonomerNotation monomerNotation : monomerNotations) {
+      if (!(isMonomerValid(monomerNotation.getID(), monomerNotation.getType()))) {
         return false;
       }
     }
@@ -164,87 +166,81 @@ public class Validation {
    * @throws HELM2HandledException
    * @throws CTKException
    */
-  public static boolean validateConnections(ContainerHELM2 containerhelm2)
+  protected static boolean validateConnections(ContainerHELM2 containerhelm2)
       throws MonomerException, IOException, JDOMException, AttachmentException,
       PolymerIDsException,
-      org.helm.notation2.parser.ExceptionParser.NotationException,
+      org.helm.notation2.parser.exceptionparser.NotationException,
       org.jdom.JDOMException, NotationException, HELM2HandledException, CTKException {
 
-    ArrayList<ConnectionNotation> listConnection =
+    List<ConnectionNotation> listConnections =
         containerhelm2.getHELM2Notation().getListOfConnections();
-    ArrayList<String> listPolymerIDs =
+    List<String> listPolymerIDs =
         containerhelm2.getHELM2Notation().getPolymerAndGroupingIDs();
 
     /* Hash-Map to save only specific InterConnections */
     InterConnections interconnection = containerhelm2.getInterconnection();
     boolean specific = true;
     /* check for each single connection */
-    for (int i = 0; i < listConnection.size(); i++) {
+    for (ConnectionNotation connection : listConnections) {
 
       /* check polymer ids */
-      checkPolymerIDSConnection(listConnection.get(i), listPolymerIDs);
+      checkPolymerIDSConnection(connection, listPolymerIDs);
 
       /*check for unspecific interaction*/
-      if(listConnection.get(i).getSourceId() instanceof GroupEntity || listConnection.get(i).getTargetId() instanceof GroupEntity){
+      if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
         specific = false;
       }
 
       /* check Monomers:-> can be number */
-      PolymerNotation source = containerhelm2.getHELM2Notation().getPolymerNotation(listConnection.get(i).getSourceId().getID());
-      String sourceUnit = listConnection.get(i).getSourceUnit();
-      PolymerNotation target = containerhelm2.getHELM2Notation().getPolymerNotation(listConnection.get(i).getTargetId().getID());
-      String targetUnit = listConnection.get(i).getTargetUnit();
+      PolymerNotation source = containerhelm2.getHELM2Notation().getPolymerNotation(connection.getSourceId().getID());
+      String sourceUnit = connection.getSourceUnit();
+      PolymerNotation target = containerhelm2.getHELM2Notation().getPolymerNotation(connection.getTargetId().getID());
+      String targetUnit = connection.getTargetUnit();
 
       /* check for specific interactions */
-      if (isConnectionSpecific(listConnection.get(i)) && specific) {
+      if (isConnectionSpecific(connection) && specific) {
         /*
          * interaction seems to be specific: it is given in number -> place of
          * monomer
          */
         /* Get Monomers */
         specific = true;
-        int numberOne = Integer.parseInt(sourceUnit);
-        int numberTwo = Integer.parseInt(targetUnit);
+        int occurenceOne = Integer.parseInt(sourceUnit);
+        int occurenceTwo = Integer.parseInt(targetUnit);
 
         /*
          * if the monomers are a group or a list of monomers -> is it no more
          * specific
          */
-        MonomerNotation first = source.getMonomer(numberOne);
-        MonomerNotation second = target.getMonomer(numberTwo);
-
         /* can the two form a connection */
-        /**/
-        ArrayList<Monomer> firsts = getAllMonomers(first);
-        ArrayList<Monomer> seconds = getAllMonomers(second);
+        List<Monomer> listMonomersOne = getAllMonomers(source.getMonomerNotation(occurenceOne));
+        List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo));
 
 
         /* check each single Attachment */
-        checkAttachment(firsts, seconds, listConnection.get(i), containerhelm2, interconnection, specific);
+        checkAttachment(listMonomersOne, listMonomersTwo, connection, containerhelm2, interconnection, specific);
         }
+
       /*Unspecific Interaction*/
         else {
-        ArrayList<Integer> numberOne = getMonomer(sourceUnit,listConnection.get(i).getSourceId(),containerhelm2);
-        ArrayList<Integer> numberTwo = getMonomer(targetUnit, listConnection.get(i).getTargetId(), containerhelm2);
+        List<Integer> listMonomerOccurencesOne = getMonomer(sourceUnit, connection.getSourceId(), containerhelm2);
+        List<Integer> listMonomerOccurencesTwo = getMonomer(targetUnit, connection.getTargetId(), containerhelm2);
         /* ? - section has to be included */
-        if (numberOne.isEmpty()) {
-          for (int y = 0; y < numberTwo.size(); y++) {
-            MonomerNotation second = target.getMonomer(numberTwo.get(y));
-            ArrayList<Monomer> seconds = getAllMonomers(second);
-            checkSingleAttachment(seconds, listConnection.get(i).getrGroupTarget(), containerhelm2, listConnection.get(i), interconnection, listConnection.get(i).getTargetId().getID());
+        if (listMonomerOccurencesOne.isEmpty()) {
+          for (Integer occurenceTwo : listMonomerOccurencesTwo) {
+            List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo));
+            checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), containerhelm2, connection, interconnection, connection.getTargetId().getID());
           }
         }
-        for (int x = 0; x < numberOne.size(); x++) {
+        for (Integer occurenceOne : listMonomerOccurencesOne) {
           /* get Monomers */
-          MonomerNotation first = source.getMonomer(numberOne.get(x));
-          ArrayList<Monomer> firsts = getAllMonomers(first);
-          checkSingleAttachment(firsts, listConnection.get(i).getrGroupSource(), containerhelm2, listConnection.get(i), interconnection, listConnection.get(i).getSourceId().getID());
+          List<Monomer> listMonomersOne = getAllMonomers(source.getMonomerNotation(occurenceOne));
+          checkSingleAttachment(listMonomersOne, connection.getrGroupSource(), containerhelm2, connection, interconnection, connection.getSourceId().getID());
           /* check single attachment */
-          for (int y = 0; y < numberTwo.size(); y++) {
-            MonomerNotation second = target.getMonomer(numberTwo.get(y));
-            ArrayList<Monomer> seconds = getAllMonomers(second);
-            checkSingleAttachment(seconds, listConnection.get(i).getrGroupTarget(), containerhelm2, listConnection.get(i), interconnection, listConnection.get(i).getTargetId().getID());
-            checkAttachment(firsts, seconds, listConnection.get(i), containerhelm2, interconnection, false);
+          for (Integer occurenceTwo : listMonomerOccurencesTwo) {
+            List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo));
+            checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), containerhelm2, connection, interconnection, connection.getTargetId().getID());
+            checkAttachment(listMonomersOne, listMonomersTwo, connection, containerhelm2, interconnection, false);
 
           }
 
@@ -288,9 +284,9 @@ public class Validation {
    * @throws org.helm.notation2.parser.ExceptionParser.NotationException
    * @throws AttachmentException
    */
-  private static ArrayList<Integer> getMonomer(String sourceUnit, Entity e, ContainerHELM2 containerhelm2) throws org.helm.notation2.parser.ExceptionParser.NotationException, MonomerException,
+  private static List<Integer> getMonomer(String sourceUnit, HELMEntity e, ContainerHELM2 containerhelm2) throws org.helm.notation2.parser.exceptionparser.NotationException, MonomerException,
       IOException, org.jdom.JDOMException, JDOMException, NotationException, AttachmentException {
-    ArrayList<Integer> occurences = new ArrayList<Integer>();
+    List<Integer> occurences = new ArrayList<Integer>();
     
     /* The monomer's position in the polymer is specified */
     try{
@@ -326,9 +322,9 @@ public class Validation {
     else if (mon instanceof MonomerNotationGroup || mon instanceof MonomerNotationList) {
       PolymerNotation polymerNotation =
           containerhelm2.getHELM2Notation().getPolymerNotation(e.getID());
-      HashMap<String,String> elements = new HashMap<String, String>();
-        for (int i = 0; i < ((MonomerNotationGroup) mon).getListOfElements().size(); i++) {
-          elements.put(((MonomerNotationGroup) mon).getListOfElements().get(i).getMonomer().getID(), "");
+        Map<String, String> elements = new HashMap<String, String>();
+        for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) mon).getListOfElements()) {
+          elements.put(groupElement.getMonomerNotation().getID(), "");
       }
 
         for (int i = 0; i < polymerNotation.getPolymerElements().getListOfElements().size(); i++) {
@@ -352,19 +348,19 @@ public class Validation {
    * @param containerhelm2
    * @return
    */
-  public static boolean validateGrouping(ContainerHELM2 containerhelm2) {
-    ArrayList<GroupingNotation> listGroupings =
+  protected static boolean validateGrouping(ContainerHELM2 containerhelm2) {
+    List<GroupingNotation> listGroupings =
         containerhelm2.getHELM2Notation().getListOfGroupings();
-    ArrayList<String> listPolymerIDs =
+    List<String> listPolymerIDs =
         containerhelm2.getHELM2Notation().getPolymerAndGroupingIDs();
     
     /*validate each group*/
-    for (int i = 0; i < listGroupings.size(); i++) {
+    for (GroupingNotation grouping : listGroupings) {
       /* check for each group element if the polymer id is there */
-      for (int j = 0; j < listGroupings.get(i).getAmbiguity().getListOfElements().size(); j ++){
-        if (!(listPolymerIDs.contains(listGroupings.get(i).getAmbiguity().getListOfElements().get(j).getID().getID()))) {
-          logger.info("Element of Group: "
-              + listGroupings.get(i).getAmbiguity().getListOfElements().get(j).getID().getID()
+      for (GroupingElement groupingElement : grouping.getAmbiguity().getListOfElements()) {
+        if (!(listPolymerIDs.contains(groupingElement.getID().getID()))) {
+          LOG.info("Element of Group: "
+              + groupingElement.getID().getID()
               + " does not exist");
           return false;
         }
@@ -379,14 +375,13 @@ public class Validation {
    * @throws NotationException
    * 
    */
-  public static boolean validateUniquePolymerIDs(ContainerHELM2 containerhelm2)
+  protected static boolean validateUniquePolymerIDs(ContainerHELM2 containerhelm2)
       throws NotationException {
-    ArrayList<String> listPolymerIDs =
+    List<String> listPolymerIDs =
         containerhelm2.getHELM2Notation().getPolymerAndGroupingIDs();
     Map<String, String> uniqueId = new HashMap<String, String>();
-    for (int i = 0; i < listPolymerIDs.size(); i++) {
-      String str = listPolymerIDs.get(i);
-      uniqueId.put(str, "");
+    for (String polymerID : listPolymerIDs) {
+      uniqueId.put(polymerID, "");
     }
     if (listPolymerIDs.size() > uniqueId.size()) {
       throw new NotationException("Polymer node IDs are not unique");
@@ -396,18 +391,58 @@ public class Validation {
   }
 
   /**
-   * method to get the number of single monomernotation -> size of list
+   * method to get the number of single monomernotation -> toDo
    * 
    * @param helm2notation
    * @return
    */
-  public static int getMonomerCount(HELM2Notation helm2notation) {
-    ArrayList<PolymerNotation> listPolymers = helm2notation.getListOfPolymers();
+  protected static int getMonomerCountAll(HELM2Notation helm2notation) {
+    List<PolymerNotation> listPolymers = helm2notation.getListOfPolymers();
     int count = 0;
-    for (int i = 0; i < listPolymers.size(); i++) {
-      count += listPolymers.get(i).getPolymerElements().getListOfElements().size();
+    for (PolymerNotation polymer : listPolymers) {
+      count += getMonomerCount(polymer);
     }
     return count;
+  }
+
+  private static int getMonomerCount(PolymerNotation notation) {
+    int count = 0;
+    for (MonomerNotation element : notation.getPolymerElements().getListOfElements()) {
+      count += getMonomerCountFromMonomerNotation(element);
+    }
+    return count;
+  }
+
+  private static int getMonomerCountFromMonomerNotation(MonomerNotation notation) {
+    int multiply;
+    try {
+      multiply = Integer.parseInt(notation.getCount());
+      if (multiply < 1) {
+        multiply = 1;
+      }
+    } catch (NumberFormatException e) {
+      multiply = 1;
+    }
+
+    if (notation instanceof MonomerNotationGroup) {
+      return 1 * multiply;
+    }
+    if (notation instanceof MonomerNotationList) {
+      int count = 0;
+      for (MonomerNotationUnit unit : ((MonomerNotationList) notation).getListofMonomerUnits()) {
+        count += getMonomerCountFromMonomerNotation(unit);
+      }
+      return count * multiply;
+    }
+
+    if (notation instanceof MonomerNotationUnitRNA) {
+      int count = 0;
+      for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) notation).getContents()) {
+        count += getMonomerCountFromMonomerNotation(unit);
+      }
+      return count * multiply;
+    }
+    return 1 * multiply;
   }
 
   /**
@@ -419,11 +454,11 @@ public class Validation {
    * @return
    * @throws PolymerIDsException
    */
-  public static boolean checkExistenceOfPolymerID(String str, ArrayList<String> listPolymerIDs) throws PolymerIDsException {
+  protected static boolean checkExistenceOfPolymerID(String str, List<String> listPolymerIDs) throws PolymerIDsException {
     if (listPolymerIDs.contains(str)) {
       return true;
     }
-    logger.info("Polymer Id does not exist");
+    LOG.info("Polymer Id does not exist");
     throw new PolymerIDsException("Polymer ID does not exist");
   }
 
@@ -439,49 +474,49 @@ public class Validation {
    * @throws NotationException
    * @throws CTKException
    */
-  public static boolean isMonomerValid(String str, String type) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
+  protected static boolean isMonomerValid(String str, String type) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
     /* Search in Database */
     MonomerStore monomerStore = monomerFactory.getMonomerStore();
     if (monomerStore.hasMonomer(type, str)) {
-      logger.info("Monomer is located in the database: " + str);
+      LOG.info("Monomer is located in the database: " + str);
       return true;
     }
 
     else if (str.charAt(0) == '[' && str.charAt(str.length() - 1) == ']' &&
         monomerStore.hasMonomer(type, str.substring(1, str.length() - 1))) {
-      logger.info("Monomer is located in the database: " + str);
+      LOG.info("Monomer is located in the database: " + str);
       return true;
     }
 
     /* polymer type is Blob: accept all */
     else if (type.equals("BLOB")) {
-      logger.info("Blob's Monomer Type: " + str);
+      LOG.info("Blob's Monomer Type: " + str);
       return true;
     }
 
     /* new unknown monomer for peptide */
     else if (type.equals("PEPTIDE") && str.equals("X")) {
-      logger.info("Unknown monomer type for peptide: " + str);
+      LOG.info("Unknown monomer type for peptide: " + str);
       return true;
     }
 
     /* new unknown monomer for peptide */
     else if (type.equals("RNA") && str.equals("N")) {
-      logger.info("Unknown monomer type for rna: " + str);
+      LOG.info("Unknown monomer type for rna: " + str);
       return true;
     }
 
     /* new unknown types */
     else if (str.equals("?") || str.equals("_")) {
-      logger.info("Unknown types: " + str);
+      LOG.info("Unknown types: " + str);
       return true;
     }
 
     /* nucleotide */
     else if (type.equals("RNA")) {
       SimpleNotationParser.getMonomerIDList(str, type, monomerStore);
-      logger.info("Nucleotide type for RNA: " + str);
+      LOG.info("Nucleotide type for RNA: " + str);
       return true;
     }
 
@@ -501,13 +536,13 @@ public class Validation {
    * method to check for one connection if the two polymer ids exist
    * 
    * @param not
-   * @param listIDs
+   * @param listPolymerIDs
    * @return
    * @throws PolymerIDsException
    */
-  private static boolean checkPolymerIDSConnection(ConnectionNotation not, ArrayList<String> listIDs) throws PolymerIDsException {
+  private static boolean checkPolymerIDSConnection(ConnectionNotation not, List<String> listPolymerIDs) throws PolymerIDsException {
     /* the polymer ids have to be there */
-    return checkExistenceOfPolymerID(not.getSourceId().getID(), listIDs) && checkExistenceOfPolymerID(not.getTargetId().getID(), listIDs);
+    return checkExistenceOfPolymerID(not.getSourceId().getID(), listPolymerIDs) && checkExistenceOfPolymerID(not.getTargetId().getID(), listPolymerIDs);
 
   }
 
@@ -522,8 +557,8 @@ public class Validation {
    * @throws HELM2HandledException
    * @throws CTKException
    */
-  public static ArrayList<Monomer> getAllMonomers(MonomerNotation not) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
-    ArrayList<Monomer> monomers = new ArrayList<Monomer>();
+  protected static List<Monomer> getAllMonomers(MonomerNotation not) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
+    List<Monomer> monomers = new ArrayList<Monomer>();
 
 
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
@@ -540,20 +575,20 @@ public class Validation {
       monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
     }
  else if (not instanceof MonomerNotationGroup) {
-      for (int i = 0; i < ((MonomerNotationGroup) not).getListOfElements().size(); i++) {
-        String id = ((MonomerNotationGroup) not).getListOfElements().get(i).getMonomer().getID();
+      for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
+        String id = groupElement.getMonomerNotation().getID();
         if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
         monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
       }
     } else if (not instanceof MonomerNotationList) {
-      for (int i = 0; i < ((MonomerNotationList) not).getListofMonomerUnits().size(); i++) {
-        if (((MonomerNotationList) not).getListofMonomerUnits().get(i) instanceof MonomerNotationUnitRNA) {
-          monomers.addAll(getMonomersRNA(((MonomerNotationUnitRNA) ((MonomerNotationList) not).getListofMonomerUnits().get(i)), monomerStore));
+      for (MonomerNotationUnit listElement : ((MonomerNotationList) not).getListofMonomerUnits()) {
+        if (listElement instanceof MonomerNotationUnitRNA) {
+          monomers.addAll(getMonomersRNA(((MonomerNotationUnitRNA) listElement), monomerStore));
         }
  else {
-          String id = ((MonomerNotationList) not).getListofMonomerUnits().get(i).getID();
+          String id = listElement.getID();
           if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
           }
@@ -569,7 +604,7 @@ public class Validation {
   private static boolean checkAttachmentPoint(Monomer mon, String str) throws AttachmentException {
     if (!(mon.getAttachmentListString().contains(str))) {
       if (!(str.equals("?"))) {
-        logger.info("Attachment point for source is not there");
+        LOG.info("Attachment point for source is not there");
         throw new AttachmentException(
             "Attachment point for source is not there: "
                 + str);
@@ -592,25 +627,25 @@ public class Validation {
    * @return
    * @throws AttachmentException
    */
-  private static boolean checkAttachment(ArrayList<Monomer> firsts, ArrayList<Monomer> seconds, ConnectionNotation not, ContainerHELM2 containerhelm2, InterConnections interconnection,
+  private static boolean checkAttachment(List<Monomer> listMonomersOne, List<Monomer> listMonomersTwo, ConnectionNotation not, ContainerHELM2 containerhelm2, InterConnections interconnection,
       boolean spec)
       throws AttachmentException {
     boolean specific = spec;
-    if (firsts.size() > 1 || seconds.size() > 1) {
+    if (listMonomersOne.size() > 1 || listMonomersTwo.size() > 1) {
       specific = false;
     }
-    for(int x  = 0; x < firsts.size(); x ++){
-      for(int y = 0; y < seconds.size(); y ++){
+    for (Monomer monomerOne : listMonomersOne) {
+      for (Monomer monomerTwo : listMonomersTwo) {
         /* Rna-Basepair-hydrogen bonds */
-        if (firsts.get(x).getPolymerType().equals("RNA")
-            && seconds.get(x).getPolymerType().equals("RNA")
+        if (monomerOne.getPolymerType().equals("RNA")
+            && monomerTwo.getPolymerType().equals("RNA")
             && not.getrGroupSource().equals("pair")
             && not.getrGroupTarget().equals("pair")) {
-          logger.info("RNA strand connection");
+          LOG.info("RNA strand connection");
 
-          if (!(firsts.get(x).getMonomerType().equals("Branch")
-              | seconds.get(x).getMonomerType().equals("Branch"))) {
-            logger.info("RNA strand connection is not valid");
+          if (!(monomerOne.getMonomerType().equals("Branch")
+              | monomerTwo.getMonomerType().equals("Branch"))) {
+            LOG.info("RNA strand connection is not valid");
             throw new AttachmentException(
                 "RNA strand connection is not valid");
           }
@@ -683,7 +718,7 @@ public class Validation {
   /**
    * method to check for one attachment point the validation
    * 
-   * @param mon
+   * @param monomers
    * @param rGroup
    * @param containerhelm2
    * @param not
@@ -692,12 +727,12 @@ public class Validation {
    * @return
    * @throws AttachmentException
    */
-  private static boolean checkSingleAttachment(ArrayList<Monomer> mon, String rGroup, ContainerHELM2 containerhelm2, ConnectionNotation not, InterConnections interconnection, String id)
+  private static boolean checkSingleAttachment(List<Monomer> monomers, String rGroup, ContainerHELM2 containerhelm2, ConnectionNotation not, InterConnections interconnection, String id)
       throws AttachmentException {
 
-    for (int i = 0; i < mon.size(); ++i) {
+    for (Monomer monomer : monomers) {
       /* Are the attachment points there */
-      checkAttachmentPoint(mon.get(i), rGroup);
+      checkAttachmentPoint(monomer, rGroup);
 
       /* is the attachment point already occupied by another monomer? */
       String detail = not.getSourceUnit() + "$"
@@ -725,10 +760,10 @@ public class Validation {
   }
 
 
-  private static ArrayList<Monomer> getMonomersRNA(MonomerNotationUnitRNA rna, MonomerStore monomerStore) throws HELM2HandledException, MonomerException, IOException, JDOMException, CTKException {
-    ArrayList<Monomer> monomers = new ArrayList<Monomer>();
-      for(int i = 0; i < rna.getContents().size(); i ++){
-        String id = rna.getContents().get(i).getID().replace("[", "");
+  private static List<Monomer> getMonomersRNA(MonomerNotationUnitRNA rna, MonomerStore monomerStore) throws HELM2HandledException, MonomerException, IOException, JDOMException, CTKException {
+    List<Monomer> monomers = new ArrayList<Monomer>();
+    for (MonomerNotationUnit unit : rna.getContents()) {
+      String id = unit.getID().replace("[", "");
         id = id.replace("]", "");
       Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id);
       try {

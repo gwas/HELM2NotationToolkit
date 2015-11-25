@@ -36,13 +36,10 @@ import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.InterConnections;
 import org.helm.notation2.MethodsForContainerHELM2;
 import org.helm.notation2.SMILES;
-import org.helm.notation2.Calculation.ExtinctionCoefficient;
 import org.helm.notation2.Exception.HELM2HandledException;
 import org.helm.notation2.parser.ParserHELM2;
-import org.helm.notation2.parser.StateMachineParser;
-import org.helm.notation2.parser.ExceptionParser.ExceptionState;
+import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom.JDOMException;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**

@@ -24,9 +24,9 @@
 package org.helm.notation2;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,13 +37,11 @@ import org.helm.chemtoolkit.Molecule;
 import org.helm.notation.MonomerException;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.StructureParser;
 import org.helm.notation2.Exception.BuilderMoleculeException;
 import org.helm.notation2.Exception.HELM2HandledException;
-import org.helm.notation2.parser.Notation.Connection.ConnectionNotation;
-import org.helm.notation2.parser.Notation.Polymer.Entity;
-import org.helm.notation2.parser.Notation.Polymer.GroupEntity;
-import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
+import org.helm.notation2.parser.notation.connection.ConnectionNotation;
+import org.helm.notation2.parser.notation.polymer.GroupEntity;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,17 +52,34 @@ import org.slf4j.LoggerFactory;
  * @author hecht
  */
 public final class BuilderMolecule {
-  static String POLYMER_TYPE_BLOB = "BLOB";
+  private static final String POLYMER_TYPE_BLOB = "BLOB";
 
-  static String POLYMER_TYPE_CHEM = "CHEM";
+  private static final String POLYMER_TYPE_CHEM = "CHEM";
 
-  static String POLYMER_TYPE_RNA = "RNA";
+  private static final String POLYMER_TYPE_RNA = "RNA";
 
-  static String POLYMER_TYPE_PEPTIDE = "PEPTIDE";
+  private static final String POLYMER_TYPE_PEPTIDE = "PEPTIDE";
+
+  public enum E_PolymerType {
+    Blob, Chem, RNA, Peptide
+  }
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(BuilderMolecule.class);
 
+  private void blub(E_PolymerType pt) {
+    switch (pt) {
+    case Blob:
+
+      break;
+    case Chem:
+      break;
+    case Peptide:
+      break;
+    default:
+      break;
+    }
+  }
 
   public static RgroupStructure buildMoleculefromSinglePolymer(PolymerNotation polymernotation) throws BuilderMoleculeException, MonomerException, IOException, JDOMException, HELM2HandledException,
       CTKException {
@@ -82,50 +97,15 @@ public final class BuilderMolecule {
 
     /* Case 2: CHEM */
     else if (polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_CHEM)) {
-      ArrayList<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
-      /* MonomerNotationList or Count should be handled */
+      List<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
 
-      /* a chemical molecule should only contain one monomer */
-      if (validMonomers.size() == 1) {
-        try{
-          if (validMonomers.get(0).getCanSMILES() != null) {
-            /* Build monomer + Rgroup information! */
-
-            molecule = new Molecule(validMonomers.get(0).getCanSMILES());
-            LOG.info("");
-            Map<String, MolAtom> rgroupMap = molecule.getRgroups();
-            rmap = new HashMap<String, MolAtom>();
-            Set keyset = rgroupMap.keySet();
-            for (Iterator it = keyset.iterator(); it.hasNext();) {
-              String key = (String) it.next();
-              rmap.put("1:" + key, (MolAtom) rgroupMap.get(key));
-            }
-
-            /* Build RgroupStructure */
-            structure.setMolecule(molecule);
-            structure.setRgroupMap(rmap);
-
-          } else {
-            LOG.error("Chemical molecule should have canonical smiles");
-            throw new BuilderMoleculeException("Chemical molecule should have canoncial smiles");
-          }
-        }
-          
-          catch(NullPointerException e){
-          throw new BuilderMoleculeException("Monomer is not stored in the monomer database");
-          }
-        }
-         else {
-          LOG.error("Chemical molecule should contain exactly one monomer");
-          throw new BuilderMoleculeException("Chemical molecule should contain exactly one monomer");
-        }
       }
         
 
 
     /* Case 3: RNA or PEPTIDE */
-    else if(polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_RNA) || polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_CHEM)) {
-      ArrayList<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
+    else if (polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_RNA) || polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_PEPTIDE)) {
+      List<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
       structure = buildMoleculefromPeptideOrRNA(validMonomers);
     }
     
@@ -138,12 +118,12 @@ public final class BuilderMolecule {
   }
 
 
-  public static void buildMoleculefromPolymers(ArrayList<PolymerNotation> notlist, ArrayList<ConnectionNotation> connectionlist) throws BuilderMoleculeException, MonomerException,
+  public static void buildMoleculefromPolymers(List<PolymerNotation> notlist, List<ConnectionNotation> connectionlist) throws BuilderMoleculeException, MonomerException,
       IOException,
       JDOMException,
       HELM2HandledException, CTKException {
-    HashMap <String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
-    
+    Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
+    Map<String, RgroupStructure> structure = new HashMap<String, RgroupStructure>();
     
     /*Build for every single polymer a molecule*/
     for(PolymerNotation node: notlist){
@@ -196,7 +176,47 @@ public final class BuilderMolecule {
 
   }
 
-  private static RgroupStructure buildMoleculefromPeptideOrRNA(ArrayList<Monomer> validMonomers) throws BuilderMoleculeException {
+  private static RgroupStructure buildMoleculefromCHEM(List<Monomer> validMonomers) throws BuilderMoleculeException {
+    RgroupStructure structure = new RgroupStructure();
+    /* MonomerNotationList or Count should be handled */
+    /* a chemical molecule should only contain one monomer */
+    if (validMonomers.size() == 1) {
+      try {
+        System.out.println(validMonomers);
+        if (validMonomers.get(0).getCanSMILES() != null) {
+          /* Build monomer + Rgroup information! */
+
+          Molecule molecule = new Molecule(validMonomers.get(0).getCanSMILES());
+          LOG.info("");
+          Map<String, MolAtom> rgroupMap = molecule.getRgroups();
+          Map<String, MolAtom> rmap = new HashMap<String, MolAtom>();
+          Set keyset = rgroupMap.keySet();
+          for (Iterator it = keyset.iterator(); it.hasNext();) {
+            String key = (String) it.next();
+            rmap.put("1:" + key, (MolAtom) rgroupMap.get(key));
+          }
+
+          /* Build RgroupStructure */
+          structure.setMolecule(molecule);
+          structure.setRgroupMap(rmap);
+          return structure;
+
+        } else {
+          LOG.error("Chemical molecule should have canonical smiles");
+          throw new BuilderMoleculeException("Chemical molecule should have canoncial smiles");
+        }
+      }
+
+      catch (NullPointerException e) {
+        throw new BuilderMoleculeException("Monomer is not stored in the monomer database");
+      }
+    } else {
+      LOG.error("Chemical molecule should contain exactly one monomer");
+      throw new BuilderMoleculeException("Chemical molecule should contain exactly one monomer");
+    }
+  }
+
+  private static RgroupStructure buildMoleculefromPeptideOrRNA(List<Monomer> validMonomers) throws BuilderMoleculeException {
     RgroupStructure structure = new RgroupStructure();
     Molecule currentMolecule;
     Map<String, MolAtom> currentRmap;
@@ -286,3 +306,4 @@ public final class BuilderMolecule {
   }
 
 }
+

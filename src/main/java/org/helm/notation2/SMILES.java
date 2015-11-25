@@ -24,7 +24,7 @@
 package org.helm.notation2;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.StructureParser;
@@ -45,7 +45,7 @@ public class SMILES {
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
 
-  public String getSMILES(ArrayList<Monomer> monomerlist) throws IOException {
+  public String getSMILES(List<Monomer> monomerlist) throws IOException {
     StringBuffer sb = new StringBuffer();
     for (Monomer element : monomerlist) {
       String smi = element.getCanSMILES();
@@ -68,3 +68,4 @@ public class SMILES {
 
 
 }
+

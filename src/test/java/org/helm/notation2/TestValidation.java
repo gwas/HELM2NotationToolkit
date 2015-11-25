@@ -35,12 +35,10 @@ import org.helm.notation2.Exception.AttachmentException;
 import org.helm.notation2.Exception.HELM2HandledException;
 import org.helm.notation2.Exception.PolymerIDsException;
 import org.helm.notation2.parser.StateMachineParser;
-import org.helm.notation2.parser.ExceptionParser.ExceptionState;
+import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import chemaxon.formats.MolFormatException;
 
 /**
  * TestValidation
@@ -167,7 +165,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 10);
+    Assert.assertEquals(Validation.getMonomerCountAll(parser.notationContainer), 16);
     
   }
 
@@ -187,7 +185,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Validation.getMonomerCount(parser.notationContainer), 11);
+    Assert.assertEquals(Validation.getMonomerCountAll(parser.notationContainer), 27);
   }
 
   @Test
@@ -223,7 +221,7 @@ public class TestValidation {
     parser = new StateMachineParser();
 
     String test =
-        "PEPTIDE1{F.L.C}|PEPTIDE2{C.D}$PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
+        "PEPTIDE1{F.L.C'3'}|PEPTIDE2{C.D}$PEPTIDE2,PEPTIDE1,1:R3-4:R3$$$";
 
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
@@ -409,6 +407,7 @@ public class TestValidation {
   }
 
 
+
   @Test
   public void testMonomerValidation() throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException, NotationException, CTKException {
     parser = new StateMachineParser();
@@ -468,3 +467,4 @@ public class TestValidation {
 
 
 }
+

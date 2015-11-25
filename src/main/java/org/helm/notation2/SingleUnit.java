@@ -7,7 +7,7 @@
 package org.helm.notation2;
 
 import org.helm.notation.model.Monomer;
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -23,12 +23,10 @@
  */
 package org.helm.notation2;
 
-import org.helm.notation2.parser.Notation.HELM2Notation;
-import org.helm.notation2.parser.Notation.Annotation.AnnotationNotation;
-import org.helm.notation2.parser.Notation.Grouping.GroupingNotation;
-import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
+import org.helm.notation2.parser.notation.grouping.GroupingNotation;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 
 /**
  * ChangeObjects
@@ -36,10 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author hecht
  */
 public final class ChangeObjects {
-
-  /** The Logger for this class */
-  private static final Logger LOG =
-      LoggerFactory.getLogger(ChangeObjects.class);
 
   public void addAnnotation(String str, ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().addAnnotation(new AnnotationNotation(
@@ -136,3 +130,4 @@ public final class ChangeObjects {
 
 
 }
+

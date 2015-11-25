@@ -6,12 +6,10 @@
  */
 package org.helm.notation2;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import org.helm.notation2.parser.Notation.Polymer.MonomerNotation;
-import org.helm.notation2.parser.Notation.Polymer.PolymerNotation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+
 
 /**
  * {@code PolymerUnit}
@@ -22,11 +20,11 @@ import org.slf4j.LoggerFactory;
  */
 public class PolymerUnit {
 
-  ArrayList<SingleUnit> elements;
+  List<SingleUnit> elements;
 
   PolymerNotation polymerNotation;
 
-  public PolymerUnit(PolymerNotation polymerNotation, ArrayList<SingleUnit> elements) {
+  public PolymerUnit(PolymerNotation polymerNotation, List<SingleUnit> elements) {
     this.polymerNotation = polymerNotation;
     this.elements = elements;
   }
