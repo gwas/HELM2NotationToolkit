@@ -21,7 +21,7 @@
  * SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation2.Calculation;
+package org.helm.notation2.calculation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +40,7 @@ import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
-import org.helm.notation2.Exception.HELM2HandledException;
+import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 

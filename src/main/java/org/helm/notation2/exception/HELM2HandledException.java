@@ -21,7 +21,7 @@
  * SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation2.Exception;
+package org.helm.notation2.exception;
 
 
 /**

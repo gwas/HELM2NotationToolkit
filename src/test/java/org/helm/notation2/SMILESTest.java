@@ -36,7 +36,7 @@ import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.InterConnections;
 import org.helm.notation2.MethodsForContainerHELM2;
 import org.helm.notation2.SMILES;
-import org.helm.notation2.Exception.HELM2HandledException;
+import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom.JDOMException;
