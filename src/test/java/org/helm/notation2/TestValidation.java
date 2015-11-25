@@ -112,7 +112,7 @@ public class TestValidation {
   @Test
   public void testvalidateUniquePolymerIDs() throws ExceptionState,
       MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException, PolymerIDsException
 
   {
     parser = new StateMachineParser();
@@ -132,7 +132,7 @@ public class TestValidation {
   @Test(expectedExceptions = NotationException.class)
   public void testvalidateUniquePolymerIDsWithException() throws ExceptionState,
       MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException
+      IOException, NotationException, JDOMException, org.jdom2.JDOMException, PolymerIDsException
 
   {
     parser = new StateMachineParser();

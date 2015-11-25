@@ -100,11 +100,11 @@ public class Validation {
    * @throws CTKException
    */
   public void validateNotationObjects(ContainerHELM2 containerhelm2)
-      throws NotationException, MonomerException, IOException, JDOMException,
+      throws MonomerException, IOException, JDOMException,
       GroupingNotationException, ConnectionNotationException,
       PolymerIDsException, AttachmentException,
       org.helm.notation2.parser.exceptionparser.NotationException,
-      org.jdom.JDOMException, HELM2HandledException, CTKException {
+      org.jdom.JDOMException, HELM2HandledException, CTKException, NotationException {
 
 
     /*all polymer ids have to be unique*/
@@ -140,7 +140,7 @@ public class Validation {
    * @throws NotationException
    * @throws CTKException
    */
-  protected static boolean validateMonomers(List<MonomerNotation> mon) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
+  protected static boolean validateMonomers(List<MonomerNotation> mon) throws MonomerException, IOException, JDOMException, CTKException, NotationException {
     List<MonomerNotation> monomerNotations = mon;
     for (MonomerNotation monomerNotation : monomerNotations) {
       if (!(isMonomerValid(monomerNotation.getID(), monomerNotation.getType()))) {
@@ -165,17 +165,14 @@ public class Validation {
    * @throws NotationException
    * @throws HELM2HandledException
    * @throws CTKException
+   * @throws org.jdom.JDOMException
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
    */
-  protected static boolean validateConnections(ContainerHELM2 containerhelm2)
-      throws MonomerException, IOException, JDOMException, AttachmentException,
-      PolymerIDsException,
-      org.helm.notation2.parser.exceptionparser.NotationException,
-      org.jdom.JDOMException, NotationException, HELM2HandledException, CTKException {
+  protected static boolean validateConnections(ContainerHELM2 containerhelm2) throws PolymerIDsException, MonomerException, IOException, JDOMException, HELM2HandledException, CTKException,
+      AttachmentException, org.helm.notation2.parser.exceptionparser.NotationException, org.jdom.JDOMException, NotationException {
 
-    List<ConnectionNotation> listConnections =
-        containerhelm2.getHELM2Notation().getListOfConnections();
-    List<String> listPolymerIDs =
-        containerhelm2.getHELM2Notation().getPolymerAndGroupingIDs();
+    List<ConnectionNotation> listConnections = containerhelm2.getHELM2Notation().getListOfConnections();
+    List<String> listPolymerIDs = containerhelm2.getHELM2Notation().getPolymerAndGroupingIDs();
 
     /* Hash-Map to save only specific InterConnections */
     InterConnections interconnection = containerhelm2.getInterconnection();
@@ -372,11 +369,11 @@ public class Validation {
   /**
    * method to check if all existent polymer ids are unique
    * 
-   * @throws NotationException
+   * @throws PolymerIDsException
    * 
    */
   protected static boolean validateUniquePolymerIDs(ContainerHELM2 containerhelm2)
-      throws NotationException {
+      throws PolymerIDsException {
     List<String> listPolymerIDs =
         containerhelm2.getHELM2Notation().getPolymerAndGroupingIDs();
     Map<String, String> uniqueId = new HashMap<String, String>();
@@ -384,7 +381,7 @@ public class Validation {
       uniqueId.put(polymerID, "");
     }
     if (listPolymerIDs.size() > uniqueId.size()) {
-      throw new NotationException("Polymer node IDs are not unique");
+      throw new PolymerIDsException("Polymer node IDs are not unique");
     }
 
     return true;
@@ -474,7 +471,7 @@ public class Validation {
    * @throws NotationException
    * @throws CTKException
    */
-  protected static boolean isMonomerValid(String str, String type) throws IOException, MonomerException, JDOMException, NotationException, CTKException {
+  protected static boolean isMonomerValid(String str, String type) throws MonomerException, IOException, JDOMException, CTKException, NotationException {
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
     /* Search in Database */
     MonomerStore monomerStore = monomerFactory.getMonomerStore();
@@ -515,6 +512,7 @@ public class Validation {
 
     /* nucleotide */
     else if (type.equals("RNA")) {
+      /* change */
       SimpleNotationParser.getMonomerIDList(str, type, monomerStore);
       LOG.info("Nucleotide type for RNA: " + str);
       return true;

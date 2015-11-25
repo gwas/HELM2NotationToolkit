@@ -38,7 +38,7 @@ import java.util.Map;
 public class InterConnections {
 
 
-  Map<String, String> mapInterConnections = new HashMap<String, String>();
+  private Map<String, String> mapInterConnections = new HashMap<String, String>();
 
   public InterConnections(){  
   }

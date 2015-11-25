@@ -1,7 +1,7 @@
 package org.helm.notation2;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
@@ -10,6 +10,7 @@ import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.tools.ComplexNotationParser;
+import org.helm.notation2.exception.HELM1FormatException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
@@ -23,9 +24,7 @@ public class TestCanonicalHELM {
   StateMachineParser parser;
 
   @Test
-  public void testCanonicalSHELM() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  public void testCanonicalSHELM() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -40,13 +39,11 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test
-  public void testCanonicalHELMExtended() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  public void testCanonicalHELMExtended() throws ExceptionState, IOException, JDOMException, HELM1FormatException
 
   {
     parser = new StateMachineParser();
@@ -61,13 +58,12 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test
-  public void testCanonicalHELMExtended2() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  public void testCanonicalHELMExtended2() throws ClassNotFoundException, HELM1FormatException, NotationException, MonomerException, IOException, StructureException, org.jdom2.JDOMException,
+      ExceptionState, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -80,14 +76,11 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Assert.assertEquals(containerhelm2.getCanonicalHELM(), ComplexNotationParser.getCanonicalNotation(test, false));
+    Assert.assertEquals(new HELM1().getCanonical(containerhelm2.getHELM2Notation()), ComplexNotationParser.getCanonicalNotation(test, false));
   }
 
   @Test
-  public void testCanonicalHELMExtendedWithCounts() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
-
+  public void testCanonicalHELMExtendedWithCounts() throws HELM1FormatException, ExceptionState, IOException, JDOMException 
   {
     parser = new StateMachineParser();
 
@@ -99,14 +92,12 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
-  @Test(expectedExceptions = HELM1ConverterException.class)
-  public void testCanonicalHELMExtendedWithCountsWithException() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  @Test(expectedExceptions = HELM1FormatException.class)
+  public void testCanonicalHELMExtendedWithCountsWithException() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -119,14 +110,12 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
   @Test
-  public void testCanonicalHELMExtendedWithMonomerNotationList() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  public void testCanonicalHELMExtendedWithMonomerNotationList() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -139,14 +128,12 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    System.out.println(containerhelm2.getCanonicalHELM());
+    System.out.println(new HELM1().getCanonical(containerhelm2.getHELM2Notation()));
 
   }
 
-  @Test(expectedExceptions = HELM1ConverterException.class)
-  public void testCanonicalHELMExtendedWithMonomerNotationGroup() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  @Test(expectedExceptions = HELM1FormatException.class)
+  public void testCanonicalHELMExtendedWithMonomerNotationGroup() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -159,14 +146,12 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
-  @Test(expectedExceptions = HELM1ConverterException.class)
-  public void testCanonicalHELMExtendedWithBLOB() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  @Test(expectedExceptions = HELM1FormatException.class)
+  public void testCanonicalHELMExtendedWithBLOB() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -179,14 +164,12 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
-  @Test(expectedExceptions = HELM1ConverterException.class)
-  public void testCanonicalHELMExtendedWithUnknownMonomer() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  @Test(expectedExceptions = HELM1FormatException.class)
+  public void testCanonicalHELMExtendedWithUnknownMonomer() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -199,13 +182,11 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
   }
 
-  @Test(expectedExceptions = HELM1ConverterException.class)
-  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforPeptide() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  @Test(expectedExceptions = HELM1FormatException.class)
+  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforPeptide() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -218,13 +199,11 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
   }
 
-  @Test(expectedExceptions = HELM1ConverterException.class)
-  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforRNA() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  @Test(expectedExceptions = HELM1FormatException.class)
+  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforRNA() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -237,13 +216,11 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
   }
 
-  @Test(expectedExceptions = HELM1ConverterException.class)
-  public void testCanonicalHELMConnectionWithGroup() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  @Test(expectedExceptions = HELM1FormatException.class)
+  public void testCanonicalHELMConnectionWithGroup() throws HELM1FormatException, ExceptionState, IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -257,13 +234,12 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test
-  public void testCanonicalHELMConnection() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException, ClassNotFoundException,
-      HELM1ConverterException
+  public void testCanonicalHELMConnection() throws HELM1FormatException, ExceptionState, IOException, JDOMException, ClassNotFoundException, NotationException, MonomerException, StructureException,
+      org.jdom2.JDOMException
 
   {
     parser = new StateMachineParser();
@@ -277,12 +253,11 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Assert.assertEquals(containerhelm2.getCanonicalHELM(), ComplexNotationParser.getCanonicalNotation("PEPTIDE1{C}|RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE2{R.E}|PEPTIDE3{R.I.P}|RNA3{R(A)P.R(C)}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$RNA2,RNA3,2:pair-5:pair|RNA2,RNA3,5:pair-2:pair$$", false));
+    Assert.assertEquals(new HELM1().getCanonical(containerhelm2.getHELM2Notation()), ComplexNotationParser.getCanonicalNotation("PEPTIDE1{C}|RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE2{R.E}|PEPTIDE3{R.I.P}|RNA3{R(A)P.R(C)}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$RNA2,RNA3,2:pair-5:pair|RNA2,RNA3,5:pair-2:pair$$", false));
   }
 
   @Test
-  public void testCanonicalHELMCHEM() throws ExceptionState, IOException, JDOMException, ClassNotFoundException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException, CTKSmilesException,
-      CTKException {
+  public void testCanonicalHELMCHEM() throws HELM1FormatException, ExceptionState, IOException, JDOMException {
     parser = new StateMachineParser();
 
     String test = "CHEM1{MCC}$$$$";
@@ -293,14 +268,12 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
   @Test
-  public void testCanonicalSMILES() throws ExceptionState, IOException,
-      JDOMException, ClassNotFoundException, HELM1ConverterException,
-      MonomerException, org.jdom2.JDOMException, CTKSmilesException, CTKException, NotationException, StructureException {
+  public void testCanonicalSMILES() throws HELM1FormatException, ExceptionState, IOException, JDOMException {
 
     parser = new StateMachineParser();
 
@@ -312,14 +285,14 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
   @Test
   public void testCanonicalSMILES2() throws ExceptionState, IOException,
       JDOMException, ClassNotFoundException, HELM1ConverterException,
-      MonomerException, org.jdom2.JDOMException, CTKSmilesException, CTKException, NotationException, StructureException {
+      MonomerException, org.jdom2.JDOMException, CTKSmilesException, CTKException, NotationException, StructureException, HELM1FormatException {
 
     parser = new StateMachineParser();
 
@@ -331,7 +304,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    containerhelm2.getCanonicalHELM();
+    new HELM1().getCanonical(containerhelm2.getHELM2Notation());
 
   }
 

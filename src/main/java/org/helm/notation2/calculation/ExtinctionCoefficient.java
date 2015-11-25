@@ -53,9 +53,9 @@ import org.jdom2.JDOMException;
  */
 public class ExtinctionCoefficient {
 
-  public static final int RNA_UNIT_TYPE = 1;
+  private static final int RNA_UNIT_TYPE = 1;
 
-  public static final int PEPTIDE_UNIT_TYPE = 2;
+  private static final int PEPTIDE_UNIT_TYPE = 2;
 
   private static Map<String, Float> monoNucleotideMap = new HashMap<String, Float>();
 
@@ -217,7 +217,6 @@ public class ExtinctionCoefficient {
 
     return (2 * resultDi) - resultSingle;
   }
-
 
 
   /**
