@@ -1,44 +1,37 @@
-/*--
+/**
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
  *
- * @(#) ContainerHELM2.java
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *****************************************************************************
  */
 package org.helm.notation2;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.CTKSmilesException;
-import org.helm.chemtoolkit.ChemicalToolKit;
-import org.helm.chemtoolkit.ChemistryManipulator;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.PermutationAndExpansion;
-import org.helm.notation2.parser.exceptionparser.HELM1ConverterException;
 import org.helm.notation2.parser.notation.HELM2Notation;
-import org.helm.notation2.parser.notation.connection.ConnectionNotation;
-import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code ContainerHELM2}
- * TODO comment me
+ * ContainerHELM2
  * 
- * @author 
- * @version $Id$
+ * @author hecht
  */
 public class ContainerHELM2 {
 
@@ -52,13 +45,6 @@ public class ContainerHELM2 {
   private InterConnections interconnection;
 
 
-  private static final String PEPTIDE = "PEPTIDE";
-
-  private static final String RNA = "RNA";
-
-  private static final String BLOB = "BLOB";
-
-  private static final String CHEM = "CHEM";
 
 
   public ContainerHELM2(HELM2Notation helm2notation,
@@ -88,11 +74,15 @@ public class ContainerHELM2 {
 
   }
 
-  public static double getExaxtMass() {
+  public double getExaxtMass() {
     return 0;
   }
 
-  public static String getMolecularFormular() {
+  public String getMolecularFormular() {
+    /* First build one big molecule */
+    System.out.println("BuildOneBigMolecule");
+    buildMolecule();
+    System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
     return null;
   }
 

@@ -1740,15 +1740,11 @@ public class ComplexNotationParser {
 		List<List<String>> nodeIdPermutations = PermutationAndExpansion
 				.linearize(lol);
 		List<String> notationList = new ArrayList<String>();
-    System.out.println(nodeIdPermutations);
 		for (List<String> sortedIdList : nodeIdPermutations) {
 			String notation = generateNotationBasedNodeOrder(sortedIdList,
 					nodeList, edgeList);
-      System.out.println(notation);
 			notationList.add(notation);
 		}
-    System.out.println(notationList.get(0));
-    System.out.println(notationList.size());
 		Collections.sort(notationList);
 		return notationList.get(0);
 	}

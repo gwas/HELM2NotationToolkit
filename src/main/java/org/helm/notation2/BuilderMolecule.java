@@ -180,7 +180,6 @@ public final class BuilderMolecule {
     /* a chemical molecule should only contain one monomer */
     if (validMonomers.size() == 1) {
       try {
-        System.out.println(validMonomers);
         if (validMonomers.get(0).getCanSMILES() != null) {
           /* Build monomer + Rgroup information! */
 

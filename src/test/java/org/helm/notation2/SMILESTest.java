@@ -62,8 +62,6 @@ public class SMILESTest {
         new InterConnections());
     SMILES smiles = new SMILES();
     String smile = smiles.getSMILES(MethodsForContainerHELM2.getListOfHandledMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
-    // Assert.assertEquals(smile,
-    // "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.[H]N[C@@H](CCC(=O)C(=O)[C@@H](N[H])CC(=O)C(=O)[C@H](CCCNC(N)=N)NC(=O)[C@@H](N[H])CC(C)C)C(O)=O");
   }
 
   @Test
@@ -73,7 +71,6 @@ public class SMILESTest {
     String test = "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
 
     String smiles = ComplexNotationParser.getComplexPolymerSMILES(test);
-    System.out.println(smiles);
   }
 
   @Test
@@ -84,7 +81,6 @@ public class SMILESTest {
     MonomerStore store = new MonomerStore();
     String canonicalNotation = ComplexNotationParser.getCanonicalNotation(test, false, store);
 
-    System.out.println(canonicalNotation);
   }
 
 
@@ -95,7 +91,6 @@ public class SMILESTest {
     MonomerStore store = new MonomerStore();
     String canonicalNotation = ComplexNotationParser.getCanonicalNotation(test, true, store);
 
-    System.out.println(test);
   }
 
 }

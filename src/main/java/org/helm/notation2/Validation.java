@@ -99,7 +99,7 @@ public class Validation {
    * @throws HELM2HandledException
    * @throws CTKException
    */
-  public static void validateNotationObjects(ContainerHELM2 containerhelm2)
+  protected static void validateNotationObjects(ContainerHELM2 containerhelm2)
       throws MonomerException, IOException, JDOMException,
       GroupingNotationException, ConnectionNotationException,
       PolymerIDsException, AttachmentException,

@@ -198,14 +198,33 @@ public class WebService {
   }
 
 
-  /* To Do */
-  public Double calculateMolecularWeight(String notation) {
-    return null;
+  /**
+   * method to calculate the molecular weight of the HELM string
+   * 
+   * @param notation
+   * @return
+   * @throws ParserException
+   * @throws ValidationException
+   */
+  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException {
+    validateHELM(notation);
+
+    /* to Do */
+    return containerhelm2.getMolecularWeight();
   }
 
-  /* To Do */
-  public String getMolecularFormula(String notation) {
-    return null;
+  /**
+   * method to get the molecular formular of one HELM
+   * 
+   * @param notation
+   * @return
+   * @throws ValidationException
+   * @throws ParserException
+   */
+  public String getMolecularFormula(String notation) throws ParserException, ValidationException {
+    validateHELM(notation);
+    /* to Do */
+    return containerhelm2.getMolecularFormular();
   }
 
   /* To Do */

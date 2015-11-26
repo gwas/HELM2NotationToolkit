@@ -311,7 +311,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    System.out.println(ExtinctionCoefficient.getInstance().calculate(containerhelm2));
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
   @Test(expectedExceptions = CalculationException.class)
@@ -328,7 +328,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    System.out.println(ExtinctionCoefficient.getInstance().calculate(containerhelm2));
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
 }

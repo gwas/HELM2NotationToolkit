@@ -173,8 +173,6 @@ public final class MethodsForContainerHELM2 {
         monomer.setAdHocMonomer(true);
         monomer.setCanSMILES(manipulator.canonicalize(id));
       } catch (CTKException e) {
-        System.out.println(manipulator.validateSMILES(id));
-
         /*monomer is not in the database and also not a valid SMILES -> throw exception*/
         throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES");
       }
