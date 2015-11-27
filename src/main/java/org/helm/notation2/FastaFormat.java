@@ -287,7 +287,7 @@ public final class FastaFormat {
       fasta.append(">" + header + "\n");
       try {
         fasta.append(generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers())) + "\n");
-      } catch (MonomerException | IOException | org.jdom2.JDOMException | HELM2HandledException | CTKException e) {
+      } catch (HELM2HandledException e) {
         throw new FastaFormatException(e.getMessage());
       }
     }
@@ -327,7 +327,7 @@ public final class FastaFormat {
       fasta.append(">" + header + "\n");
       try {
         fasta.append(generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers())) + "\n");
-      } catch (MonomerException | IOException | org.jdom2.JDOMException | HELM2HandledException | CTKException e) {
+      } catch (HELM2HandledException e) {
         throw new FastaFormatException(e.getMessage());
       }
     }

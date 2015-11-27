@@ -30,7 +30,6 @@ import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.StructureException;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
-import org.helm.notation2.exception.AttachmentException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.GroupingNotationException;
@@ -42,7 +41,6 @@ import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,11 +85,10 @@ public class WebService {
    * method to validate the input HELM-String
    * 
    * @param helm
-   * @return
    * @throws ParserException
    * @throws ValidationException
    */
-  public boolean validateHELM(String helm) throws ParserException, ValidationException {
+  public void validateHELM(String helm) throws ParserException, ValidationException {
     /* Read */
     readNotation(helm);
 
@@ -100,12 +97,11 @@ public class WebService {
       LOG.info("Validation of HELM is starting");
       Validation.validateNotationObjects(containerhelm2);
       LOG.info("Validation was successful");
-    } catch (NotationException | MonomerException | IOException | org.jdom2.JDOMException | GroupingNotationException | ConnectionNotationException | PolymerIDsException | AttachmentException
-        | JDOMException | HELM2HandledException | CTKException | org.helm.notation.NotationException e) {
+    } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException e) {
+      LOG.info("Validation was not successful");
+      LOG.error(e.getMessage());
       throw new ValidationException(e.getMessage());
     }
-
-    return true;
 
   }
   
@@ -152,7 +148,6 @@ public class WebService {
     try {
       return ExtinctionCoefficient.getInstance().calculate(containerhelm2);
     } catch (org.helm.notation.NotationException | MonomerException | IOException | org.jdom2.JDOMException | StructureException | CalculationException | HELM2HandledException | CTKException e) {
-      // TODO Auto-generated catch block
       throw new HELM1FormatException(e.getMessage());
     }
 

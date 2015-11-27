@@ -129,7 +129,7 @@ public class TestValidation {
     Assert.assertTrue(Validation.validateUniquePolymerIDs(containerhelm2));
   }
 
-  @Test(expectedExceptions = NotationException.class)
+  @Test
   public void testvalidateUniquePolymerIDsWithException() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException, PolymerIDsException
@@ -146,7 +146,7 @@ public class TestValidation {
     test += "V2.0";
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Assert.assertTrue(Validation.validateUniquePolymerIDs(containerhelm2));
+    Assert.assertFalse(Validation.validateUniquePolymerIDs(containerhelm2));
   }
 
   @Test
@@ -207,7 +207,7 @@ public class TestValidation {
     test += "V2.0";
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertTrue(Validation.validateConnections(containerhelm2));
 
   }
 
@@ -257,7 +257,7 @@ public class TestValidation {
 
   }
 
-  @Test(expectedExceptions = AttachmentException.class)
+  @Test
   public void testConnectionFalse() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
@@ -276,7 +276,7 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertFalse(Validation.validateConnections(containerhelm2));
 
   }
 
@@ -299,11 +299,11 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertTrue(Validation.validateConnections(containerhelm2));
 
   }
 
-  @Test(expectedExceptions = AttachmentException.class)
+  @Test
   public void testConnectionHELM2SimpleWithException() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
@@ -322,7 +322,7 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertFalse(Validation.validateConnections(containerhelm2));
 
   }
 
@@ -345,7 +345,7 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertTrue(Validation.validateConnections(containerhelm2));
 
   }
 
@@ -364,11 +364,11 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertTrue(Validation.validateConnections(containerhelm2));
 
   }
 
-  @Test(expectedExceptions = AttachmentException.class)
+  @Test
   public void testConnectionHELM2ExtendedWithException() throws ExceptionState,
       MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException, PolymerIDsException, HELM2HandledException, CTKException {
     parser = new StateMachineParser();
@@ -383,7 +383,7 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertFalse(Validation.validateConnections(containerhelm2));
 
   }
 
@@ -402,7 +402,7 @@ public class TestValidation {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Validation.validateConnections(containerhelm2);
+    Assert.assertTrue(Validation.validateConnections(containerhelm2));
 
   }
 

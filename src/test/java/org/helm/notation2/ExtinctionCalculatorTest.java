@@ -244,7 +244,7 @@ public class ExtinctionCalculatorTest {
     ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
-  @Test(expectedExceptions = MonomerException.class)
+  @Test(expectedExceptions = HELM2HandledException.class)
   public void testCalculationWithException4() throws ExceptionState, MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
 
@@ -263,7 +263,7 @@ public class ExtinctionCalculatorTest {
     ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
-  @Test(expectedExceptions = MonomerException.class)
+  @Test(expectedExceptions = HELM2HandledException.class)
   public void testCalculationWithException5() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
       HELM2HandledException, CTKException {
     parser = new StateMachineParser();
@@ -277,7 +277,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    System.out.println(ExtinctionCoefficient.getInstance().calculate(containerhelm2));
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)

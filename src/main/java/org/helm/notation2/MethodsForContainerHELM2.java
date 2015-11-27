@@ -27,9 +27,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
-import org.helm.chemtoolkit.ChemistryManipulator;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
@@ -54,17 +54,14 @@ public final class MethodsForContainerHELM2 {
 
 
   /**
-   * Only on these monomers calculation methods, getsmiles should be performed
+   * method to get all HELM1 valid MonomerNotations Only on these monomers
+   * required HELM1 functions are performed
    * 
    * @param monomerNotations
    * @return
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
    * @throws HELM2HandledException
-   * @throws CTKException
    */
-  public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
+  public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations) throws HELM2HandledException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (MonomerNotation monomerNotation : monomerNotations) {
       /* group element */
@@ -82,18 +79,22 @@ public final class MethodsForContainerHELM2 {
           for (int j = 0; j < count; j++) {
             items.addAll(Validation.getAllMonomers(monomerNotation));
           }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
         }
 
       }
     }
-
     return items;
-
   }
 
-  public static List<MonomerNotation> getListOfMonomerNotation(List<PolymerNotation> polymers) {
+  /**
+   * method to get all MonomerNotations for all given polymers
+   * 
+   * @param polymers
+   * @return
+   */
+  protected static List<MonomerNotation> getListOfMonomerNotation(List<PolymerNotation> polymers) {
     List<MonomerNotation> items = new ArrayList<MonomerNotation>();
     for (PolymerNotation polymer : polymers) {
       items.addAll(polymer.getListMonomers());
@@ -103,7 +104,18 @@ public final class MethodsForContainerHELM2 {
 
   }
 
-  public static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
+  /**
+   * method to get all monomers for all MonomerNotations
+   * 
+   * @param monomerNotations
+   * @return
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws HELM2HandledException
+   * @throws CTKException
+   */
+  protected static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (MonomerNotation monomerNotation : monomerNotations) {
       items.addAll(Validation.getAllMonomers(monomerNotation));
@@ -112,7 +124,14 @@ public final class MethodsForContainerHELM2 {
 
   }
 
-  public static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
+  /**
+   * method to get all polymers for one specific polymer type
+   * 
+   * @param str
+   * @param polymers
+   * @return
+   */
+  protected static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
     List<PolymerNotation> list = new ArrayList<PolymerNotation>();
     for (PolymerNotation polymer : polymers) {
       if (polymer.getPolymerID().getType().equals(str)) {
@@ -122,36 +141,14 @@ public final class MethodsForContainerHELM2 {
     return list;
   }
 
-  public static String getSMILES() {
-    return null;
-
-  }
-
-  public static String getCanonicalHELM(HELM2Notation not) throws MonomerException, IOException, JDOMException, StructureException, HELM2HandledException, ClassNotFoundException {
-
-    
-    return null;
-  }
-
-  public static String convertToHELM1(HELM2Notation not) throws HELM2HandledException {
-    /* Grouping section is additional! */
-    if (not.getListOfGroupings() != null) {
-      throw new HELM2HandledException("Functions can't be called for HELM2 objects");
-    }
-
-    /* Connection ambiguity check */
-
-    /* valid Monomers -> */
-
-    /* Annotation checks */
-
-    String notation = "";
-
-    return notation;
-  }
-
-  public static boolean isMonomerSpecific(PolymerNotation not, int position) {
-
+  /**
+   * method to check if the monomer is specific
+   * 
+   * @param not
+   * @param position
+   * @return true if the monomer is specific, false otherwise
+   */
+  protected static boolean isMonomerSpecific(PolymerNotation not, int position) {
     if (not.getPolymerElements().getListOfElements().get(position) instanceof MonomerNotationUnit) {
       return true;
     }
@@ -160,25 +157,35 @@ public final class MethodsForContainerHELM2 {
     }
   }
 
-  public static Monomer getMonomer(String type, String id) throws MonomerException, IOException, JDOMException, CTKException {
+  /**
+   * method to get the monomer from the database!
+   * 
+   * @param type
+   * @param id
+   * @return
+   * @throws MonomerException
+   */
+  protected static Monomer getMonomer(String type, String id) throws MonomerException {
+    try {
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
     MonomerStore monomerStore = monomerFactory.getMonomerStore();
     Monomer monomer;
     monomer = monomerStore.getMonomer(type, id);
     if (monomer == null) {
-      ChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
-      try {
+      AbstractChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
         manipulator.validateSMILES(id);
         monomer = new Monomer(type, "Undefined", "", "");
         monomer.setAdHocMonomer(true);
         monomer.setCanSMILES(manipulator.canonicalize(id));
-      } catch (CTKException e) {
-        /*monomer is not in the database and also not a valid SMILES -> throw exception*/
-        throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES");
       }
+      return monomer;
+    } catch (CTKException | IOException | JDOMException e) {
+      /*
+       * monomer is not in the database and also not a valid SMILES -> throw
+       * exception
+       */
+      throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES");
     }
-   
-    return monomer;
   }
 
 

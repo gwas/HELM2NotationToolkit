@@ -32,6 +32,8 @@ import java.util.Set;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
+import org.helm.chemtoolkit.IAtomBase;
+import org.helm.chemtoolkit.IMoleculeBase;
 import org.helm.chemtoolkit.MolAtom;
 import org.helm.chemtoolkit.Molecule;
 import org.helm.notation.MonomerException;
@@ -215,11 +217,11 @@ public final class BuilderMolecule {
 
   private static RgroupStructure buildMoleculefromPeptideOrRNA(List<Monomer> validMonomers) throws BuilderMoleculeException {
     RgroupStructure structure = new RgroupStructure();
-    Molecule currentMolecule;
-    Map<String, MolAtom> currentRmap;
-    Molecule molecule;
-    Map<String, MolAtom> rmap = new HashMap<String, MolAtom>();
-    Molecule prevMolecule = null;
+    IMoleculeBase currentMolecule;
+    Map<String, IAtomBase> currentRmap;
+    IMoleculeBase molecule;
+    Map<String, IAtomBase> rmap = new HashMap<String, IAtomBase>();
+    IMoleculeBase prevMolecule = null;
     
 
     if(validMonomers.size() == 0|| validMonomers == null){
@@ -228,7 +230,8 @@ public final class BuilderMolecule {
     for (int i = 0; i < validMonomers.size(); i++) {
       
       if (prevMolecule != null) {
-        currentMolecule = new Molecule(validMonomers.get(i).getCanSMILES());
+        currentMolecule = ChemicalToolKit.getTestINSTANCE("").getManipulator().ge
+        currentMolecule = new IMoleculeBase(validMonomers.get(i).getCanSMILES());
         currentRmap = currentMolecule.getRgroups();
         /* BackBone Connection */
         if (validMonomers.get(i).getMonomerType().equals(Monomer.BACKBONE_MOMONER_TYPE)) {

@@ -12,10 +12,10 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
 import org.helm.chemtoolkit.ChemicalToolKit;
-import org.helm.chemtoolkit.ChemistryManipulator;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.model.Monomer;
@@ -55,6 +55,13 @@ public final class HELM1 {
 
   private static String fourthSection = ""; // annotation section
   
+  /**
+   * method to reproduce a standard HELM1
+   * 
+   * @param helm2notation
+   * @return
+   * @throws HELM1FormatException
+   */
   public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException {
     HELM1.helm2notation = helm2notation;
     try {
@@ -309,7 +316,7 @@ public final class HELM1 {
 
       Monomer m = MonomerFactory.getInstance().getMonomerStore().getMonomer(element.getValue().toString(), element.getKey().toString());
       String smiles = m.getCanSMILES();
-      ChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
+      AbstractChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
       String canSmiles = manipulator.canonicalize(smiles);
       // to Do
       convert.put(element.getKey().toString(), canSmiles);
