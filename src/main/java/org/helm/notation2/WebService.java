@@ -102,7 +102,6 @@ public class WebService {
       LOG.error(e.getMessage());
       throw new ValidationException(e.getMessage());
     }
-
   }
   
   /**
@@ -222,6 +221,14 @@ public class WebService {
     return containerhelm2.getMolecularFormular();
   }
 
+  public void getNaturalAnalogSequence(String notation) throws ParserException, ValidationException {
+    /* input-sequence -> HELM1 or HELM2 */
+    validateHELM(notation);
+    /* is only possible for peptides + nucleotides */
+    /* replace each polymer into the analogsequence and generate HELM2 format */
+
+  }
+
   /* To Do */
   public void doMonomerManagmentStoreActions() {
 
@@ -231,6 +238,7 @@ public class WebService {
   public void getImages(String notation) {
 
   }
+
 
 
 

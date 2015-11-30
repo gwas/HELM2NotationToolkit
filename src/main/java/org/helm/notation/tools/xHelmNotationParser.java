@@ -24,6 +24,18 @@ import org.jdom2.output.XMLOutputter;
  */
 public class xHelmNotationParser {
 
+
+  /**
+   * Extracts the HELM string from the root node of the XHELM document
+   * 
+   * @param rootElement
+   * @return the complex notation string
+   */
+  public static String getHELMNotationString(Element rootElement) {
+    Element helmNotationElement = rootElement.getChild("HelmNotation");
+    return helmNotationElement.getText();
+  }
+
 	/**
 	 * Extracts the complex notation string from the root node of the XHELM
 	 * document

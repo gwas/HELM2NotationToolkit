@@ -320,7 +320,6 @@ public class MonomerFactory {
 			throws IOException, MonomerException {
 		Map<String, Monomer> monomerMap = monomerDB.get(monomer
 				.getPolymerType());
-
 		if (null == monomerMap) {
 			Map<String, Monomer> map = new HashMap<String, Monomer>();
 			Monomer copyMonomer = DeepCopy.copy(monomer);

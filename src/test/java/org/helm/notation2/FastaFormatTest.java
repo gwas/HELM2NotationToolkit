@@ -24,6 +24,8 @@
 package org.helm.notation2;
 
 import java.io.IOException;
+
+import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
@@ -95,4 +97,33 @@ public class FastaFormatTest {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
     FastaFormat.generateFastaFromRNAPolymer(containerhelm2.getHELM2Notation().getListOfPolymers());
   }
+
+  @Test
+  public void testHELMToAnalogSequenceExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException {
+    String notation = "RNA1{[dR](U)P.R(T)P.R(G)P.R(C)}$$$$";
+    testHELMAnalogSequence(notation);
+
+    notation = "RNA1{(R(U)P+R(T)P).R(T)P.R(G)P.R(C)}$$$$";
+    testHELMAnalogSequence(notation);
+
+    notation = "PEPTIDE1{(A.G).L}$$$$";
+    testHELMAnalogSequence(notation);
+
+    notation = "PEPTIDE1{[dF].[dN].[dL]}$$$$";
+    testHELMAnalogSequence(notation);
+  }
+
+  private void testHELMAnalogSequence(String notation) throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException {
+    ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
+    String helm2 = converter.doConvert(notation);
+    ParserHELM2 parserHELM2 = new ParserHELM2();
+    parserHELM2.parse(helm2);
+
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
+    FastaFormat.convertIntoAnalogSequence(containerhelm2.getHELM2Notation());
+    System.out.println(containerhelm2.getHELM2Notation().toHELM2());
+  }
+
+
+
 }
