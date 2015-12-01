@@ -1,18 +1,36 @@
-
+/**
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *****************************************************************************
+ */
 package org.helm.notation2;
 
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerStore;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.MonomerParser;
 import org.helm.notation.tools.xHelmNotationExporter;
 import org.helm.notation2.exception.HELM1FormatException;
-import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
@@ -31,9 +49,14 @@ public final class xHELM {
 
   private static Set<Monomer> set = null;
 
-
-
-  protected static String writeXHELM2(ContainerHELM2 containerhelm2) throws MonomerException {
+  /**
+   * method to get xhelm for the helm2 notation with the new functionality
+   * 
+   * @param containerhelm2, helm's notations objects
+   * @return xhelm
+   * @throws MonomerException
+   */
+  protected static String getXHELM2(ContainerHELM2 containerhelm2) throws MonomerException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
@@ -47,7 +70,7 @@ public final class xHELM {
     Element monomerListElement = new Element(xHelmNotationExporter.MONOMER_LIST_ELEMENT);
 
       
-      /* get all adhocMonomers */
+    /* save all adhocMonomers */
       for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())) {
       /* get all elements of an rna */
         if (monomernotation instanceof MonomerNotationUnitRNA) {
@@ -61,7 +84,7 @@ public final class xHELM {
       }
    
       }
-      // Distinct monomers
+    /* give the adhocMonomer's information */
       for (Monomer distinctmonomer : set) {
         Element monomerElement = MonomerParser.getMonomerElement(distinctmonomer);
         monomerListElement.getChildren().add(monomerElement);
@@ -74,7 +97,16 @@ public final class xHELM {
     return xmlOutput.outputString(doc);
   }
 
-  protected static String writeXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException {
+  /**
+   * method to get xhelm for the helm notation, only if it was possible to
+   * convert the helm in the old format
+   * 
+   * @param containerhelm2, helm's notations objects
+   * @return xhelm
+   * @throws MonomerException
+   * @throws HELM1FormatException
+   */
+  protected static String getXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
@@ -87,7 +119,7 @@ public final class xHELM {
 
     Element monomerListElement = new Element(xHelmNotationExporter.MONOMER_LIST_ELEMENT);
 
-    /* get all adhocMonomers */
+    /* save all adhocMonomers in the set */
     for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())) {
       /* get all elements of an rna */
       if (monomernotation instanceof MonomerNotationUnitRNA) {
@@ -96,11 +128,10 @@ public final class xHELM {
         }
       } else {
         addAdHocMonomer(monomernotation);
-
       }
-
     }
-    // Distinct monomers
+
+    /* give adhoc monomer's information */
     for (Monomer distinctmonomer : set) {
       Element monomerElement = MonomerParser.getMonomerElement(distinctmonomer);
       monomerListElement.getChildren().add(monomerElement);
@@ -117,14 +148,19 @@ public final class xHELM {
   }
 
 
+  /**
+   * method to add the monomer if it is an adhoc monomer
+   * 
+   * @param monomerNotation
+   */
   private static void addAdHocMonomer(MonomerNotation monomerNotation) {
     try {
       Monomer monomer = MethodsForContainerHELM2.getMonomer(monomerNotation.getType(), monomerNotation.getID());
       if (monomer.isAdHocMonomer()) {
-        System.out.println(monomer.getName());
         set.add(monomer);
       }
     } catch (MonomerException monomer) {
+      /* monomer is not in the database -> not an adhoc monomer */
 
     }
     

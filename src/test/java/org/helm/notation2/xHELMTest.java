@@ -42,7 +42,7 @@ public class xHELMTest {
     parserHELM2.parse(helm2);
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    System.out.println(xHELM.writeXHELM2(containerhelm2));
+    System.out.println(xHELM.getXHELM2(containerhelm2));
   }
 
   private void testxHELM1(String notation) throws ExceptionState, IOException, JDOMException, MonomerException, HELM1FormatException {
@@ -52,6 +52,6 @@ public class xHELMTest {
     parserHELM2.parse(helm2);
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    System.out.println(xHELM.writeXHELM(containerhelm2));
+    System.out.println(xHELM.getXHELM(containerhelm2));
   }
 }
