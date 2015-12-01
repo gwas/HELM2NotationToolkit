@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 
 public class xHELMTest {
 
-  @Test
+  // @Test
   public void testxHELMExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, MonomerException, HELM1FormatException, org.jdom2.JDOMException {
     String notation = "RNA1{R(U)P.R(T)P.R(G)P.R(C)}$$$$";
     testxHELM1(notation);
@@ -49,7 +49,7 @@ public class xHELMTest {
     testxHELM1(notation);
   }
 
-  @Test(expectedExceptions = HELM1FormatException.class)
+  // @Test(expectedExceptions = HELM1FormatException.class)
   public void testxHELMWithException() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, MonomerException, HELM1FormatException,
       org.jdom2.JDOMException {
     String notation;
