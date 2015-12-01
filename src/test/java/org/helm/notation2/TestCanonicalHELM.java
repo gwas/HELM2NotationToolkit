@@ -62,7 +62,7 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test
@@ -81,7 +81,7 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test
@@ -99,7 +99,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    Assert.assertEquals(HELM1.getCanonical(containerhelm2.getHELM2Notation()), ComplexNotationParser.getCanonicalNotation(test, false));
+    Assert.assertEquals(HELM1Utils.getCanonical(containerhelm2.getHELM2Notation()), ComplexNotationParser.getCanonicalNotation(test, false));
   }
 
   @Test
@@ -115,7 +115,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -133,7 +133,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -151,7 +151,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -169,7 +169,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -187,7 +187,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -205,7 +205,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
@@ -222,7 +222,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
@@ -239,7 +239,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
@@ -257,7 +257,7 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
 
   @Test
@@ -276,7 +276,7 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-    Assert.assertEquals(HELM1.getCanonical(containerhelm2.getHELM2Notation()), ComplexNotationParser.getCanonicalNotation("PEPTIDE1{C}|RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE2{R.E}|PEPTIDE3{R.I.P}|RNA3{R(A)P.R(C)}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$RNA2,RNA3,2:pair-5:pair|RNA2,RNA3,5:pair-2:pair$$", false));
+    Assert.assertEquals(HELM1Utils.getCanonical(containerhelm2.getHELM2Notation()), ComplexNotationParser.getCanonicalNotation("PEPTIDE1{C}|RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE2{R.E}|PEPTIDE3{R.I.P}|RNA3{R(A)P.R(C)}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$RNA2,RNA3,2:pair-5:pair|RNA2,RNA3,5:pair-2:pair$$", false));
   }
 
   @Test
@@ -291,7 +291,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -308,7 +308,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -328,7 +328,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
 
   }
 
@@ -348,7 +348,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getStandard(containerhelm2.getHELM2Notation());
+    HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
 
   }
 
@@ -368,7 +368,7 @@ public class TestCanonicalHELM {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    HELM1.getStandard(containerhelm2.getHELM2Notation());
+    HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
 
   }
 
@@ -433,7 +433,7 @@ public class TestCanonicalHELM {
     parserHELM2.parse(helm2);
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    HELM1.getStandard(containerhelm2.getHELM2Notation());
+    HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
   }
 
 

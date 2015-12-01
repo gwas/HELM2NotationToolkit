@@ -120,7 +120,7 @@ public final class xHELM {
     Document doc = new Document(root);
 
     Element helmElement = new Element(xHelmNotationExporter.HELM_NOTATION_ELEMENT);
-    helmElement.setText(HELM1.getStandard(containerhelm2.getHELM2Notation()));
+    helmElement.setText(HELM1Utils.getStandard(containerhelm2.getHELM2Notation()));
 
     root.addContent(helmElement);
 

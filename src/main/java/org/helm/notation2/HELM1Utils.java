@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author hecht
  */
-public final class HELM1 {
+public final class HELM1Utils {
 
   private static final String CHEM_ADHOC = "CM#";
 
@@ -43,7 +43,7 @@ public final class HELM1 {
   private static final String RNA_ADHOC = "NM#";
 
   /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(HELM1.class);
+  private static final Logger LOG = LoggerFactory.getLogger(HELM1Utils.class);
 
   private static HELM2Notation helm2notation;
 
@@ -63,7 +63,7 @@ public final class HELM1 {
    * @throws HELM1FormatException
    */
   public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException {
-    HELM1.helm2notation = helm2notation;
+    HELM1Utils.helm2notation = helm2notation;
     try {
       setStandardHELMFirstSection();
       setStandardHELMSecondSectionAndThirdSection();
@@ -84,7 +84,7 @@ public final class HELM1 {
    * @throws HELM1FormatException
    */
   public static String getCanonical(HELM2Notation helm2notation) throws HELM1FormatException {
-    HELM1.helm2notation = helm2notation;
+    HELM1Utils.helm2notation = helm2notation;
     Map<String, String> convertsortedIdstoIds;
     try {
       convertsortedIdstoIds = setCanonicalHELMFirstSection();

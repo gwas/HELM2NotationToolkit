@@ -116,7 +116,7 @@ public class WebService {
    */
   public String convertStandardHELMToCanonicalHELM(String notation) throws HELM1FormatException, ParserException, ValidationException {
     validateHELM(notation);
-    return HELM1.getCanonical(containerhelm2.getHELM2Notation());
+    return HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
 
   /**
@@ -130,7 +130,7 @@ public class WebService {
    */
   public String convertIntoStandardHELM(String notation) throws HELM1FormatException, ParserException, ValidationException {
     validateHELM(notation);
-    return HELM1.getStandard(containerhelm2.getHELM2Notation());
+    return HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
   }
 
 
