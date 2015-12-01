@@ -172,10 +172,12 @@ public final class MethodsForContainerHELM2 {
     Monomer monomer;
     monomer = monomerStore.getMonomer(type, id);
     if (monomer == null) {
-      AbstractChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
+        AbstractChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
         manipulator.validateSMILES(id);
         monomer = new Monomer(type, "Undefined", "", "");
         monomer.setAdHocMonomer(true);
+        System.out.println(id);
+        System.out.println(manipulator.canonicalize(id));
         monomer.setCanSMILES(manipulator.canonicalize(id));
       }
       return monomer;

@@ -23,10 +23,12 @@
  */
 package org.helm.notation2;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerFactory;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.MonomerParser;
 import org.helm.notation.tools.xHelmNotationExporter;
@@ -36,6 +38,7 @@ import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
@@ -55,8 +58,10 @@ public final class xHELM {
    * @param containerhelm2, helm's notations objects
    * @return xhelm
    * @throws MonomerException
+   * @throws JDOMException
+   * @throws IOException
    */
-  protected static String getXHELM2(ContainerHELM2 containerhelm2) throws MonomerException {
+  protected static String getXHELM2(ContainerHELM2 containerhelm2) throws MonomerException, IOException, JDOMException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
@@ -105,8 +110,10 @@ public final class xHELM {
    * @return xhelm
    * @throws MonomerException
    * @throws HELM1FormatException
+   * @throws JDOMException
+   * @throws IOException
    */
-  protected static String getXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException {
+  protected static String getXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException, IOException, JDOMException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
@@ -122,6 +129,7 @@ public final class xHELM {
     /* save all adhocMonomers in the set */
     for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())) {
       /* get all elements of an rna */
+      System.out.println(monomernotation.getID());
       if (monomernotation instanceof MonomerNotationUnitRNA) {
         for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomernotation).getContents()) {
           addAdHocMonomer(unit);
@@ -152,10 +160,13 @@ public final class xHELM {
    * method to add the monomer if it is an adhoc monomer
    * 
    * @param monomerNotation
+   * @throws JDOMException
+   * @throws IOException
    */
-  private static void addAdHocMonomer(MonomerNotation monomerNotation) {
+  private static void addAdHocMonomer(MonomerNotation monomerNotation) throws IOException, JDOMException {
     try {
-      Monomer monomer = MethodsForContainerHELM2.getMonomer(monomerNotation.getType(), monomerNotation.getID());
+      System.out.println(monomerNotation.getID());
+      Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(monomerNotation.getType(), monomerNotation.getID());
       if (monomer.isAdHocMonomer()) {
         set.add(monomer);
       }

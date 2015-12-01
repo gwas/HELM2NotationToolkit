@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 public class WebService {
 
   private ContainerHELM2 containerhelm2;
+
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(WebService.class);
 
@@ -233,6 +234,7 @@ public class WebService {
   public void doMonomerManagmentStoreActions() {
 
   }
+
 
   /* To Do */
   public void getImages(String notation) {

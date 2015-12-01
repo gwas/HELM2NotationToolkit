@@ -1,3 +1,26 @@
+/**
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *****************************************************************************
+ */
 package org.helm.notation2;
 
 import java.io.IOException;
@@ -15,7 +38,7 @@ import org.testng.annotations.Test;
 public class xHELMTest {
 
   @Test
-  public void testxHELMExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, MonomerException, HELM1FormatException {
+  public void testxHELMExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, MonomerException, HELM1FormatException, org.jdom2.JDOMException {
     String notation = "RNA1{R(U)P.R(T)P.R(G)P.R(C)}$$$$";
     testxHELM1(notation);
 
@@ -27,7 +50,8 @@ public class xHELMTest {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testxHELMWithException() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, MonomerException, HELM1FormatException {
+  public void testxHELMWithException() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, MonomerException, HELM1FormatException,
+      org.jdom2.JDOMException {
     String notation;
 
     notation = "PEPTIDE1{(A+G).L}$$$$";
@@ -35,7 +59,7 @@ public class xHELMTest {
 
   }
 
-  private void testxHELM2(String notation) throws ExceptionState, IOException, JDOMException, MonomerException {
+  private void testxHELM2(String notation) throws ExceptionState, IOException, JDOMException, MonomerException, org.jdom2.JDOMException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
@@ -45,7 +69,7 @@ public class xHELMTest {
     System.out.println(xHELM.getXHELM2(containerhelm2));
   }
 
-  private void testxHELM1(String notation) throws ExceptionState, IOException, JDOMException, MonomerException, HELM1FormatException {
+  private void testxHELM1(String notation) throws ExceptionState, IOException, JDOMException, MonomerException, HELM1FormatException, org.jdom2.JDOMException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();

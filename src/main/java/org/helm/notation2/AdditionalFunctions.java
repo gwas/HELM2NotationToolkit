@@ -14,7 +14,8 @@ public class AdditionalFunctions {
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(AdditionalFunctions.class);
 
-  public void getxHELMNotation(String notation) {
+  protected void getXHELMNotation(String notation) {
+
 
   }
 

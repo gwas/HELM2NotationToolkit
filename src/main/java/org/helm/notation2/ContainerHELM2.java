@@ -24,7 +24,22 @@
 package org.helm.notation2;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.helm.chemtoolkit.IMoleculeBase;
+import org.helm.notation.MonomerException;
+import org.helm.notation2.exception.ConnectionNotationException;
+import org.helm.notation2.exception.GroupingNotationException;
+import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
+import org.helm.notation2.parser.notation.connection.ConnectionNotation;
+import org.helm.notation2.parser.notation.polymer.BlobEntity;
+import org.helm.notation2.parser.notation.polymer.ChemEntity;
+import org.helm.notation2.parser.notation.polymer.PeptideEntity;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +76,10 @@ public class ContainerHELM2 {
     return interconnection;
   }
 
-  public void buildMolecule() {
+  /**
+   * method to build from oine notation one molecule
+   */
+  private void buildMolecule() {
 
   }
 
@@ -70,11 +88,14 @@ public class ContainerHELM2 {
     System.out.println("BuildOneBigMolecule");
     buildMolecule();
     System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
+
     return 0;
 
   }
 
   public double getExaxtMass() {
+    System.out.println("BuildOneBigMolecule");
+    buildMolecule();
     return 0;
   }
 
@@ -85,6 +106,199 @@ public class ContainerHELM2 {
     System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
     return null;
   }
+  
+  /* SMILES class */
+  public void getSMILES() {
 
+  }
+
+  /* SMILES class */
+  public void getCanonicalSMILES()
+  {
+
+  }
+
+  /* cannot generate SMILEs */
+  public void containsGenericStructure() {
+  }
+
+  /* BuilderMolecule */
+  public List<IMoleculeBase> getStructure() {
+    return new ArrayList<IMoleculeBase>();
+  }
+
+  /**
+   * method to validate all notations objects
+   * 
+   * @throws ConnectionNotationException
+   * @throws GroupingNotationException
+   * @throws MonomerException
+   * @throws PolymerIDsException
+   */
+  public void validate() throws PolymerIDsException, MonomerException, GroupingNotationException, ConnectionNotationException {
+    Validation.validateNotationObjects(this);
+  }
+
+  /**
+   * method to get all polymers of this object
+   * 
+   * @return list of polymer notation
+   */
+  public List<PolymerNotation> getAllPolymers() {
+    return helm2notation.getListOfPolymers();
+  }
+
+  /**
+   * method to get all connections of this object
+   * 
+   * @return list of connection notation
+   */
+  public List<ConnectionNotation> getAllConnections() {
+    return helm2notation.getListOfConnections();
+  }
+
+  /**
+   * method to get all edge connections of this object
+   * 
+   * @return
+   */
+  public List<ConnectionNotation> getAllEdgeConnections() {
+    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
+    for (ConnectionNotation connection : helm2notation.getListOfConnections()) {
+      if (!(connection.getrGroupSource().equals("pair"))) {
+        listEdgeConnection.add(connection);
+      }
+    }
+    return listEdgeConnection;
+  }
+
+  /**
+   * method to get all base pair connections of this object
+   * 
+   * @return
+   */
+  public List<ConnectionNotation> getAllBasePairConnections() {
+    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
+    for (ConnectionNotation connection : helm2notation.getListOfConnections()) {
+      if ((connection.getrGroupSource().equals("pair"))) {
+        listEdgeConnection.add(connection);
+      }
+    }
+    return listEdgeConnection;
+  }
+
+  /**
+   * method to get all annotations of this object
+   * 
+   * @return
+   */
+  public AnnotationNotation getAllAnnotation() {
+    return helm2notation.getAnnotation();
+  }
+
+  /**
+   * method to get all rna polymers of this object
+   * 
+   * @return list of rna polymers
+   */
+  public List<PolymerNotation> getRNAPolymers() {
+    List<PolymerNotation> rnaPolymers = new ArrayList<PolymerNotation>();
+    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
+      if (polymer.getPolymerID() instanceof RNAEntity) {
+        rnaPolymers.add(polymer);
+      }
+    }
+    return rnaPolymers;
+  }
+
+  /**
+   * method to get all peptide polymers of this object
+   * 
+   * @return list of peptide polymers
+   */
+  public List<PolymerNotation> getPeptidePolymers() {
+    List<PolymerNotation> peptidePolymers = new ArrayList<PolymerNotation>();
+    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
+      if (polymer.getPolymerID() instanceof PeptideEntity) {
+        peptidePolymers.add(polymer);
+      }
+    }
+    return peptidePolymers;
+  }
+
+  /**
+   * method to get all chem polymers of this object
+   * 
+   * @return list of chem polymers
+   */
+  public List<PolymerNotation> getCHEMPolymers() {
+    List<PolymerNotation> chemPolymers = new ArrayList<PolymerNotation>();
+    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
+      if (polymer.getPolymerID() instanceof ChemEntity) {
+        chemPolymers.add(polymer);
+      }
+    }
+    return chemPolymers;
+  }
+
+  /**
+   * method to get all blob polymers of this object
+   * 
+   * @return list of blob polymers
+   */
+  public List<PolymerNotation> getBLOBPolymers() {
+    List<PolymerNotation> blobPolymers = new ArrayList<PolymerNotation>();
+    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
+      if (polymer.getPolymerID() instanceof BlobEntity) {
+        blobPolymers.add(polymer);
+      }
+    }
+    return blobPolymers;
+  }
+
+  /* Do we really need this function */
+  public void getFormatedSirnaSequences() {
+
+  }
+
+  public void getCanonicalNotation() {
+    
+  }
+
+  public void addHELM2notation(HELM2Notation newHELM2Notation) {
+
+  }
+
+  public void hybridize() {
+
+  }
+
+  public void decompose() {
+
+  }
+
+  public void replaceMonomer() {
+    
+  }
+
+  public void standardize() {
+  }
+
+  public boolean hasNucleotideModification() {
+    return true;
+  }
+
+  public int getTotalMonomerCount() {
+    return 1;
+  }
+
+  public static void getMoleculeInfo() {
+    
+  }
+
+  public static void getNotaitonByREplacingSMILES() {
+
+  }
 }
+
 
