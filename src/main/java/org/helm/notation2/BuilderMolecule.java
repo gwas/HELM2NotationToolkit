@@ -33,7 +33,6 @@ import java.util.Set;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.chemtoolkit.IAtomBase;
-import org.helm.chemtoolkit.IMoleculeBase;
 import org.helm.chemtoolkit.MolAtom;
 import org.helm.chemtoolkit.Molecule;
 import org.helm.notation.MonomerException;

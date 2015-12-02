@@ -27,7 +27,7 @@ package org.helm.notation2;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.helm.chemtoolkit.IMoleculeBase;
+import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.notation.MonomerException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
@@ -123,8 +123,8 @@ public class ContainerHELM2 {
   }
 
   /* BuilderMolecule */
-  public List<IMoleculeBase> getStructure() {
-    return new ArrayList<IMoleculeBase>();
+  public List<AbstractMolecule> getStructure() {
+    return new ArrayList<AbstractMolecule>();
   }
 
   /**
