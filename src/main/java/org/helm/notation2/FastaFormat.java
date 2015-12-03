@@ -336,7 +336,7 @@ public final class FastaFormat {
    * @param monomers
    * @return
    */
-  private static String generateFastaFromPeptide(List<Monomer> monomers) {
+  protected static String generateFastaFromPeptide(List<Monomer> monomers) {
     StringBuilder fasta = new StringBuilder();
     for (Monomer monomer : monomers) {
       fasta.append(monomer.getNaturalAnalog());
@@ -377,7 +377,7 @@ public final class FastaFormat {
    * @param listMonomers
    * @return
    */
-  private static String generateFastaFromRNA(List<Monomer> monomers) {
+  protected static String generateFastaFromRNA(List<Monomer> monomers) {
     StringBuilder fasta = new StringBuilder();
     for (Monomer monomer : monomers) {
       fasta.append(monomer.getNaturalAnalog());
