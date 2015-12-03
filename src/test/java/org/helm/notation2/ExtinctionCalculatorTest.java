@@ -167,7 +167,7 @@ public class ExtinctionCalculatorTest {
     Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
   }
 
-  @Test(expectedExceptions = HELM2HandledException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException() throws ExtinctionCoefficientException, CalculationException, ExceptionState, IOException, JDOMException {
     parser = new StateMachineParser();
 
@@ -184,7 +184,7 @@ public class ExtinctionCalculatorTest {
     Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
   }
 
-  @Test(expectedExceptions = HELM2HandledException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException2() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
@@ -198,9 +198,10 @@ public class ExtinctionCalculatorTest {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
     ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+
   }
 
-  @Test(expectedExceptions = HELM2HandledException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException3() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
@@ -216,7 +217,7 @@ public class ExtinctionCalculatorTest {
     ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
-  @Test(expectedExceptions = HELM2HandledException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException4() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
@@ -232,7 +233,7 @@ public class ExtinctionCalculatorTest {
     ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
-  @Test(expectedExceptions = HELM2HandledException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException5() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
@@ -248,7 +249,7 @@ public class ExtinctionCalculatorTest {
     ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
-  @Test(expectedExceptions = HELM2HandledException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException6() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
@@ -264,7 +265,7 @@ public class ExtinctionCalculatorTest {
     System.out.println(ExtinctionCoefficient.getInstance().calculate(containerhelm2));
   }
 
-  @Test(expectedExceptions = CalculationException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException7() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
@@ -280,7 +281,7 @@ public class ExtinctionCalculatorTest {
     ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
 
-  @Test(expectedExceptions = CalculationException.class)
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException8() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
