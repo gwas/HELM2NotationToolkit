@@ -29,14 +29,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 
-import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.InterConnections;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
+import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
@@ -54,8 +51,7 @@ public class ExtinctionCalculatorTest {
 
 
   @Test
-  public void testCalculationOnePeptide() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
+  public void testCalculationOnePeptide() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException
 
   {
     parser = new StateMachineParser();
@@ -78,10 +74,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test
-  public void testCalculationOneRNA() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationOneRNA() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}$$$$";
@@ -100,10 +93,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test
-  public void testCalculationRepeatingRNA() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationRepeatingRNA() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{P.(R(A)P.R(G)P)'2'.R([5meC])P.R(G)P.[mR](A)}$$$$";
@@ -122,10 +112,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test
-  public void testCalculationRepeatingMonomer() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationRepeatingMonomer() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{C'2'}$$$$";
@@ -147,10 +134,7 @@ public class ExtinctionCalculatorTest {
 
 
   @Test
-  public void testCalculationRepeatingList() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationRepeatingList() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{(F.C.F)'3'}$$$$";
@@ -167,10 +151,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test
-  public void testCalculationWithCHEMAndBlob() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationWithCHEMAndBlob() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "CHEM1{[MCC]}|RNA1{R(U)}|BLOB1{?}$$$$";
@@ -187,10 +168,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void testCalculationWithException() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationWithException() throws ExtinctionCoefficientException, CalculationException, ExceptionState, IOException, JDOMException {
     parser = new StateMachineParser();
 
     String test = "CHEM1{[MCC]}|RNA1{(R(U)+R(A))}|BLOB1{?}$$$$";
@@ -207,10 +185,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void testCalculationWithException2() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationWithException2() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{?}$$$$";
@@ -226,10 +201,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void testCalculationWithException3() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationWithException3() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{A.C._}$$$$";
@@ -245,10 +217,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void testCalculationWithException4() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException, StructureException, CalculationException, HELM2HandledException, CTKException
-
-  {
+  public void testCalculationWithException4() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{A.C.(_.K)}$$$$";
@@ -264,8 +233,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void testCalculationWithException5() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, CTKException {
+  public void testCalculationWithException5() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{X}$$$$";
@@ -281,8 +249,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void testCalculationWithException6() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, CTKException {
+  public void testCalculationWithException6() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{?}$$$$";
@@ -298,8 +265,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = CalculationException.class)
-  public void testCalculationWithException7() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, CTKException {
+  public void testCalculationWithException7() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{R(N)P}$$$$";
@@ -315,8 +281,7 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = CalculationException.class)
-  public void testCalculationWithException8() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, CTKException {
+  public void testCalculationWithException8() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{[[H]OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1O[H])N1C=CC(=O)NC1=O)N1C=CC(=O)NC1=O)N1C=CC(=O)NC1=O]}$$$$";
