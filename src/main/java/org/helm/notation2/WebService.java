@@ -30,7 +30,9 @@ import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.StructureException;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
+import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ConnectionNotationException;
+import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM1FormatException;
@@ -141,16 +143,11 @@ public class WebService {
    * @return
    * @throws ParserException
    * @throws ValidationException
-   * @throws HELM1FormatException
+   * @throws ExtinctionCoefficientException
    */
-  public Float calculateExtinctionCoefficient(String notation) throws ParserException, ValidationException, HELM1FormatException {
+  public Float calculateExtinctionCoefficient(String notation) throws ParserException, ValidationException, ExtinctionCoefficientException, CalculationException {
     validateHELM(notation);
-    try {
-      return ExtinctionCoefficient.getInstance().calculate(containerhelm2);
-    } catch (org.helm.notation.NotationException | MonomerException | IOException | org.jdom2.JDOMException | StructureException | CalculationException | HELM2HandledException | CTKException e) {
-      throw new HELM1FormatException(e.getMessage());
-    }
-
+    return ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
   
 
@@ -200,12 +197,11 @@ public class WebService {
    * @return
    * @throws ParserException
    * @throws ValidationException
+   * @throws BuilderMoleculeException
    */
-  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException {
+  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException, BuilderMoleculeException {
     validateHELM(notation);
-
-    /* to Do */
-    return containerhelm2.getMolecularWeight();
+    return MoleculeInformation.getMolecularWeight(containerhelm2.getHELM2Notation());
   }
 
   /**
@@ -215,11 +211,11 @@ public class WebService {
    * @return
    * @throws ValidationException
    * @throws ParserException
+   * @throws BuilderMoleculeException
    */
-  public String getMolecularFormula(String notation) throws ParserException, ValidationException {
+  public String getMolecularFormula(String notation) throws ParserException, ValidationException, BuilderMoleculeException {
     validateHELM(notation);
-    /* to Do */
-    return containerhelm2.getMolecularFormular();
+    return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
   }
 
   public void getNaturalAnalogSequence(String notation) throws ParserException, ValidationException {
@@ -230,18 +226,16 @@ public class WebService {
 
   }
 
+  public void getImageHELMMolecule(String notation) throws BuilderMoleculeException, ParserException, ValidationException {
+    validateHELM(notation);
+    Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+  }
+
+
   /* To Do */
   public void doMonomerManagmentStoreActions() {
 
   }
-
-
-  /* To Do */
-  public void getImages(String notation) {
-
-  }
-
-
 
 
 

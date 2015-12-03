@@ -45,7 +45,7 @@ public class SMILES {
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
 
-  public String getSMILES(List<Monomer> monomerlist) throws IOException {
+  protected String getSMILES(List<Monomer> monomerlist) throws IOException {
     StringBuffer sb = new StringBuffer();
     for (Monomer element : monomerlist) {
       String smi = element.getCanSMILES();
@@ -62,7 +62,7 @@ public class SMILES {
     
   }
 
-  public void getCanonicalSmilesForAll() {
+  protected void getCanonicalSmilesForAll() {
 
   }
 

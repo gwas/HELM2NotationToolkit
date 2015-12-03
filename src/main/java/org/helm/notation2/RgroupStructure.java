@@ -25,10 +25,9 @@ package org.helm.notation2;
 
 import java.util.Map;
 
-import org.helm.chemtoolkit.MolAtom;
-import org.helm.chemtoolkit.Molecule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.helm.chemtoolkit.AbstractMolecule;
+import org.helm.chemtoolkit.IAtomBase;
+
 
 
 
@@ -40,23 +39,23 @@ import org.slf4j.LoggerFactory;
 public class RgroupStructure {
 
 
-  private Molecule molecule;
+  private AbstractMolecule molecule;
 
-  private Map<String, MolAtom> rgroupMap;
+  private Map<String, IAtomBase> rgroupMap;
 
-  public Molecule getMolecule() {
+  public AbstractMolecule getMolecule() {
     return molecule;
   }
 
-  public void setMolecule(Molecule molecule) {
+  public void setMolecule(AbstractMolecule molecule) {
     this.molecule = molecule;
   }
 
-  public Map<String, MolAtom> getRgroupMap() {
+  public Map<String, IAtomBase> getRgroupMap() {
     return rgroupMap;
   }
 
-  public void setRgroupMap(Map<String, MolAtom> rgroupMap) {
+  public void setRgroupMap(Map<String, IAtomBase> rgroupMap) {
     this.rgroupMap = rgroupMap;
   }
 }

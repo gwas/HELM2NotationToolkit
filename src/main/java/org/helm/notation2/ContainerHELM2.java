@@ -61,7 +61,6 @@ public class ContainerHELM2 {
 
 
 
-
   public ContainerHELM2(HELM2Notation helm2notation,
       InterConnections interconnection) {
     this.helm2notation = helm2notation;
@@ -76,36 +75,7 @@ public class ContainerHELM2 {
     return interconnection;
   }
 
-  /**
-   * method to build from oine notation one molecule
-   */
-  private void buildMolecule() {
 
-  }
-
-  public double getMolecularWeight() {
-    /* First build one big molecule */
-    System.out.println("BuildOneBigMolecule");
-    buildMolecule();
-    System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
-
-    return 0;
-
-  }
-
-  public double getExaxtMass() {
-    System.out.println("BuildOneBigMolecule");
-    buildMolecule();
-    return 0;
-  }
-
-  public String getMolecularFormular() {
-    /* First build one big molecule */
-    System.out.println("BuildOneBigMolecule");
-    buildMolecule();
-    System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
-    return null;
-  }
   
   /* SMILES class */
   public void getSMILES() {
@@ -296,7 +266,7 @@ public class ContainerHELM2 {
     
   }
 
-  public static void getNotaitonByREplacingSMILES() {
+  public static void getNotationByReplacingSMILES() {
 
   }
 }

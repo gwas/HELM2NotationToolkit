@@ -19,9 +19,6 @@ public class AdditionalFunctions {
 
   }
 
-  public void getSMILES(String notation) {
-
-  }
 
   public void getMDL(String notation){
 

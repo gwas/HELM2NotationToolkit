@@ -40,6 +40,7 @@ import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
+import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
@@ -146,9 +147,7 @@ public class ExtinctionCoefficient {
     return RNA_UNIT_TYPE;
   }
 
-  public float calculate(ContainerHELM2 helm2container) throws NotationException,
-      MonomerException, IOException, JDOMException, StructureException,
-      CalculationException, HELM2HandledException, CTKException {
+  public float calculate(ContainerHELM2 helm2container) throws ExtinctionCoefficientException {
     int unitType = 1;
     float result = 0.0f;
     List<PolymerNotation> polymerNodes = helm2container.getHELM2Notation().getListOfPolymers();
@@ -158,12 +157,20 @@ public class ExtinctionCoefficient {
       ArrayList<PolymerNotation> not = new ArrayList<PolymerNotation>();
       not.add(polymerNode);
       if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
-        ext = calculateExtinctionFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+        try {
+          ext = calculateExtinctionFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+        } catch (CalculationException | IOException | HELM2HandledException e) {
+          throw new ExtinctionCoefficientException(e.getMessage());
+        }
         if (unitType == PEPTIDE_UNIT_TYPE) {
           ext = ext * 1000;
         }
       } else if (polymerType.equals(Monomer.PEPTIDE_POLYMER_TYPE)) {
-        ext = calculateExtinctionFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+        try {
+          ext = calculateExtinctionFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+        } catch (IOException | HELM2HandledException e) {
+          throw new ExtinctionCoefficientException(e.getMessage());
+        }
         if (unitType == RNA_UNIT_TYPE) {
           ext = ext / 1000;
         }
