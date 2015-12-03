@@ -266,14 +266,15 @@ public final class FastaFormat {
    * @throws FastaFormatException
    */
   protected static PolymerListElements generateElementsforRNA(String fasta, HELMEntity entity) throws FastaFormatException {
+    initMapNucleotides();
+    initMapNucleotidesNaturalAnalog();
     PolymerListElements elements = new PolymerListElements(entity);
     for (Character c : fasta.toCharArray()) {
       /*-> get for each single nucleotide code the contents from the nucleotidefactory*/
-     
         try {
           elements.addMonomerNotation(nucleotides.get(c.toString()));
       } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | NullPointerException e) {
-          throw new FastaFormatException("Monomer can not be found");
+        throw new FastaFormatException("Monomer can not be found:" + c.toString());
         }
     }
     /* remove the phosphat of the last group */

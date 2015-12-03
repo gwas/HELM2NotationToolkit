@@ -25,13 +25,16 @@ package org.helm.notation2;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.notation.MonomerException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.PolymerIDsException;
+import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
@@ -77,20 +80,11 @@ public class ContainerHELM2 {
 
 
   
-  /* SMILES class */
-  public void getSMILES() {
 
-  }
 
-  /* SMILES class */
-  public void getCanonicalSMILES()
-  {
 
-  }
 
-  /* cannot generate SMILEs */
-  public void containsGenericStructure() {
-  }
+
 
   /* BuilderMolecule */
   public List<AbstractMolecule> getStructure() {
@@ -156,6 +150,7 @@ public class ContainerHELM2 {
     }
     return listEdgeConnection;
   }
+
 
   /**
    * method to get all annotations of this object
@@ -226,45 +221,59 @@ public class ContainerHELM2 {
     return blobPolymers;
   }
 
-  /* Do we really need this function */
-  public void getFormatedSirnaSequences() {
+
+
+
+
+  public void addHELM2notation(HELM2Notation newHELM2Notation) {
+    /* method to merge the new HELM2Notation into the existing one */
+
+    /* section 1 */
+    /* id's müssen angepasst werden */
+
+    /* section 2 */
+
+    /* section 3 */
+
+    /* section 4 */
 
   }
 
-  public void getCanonicalNotation() {
+  private void section1(HELM2Notation newHELM2Notation) throws NotationException {
+    List<String> ids_one = helm2notation.getPolymerIDs();
+    Map<String, String> l = new HashMap<String, String>();
+
+    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
+      if (ids_one.contains(polymer.getPolymerID().getID())) {
+        /* change id */
+        polymer = new PolymerNotation("");
+        l.put(polymer.getPolymerID().getID(), "");
+      } else {
+        l.put(polymer.getPolymerID().getID(), polymer.getPolymerID().getID());
+      }
+      helm2notation.addPolymer(polymer);
+    }
+    
     
   }
 
-  public void addHELM2notation(HELM2Notation newHELM2Notation) {
 
+  private static PolymerNotation generateChangePolymer(PolymerNotation polymer) {
+    PolymerNotation changedPolymer = null;
+    return changedPolymer;
   }
 
-  public void hybridize() {
-
-  }
-
-  public void decompose() {
-
-  }
 
   public void replaceMonomer() {
     
   }
 
-  public void standardize() {
-  }
 
-  public boolean hasNucleotideModification() {
-    return true;
-  }
 
-  public int getTotalMonomerCount() {
-    return 1;
-  }
 
-  public static void getMoleculeInfo() {
-    
-  }
+
+
+
 
   public static void getNotationByReplacingSMILES() {
 

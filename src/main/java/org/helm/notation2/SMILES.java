@@ -66,6 +66,10 @@ public class SMILES {
 
   }
 
+  /* cannot generate SMILEs */
+  public void containsGenericStructure() {
+  }
+
 
 }
 

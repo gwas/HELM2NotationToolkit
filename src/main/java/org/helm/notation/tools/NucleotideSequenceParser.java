@@ -146,7 +146,8 @@ public class NucleotideSequenceParser {
 		List<Nucleotide> nucList = getNucleotideList(cleanSequence,
 				notationSource);
 		List<Nucleotide> compList = getComplementList(nucList);
-
+    System.out.println(compList.get(0).getNaturalAnalog());
+    System.out.println(compList.get(0).getNotation());
 		StringBuffer sb = new StringBuffer();
 		boolean inNormalDirection = isNormalDirection(sequence);
 		if (inNormalDirection) {
@@ -750,10 +751,8 @@ public class NucleotideSequenceParser {
 				.getNormalComplementSequence(upperAS);
 		String reverseCompAS = NucleotideSequenceParser
 				.getReverseComplementSequence(upperAS);
-
 		String normalMax = getMaxMatchFragment(upperSS, normalCompAS);
 		String reverseMax = getMaxMatchFragment(upperSS, reverseCompAS);
-
 		if (normalMax.length() < reverseMax.length()) {
 			return true;
 		} else {

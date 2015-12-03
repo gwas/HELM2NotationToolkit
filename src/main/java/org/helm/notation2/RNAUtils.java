@@ -1,16 +1,44 @@
-
+/**
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *****************************************************************************
+ */
 package org.helm.notation2;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.helm.notation.MonomerFactory;
 import org.helm.notation.NucleotideFactory;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
+import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.jdom2.JDOMException;
@@ -23,9 +51,41 @@ import org.jdom2.JDOMException;
  */
 public class RNAUtils {
 
+  
+  private static Map<String, String> complementMap = null;
+  
 
-  protected void getSirnaNotation() {
 
+  
+  /**
+   * initialize Map to get the complement of each nucleotide
+   */
+  private static void initComplementMap() {
+    complementMap = new HashMap<String, String>();
+    complementMap.put("A", "U");
+    complementMap.put("G", "C");
+    complementMap.put("C", "G");
+    complementMap.put("U", "A");
+    complementMap.put("T", "A");
+    complementMap.put("X", "X");
+  }
+
+  protected static ContainerHELM2 getSirnaNotation(String sequence) throws NotationException, FastaFormatException, HELM2HandledException, IOException, JDOMException,
+      org.helm.notation.NotationException,
+      RNAUtilsException, org.jdom.JDOMException {
+
+    /* Build the sense + antisense sequence */
+    ContainerHELM2 sense = SequenceConverter.readRNA(sequence);
+    PolymerNotation antisense = new PolymerNotation("RNA2");
+    PolymerNotation current = getAntiparallel(sense.getAllPolymers().get(0));
+    sense.getHELM2Notation().addPolymer(new PolymerNotation(antisense.getPolymerID(), current.getPolymerElements(), current.getAnnotation()));
+
+    /* Build the hydrogenbonds between the two */
+    List<ConnectionNotation> connections = hybridize(sense.getHELM2Notation().getListOfPolymers().get(0), sense.getHELM2Notation().getListOfPolymers().get(1));
+    for (ConnectionNotation connection : connections) {
+      sense.getHELM2Notation().addConnection(connection);
+    }
+    return sense;
   }
 
   protected void getFormatedSirnaSequence() {
@@ -60,21 +120,30 @@ public class RNAUtils {
   }
 
 
+
   /**
-   * method to check if two given polymers are in the opposite direction
+   * method to check if two given polymers are complement to each other
    * 
    * @param polymerOne
    * @param polymerTwo
    * @return true, if they are opposite to each other, false otherwise
    * @throws RNAUtilsException if the polymers are not RNA/DNA
    * @throws HELM2HandledException if the polymers can not be downcasted
+   * @throws org.helm.notation.NotationException
+   * @throws JDOMException
+   * @throws IOException
+   * @throws FastaFormatException
+   * @throws NotationException
    */
-  protected static boolean AreInOppositeDirection(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException {
+  protected static boolean AreAntiparallel(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException, NotationException, FastaFormatException,
+      IOException,
+      JDOMException, org.helm.notation.NotationException {
     checkRNA(polymerOne);
     checkRNA(polymerTwo);
-    String sequenceOne = FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymerOne.getListMonomers()));
+    PolymerNotation antiparallel = getAntiparallel(polymerOne);
+    String sequenceOne = FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(antiparallel.getListMonomers()));
     String sequenceTwo = FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymerTwo.getListMonomers()));
-    return sequenceOne.equals(new StringBuilder(sequenceTwo).reverse().toString());
+    return sequenceOne.equals(sequenceTwo);
   }
 
   protected void getMaxMatchFragment() {
@@ -98,10 +167,10 @@ public class RNAUtils {
   }
 
   /**
-   * method to get the reverse complement polymer from a rna/dna polymer
+   * method to get the antiparallel polymer from a rna/dna polymer
    * 
    * @param polymer
-   * @return reverse complement polymer
+   * @return anitparallel polymer
    * @throws NotationException
    * @throws FastaFormatException
    * @throws HELM2HandledException
@@ -110,27 +179,65 @@ public class RNAUtils {
    * @throws org.helm.notation.NotationException
    * @throws RNAUtilsException
    */
-  protected static PolymerNotation getReverseComplement(PolymerNotation polymer) throws NotationException, FastaFormatException, HELM2HandledException, IOException, JDOMException,
+  protected static PolymerNotation getAntiparallel(PolymerNotation polymer) throws NotationException, FastaFormatException, HELM2HandledException, IOException, JDOMException,
       org.helm.notation.NotationException, RNAUtilsException {
     checkRNA(polymer);
-    PolymerNotation reversePolymer = SequenceConverter.readRNA(generateReverseComplement(polymer)).getHELM2Notation().getCurrentPolymer();
-    reversePolymer = new PolymerNotation(reversePolymer.getPolymerID(), reversePolymer.getPolymerElements(), "ReverseComplement to " + polymer.getPolymerID().getID() );
+    String sequence = generateAntiparallel(polymer);
+    PolymerNotation reversePolymer = SequenceConverter.readRNA(generateAntiparallel(polymer)).getHELM2Notation().getCurrentPolymer();
+    reversePolymer = new PolymerNotation(reversePolymer.getPolymerID(), reversePolymer.getPolymerElements(), "Antiparallel to " + polymer.getPolymerID().getID());
     return reversePolymer;
   }
 
   /**
-   * method to generate the reverse complement sequence from a rna/dna polymer
+   * method to generate the antiparallel sequence from a rna/dna polymer
    * 
    * @param polymer
-   * @return reverse complement sequence
+   * @return antiparallel
    * @throws HELM2HandledException
    * @throws IOException
    * @throws JDOMException
    * @throws org.helm.notation.NotationException
    * @throws RNAUtilsException
    */
-  private static String generateReverseComplement(PolymerNotation polymer) throws HELM2HandledException, IOException, JDOMException, org.helm.notation.NotationException, RNAUtilsException {
-    return generateNormalComplement(polymer).reverse().toString();
+  private static String generateAntiparallel(PolymerNotation polymer) throws HELM2HandledException, IOException, JDOMException, org.helm.notation.NotationException, RNAUtilsException {
+    return generateComplement(polymer).reverse().toString();
+  }
+
+  /**
+   * method to get the polymer with the inverse sequence of the current polymer
+   * 
+   * @param polymer
+   * @return reverse complement sequence
+   * @throws RNAUtilsException
+   * @throws NotationException
+   * @throws FastaFormatException
+   * @throws HELM2HandledException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws org.helm.notation.NotationException
+   */
+  protected static PolymerNotation getInverse(PolymerNotation polymer) throws RNAUtilsException, NotationException, FastaFormatException, HELM2HandledException, IOException, JDOMException,
+      org.helm.notation.NotationException {
+    checkRNA(polymer);
+    PolymerNotation inverse = SequenceConverter.readRNA(generateInverse(polymer).toString()).getHELM2Notation().getListOfPolymers().get(0);
+    inverse = new PolymerNotation(inverse.getPolymerID(), inverse.getPolymerElements(), "Inverse to " + polymer.getPolymerID().getID());
+    return inverse;
+
+  }
+
+  /**
+   * method to generate the inverse sequence of the given polymer
+   * 
+   * @param polymer
+   * @return inverse sequence
+   * @throws HELM2HandledException
+   * @throws RNAUtilsException
+   */
+  private static StringBuilder generateInverse(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException {
+    initComplementMap();
+    String sequence = getNaturalAnalogSequence(polymer);
+    StringBuilder sb = new StringBuilder(sequence);
+    return sb.reverse();
   }
 
   /**
@@ -144,11 +251,12 @@ public class RNAUtils {
    * @throws org.helm.notation.NotationException
    * @throws RNAUtilsException
    */
-  private static StringBuilder generateNormalComplement(PolymerNotation polymer) throws HELM2HandledException, IOException, JDOMException, org.helm.notation.NotationException, RNAUtilsException {
+  private static StringBuilder generateComplement(PolymerNotation polymer) throws HELM2HandledException, IOException, JDOMException, org.helm.notation.NotationException, RNAUtilsException {
+    initComplementMap();
     String sequence = getNaturalAnalogSequence(polymer);
     StringBuilder sb = new StringBuilder();
     for (char c : sequence.toCharArray()) {
-      sb.append(NucleotideFactory.getInstance().getReverseNucleotideTemplateMap().get(c));
+      sb.append(complementMap.get(String.valueOf(c)));
     }
     return sb;
   }
@@ -166,10 +274,10 @@ public class RNAUtils {
    * @throws org.helm.notation.NotationException
    * @throws RNAUtilsException
    */
-  protected static PolymerNotation getNormalComplement(PolymerNotation polymer) throws NotationException, FastaFormatException, HELM2HandledException, IOException, JDOMException,
+  protected static PolymerNotation getComplement(PolymerNotation polymer) throws NotationException, FastaFormatException, HELM2HandledException, IOException, JDOMException,
       org.helm.notation.NotationException, RNAUtilsException {
     checkRNA(polymer);
-    PolymerNotation complementPolymer = SequenceConverter.readRNA(generateNormalComplement(polymer).toString()).getHELM2Notation().getCurrentPolymer();
+    PolymerNotation complementPolymer = SequenceConverter.readRNA(generateComplement(polymer).toString()).getHELM2Notation().getListOfPolymers().get(0);
     complementPolymer = new PolymerNotation(complementPolymer.getPolymerID(), complementPolymer.getPolymerElements(), "NormalComplement to " + polymer.getPolymerID().getID());
     return complementPolymer;
   }
@@ -180,7 +288,28 @@ public class RNAUtils {
 
   }
 
-  protected void hybridize() {
+  protected static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two) throws NotationException, RNAUtilsException, HELM2HandledException, FastaFormatException, IOException,
+      JDOMException, org.helm.notation.NotationException, org.jdom.JDOMException {
+    checkRNA(one);
+    checkRNA(two);
+
+    List<ConnectionNotation> connections = new ArrayList<ConnectionNotation>();
+    ConnectionNotation connection;
+    /*Length of the two rnas have to be the same */
+    if (AreAntiparallel(one, two)) {
+      for (int i = 0; i < PolymerUtils.getTotalMonomerCount(one); i++) {
+        int backValue = PolymerUtils.getTotalMonomerCount(one) - i;
+        int firstValue = i + 1;
+
+        String details = firstValue + ":pair-" + backValue + ":pair";
+        connection = new ConnectionNotation(one.getPolymerID(), two.getPolymerID(), details);
+        connections.add(connection);
+      }
+      return connections;
+    }
+ else {
+      throw new RNAUtilsException("The given RNAs are not antiparallel to each other");
+    }
 
   }
 
