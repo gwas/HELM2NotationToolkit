@@ -238,7 +238,7 @@ public final class FastaFormat {
    * @return PolymerListElements
    * @throws FastaFormatException
    */
-  private static PolymerListElements generateElementsOfPeptide(String fasta, HELMEntity entity) throws FastaFormatException {
+  protected static PolymerListElements generateElementsOfPeptide(String fasta, HELMEntity entity) throws FastaFormatException {
     try{
       PolymerListElements elements = new PolymerListElements(entity);
       for (Character c : fasta.toCharArray()) {
@@ -265,7 +265,7 @@ public final class FastaFormat {
    * @return PolymerListElements
    * @throws FastaFormatException
    */
-  private static PolymerListElements generateElementsforRNA(String fasta, HELMEntity entity) throws FastaFormatException {
+  protected static PolymerListElements generateElementsforRNA(String fasta, HELMEntity entity) throws FastaFormatException {
     PolymerListElements elements = new PolymerListElements(entity);
     for (Character c : fasta.toCharArray()) {
       /*-> get for each single nucleotide code the contents from the nucleotidefactory*/
