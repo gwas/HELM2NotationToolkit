@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.AttachmentList;
 
@@ -88,14 +89,13 @@ public final class BuilderMolecule {
 
 
 
- public static RgroupStructure buildMoleculefromSinglePolymer(PolymerNotation
+  protected static RgroupStructure buildMoleculefromSinglePolymer(PolymerNotation
  polymernotation) throws BuilderMoleculeException, MonomerException,
  IOException, JDOMException, HELM2HandledException,
  CTKException {
 
  /* Contents of the RgroupStructure */
  RgroupStructure structure = new RgroupStructure();
-    AbstractMolecule molecule;
     Map<String, IAtomBase> rmap;
 
  /* Case 1: BLOB -> throw exception */
@@ -127,69 +127,72 @@ public final class BuilderMolecule {
  }
 
   public static AbstractMolecule buildMoleculefromPolymers(List<PolymerNotation> notlist,
-      List<ConnectionNotation> connectionlist) throws BuilderMoleculeException {
- Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
- Map<String, RgroupStructure> structure = new HashMap<String,
- RgroupStructure>();
-
- /*Build for every single polymer a molecule*/
- for(PolymerNotation node: notlist){
- map.put(node.getPolymerID().getID(),node);
-      try {
-        buildMoleculefromSinglePolymer(node);
-      } catch (MonomerException | IOException | JDOMException | HELM2HandledException | CTKException e) {
-        throw new BuilderMoleculeException(e.getMessage());
-      }
- }
-
+      List<ConnectionNotation> connectionlist) throws BuilderMoleculeException, CTKException {
+    Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
+    Map<String, RgroupStructure> structure = new HashMap<String,RgroupStructure>();
+    AbstractMolecule molecule = null;
+    /*Build for every single polymer a molecule*/
+    for(PolymerNotation node: notlist){
+      map.put(node.getPolymerID().getID(),node);
+        try {
+          structure.put(node.getPolymerID().getID(), buildMoleculefromSinglePolymer(node));
+        } catch (MonomerException | IOException | JDOMException | HELM2HandledException | CTKException e) {
+          throw new BuilderMoleculeException(e.getMessage());
+        }
+    }
 
 
- for (ConnectionNotation connection : connectionlist) {
 
- /*Group Id -> throw exception*/
- if (connection.getSourceId() instanceof GroupEntity ||
- connection.getTargetId() instanceof GroupEntity) {
- LOG.error("Molecule can't be build for group connection");
+    for (ConnectionNotation connection : connectionlist) {
+
+      /*Group Id -> throw exception*/
+      if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
+        LOG.error("Molecule can't be build for group connection");
         throw new BuilderMoleculeException("Molecule can't be build for group connection");
- }
+      }
 
- /*Get the source molecule + target molecule*/
- System.out.println("Get Source Molecule + Target Molecule");
+      /* Get the source molecule + target molecule */
+      System.out.println("Get Source Molecule + Target Molecule");
+      AbstractMolecule one = structure.get(connection.getSourceId().getID()).getMolecule();
+      AbstractMolecule two = structure.get(connection.getTargetId().getID()).getMolecule();
+
+      /*
+       * connection details: have to be an integer value + specific
+       * MonomerNotationUnit
+       */
+      int source;
+      int target;
+      try {
+        source = Integer.parseInt(connection.getSourceUnit());
+        target = Integer.parseInt(connection.getTargetUnit());
+      } catch (NumberFormatException e) {
+        throw new BuilderMoleculeException("Connection has to be unambiguous");
+      }
+
+      /* if the */
+      if (!((MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getSourceId().getID()), source)
+          && MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getTargetId().getID()), target)))) {
+        throw new BuilderMoleculeException("Connection has to be unambiguous");
+      }
 
 
- /*
- * connection details: have to be an integer value + specific
- * MonomerNotationUnit
- */
- int source;
- int target;
- try {
- source = Integer.parseInt(connection.getSourceUnit());
- target = Integer.parseInt(connection.getTargetUnit());
- } catch (NumberFormatException e) {
- throw new BuilderMoleculeException("Connection has to be unambiguous");
- }
+      /* R group of connection is unknown */
+      if (connection.getrGroupSource().equals("?") || connection.getrGroupTarget().equals("?")) {
+        throw new BuilderMoleculeException("Connection's R groups have to be known");
+      }
 
- /*if the */
- if((MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getSourceId().getID()),
- source) &&
- MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getTargetId().getID()),
- target))){
- throw new BuilderMoleculeException("Connection has to be unambiguous");
- }
+      System.out.println("Build Molecule");
+      System.out.println("Update R groups");
+
+      int RgroupOne = Integer.valueOf(connection.getrGroupSource().split("R")[1]);
+      int RgroupTwo = Integer.valueOf(connection.getrGroupSource().split("R")[1]);
+      molecule = ChemicalToolKit.getTestINSTANCE("").getManipulator().merge(molecule, one.getRGroupAtom(RgroupOne, true), two, two.getRGroupAtom(RgroupTwo, true));
 
 
- /* R group of connection is unknown */
- if (connection.getrGroupSource().equals("?") ||
- connection.getrGroupTarget().equals("?")) {
- throw new BuilderMoleculeException("Connection's R groups have to be known");
- }
+    }
 
- System.out.println("Build Molecule");
- System.out.println("Update R groups");
 
- }
-    return null;
+    return molecule;
  }
 
   private static RgroupStructure buildMoleculefromCHEM(List<Monomer> validMonomers) throws BuilderMoleculeException, IOException, CTKException {
@@ -202,14 +205,17 @@ public final class BuilderMolecule {
           /* Build monomer + Rgroup information! */
           Monomer monomer = validMonomers.get(0);
           String smiles = monomer.getCanSMILES();
+
           List<Attachment> listAttachments = monomer.getAttachmentList();
           AttachmentList list = new AttachmentList();
 
           for (Attachment attachment : listAttachments) {
-            list.add(new org.helm.chemtoolkit.Attachment(String.valueOf(attachment.getId()), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
+            list.add(new org.helm.chemtoolkit.Attachment(attachment.getAlternateId(), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
           }
-
           AbstractMolecule molecule = ChemicalToolKit.getTestINSTANCE("").getManipulator().getMolecule(smiles, list);
+
+          molecule = buildSingleMolecule(molecule);
+
           LOG.info("");
           Map<String, IAtomBase> rgroupMap = molecule.getRgroups();
           Map<String, IAtomBase> rmap = new HashMap<String, IAtomBase>();
@@ -222,6 +228,7 @@ public final class BuilderMolecule {
           /* Build RgroupStructure */
           structure.setMolecule(molecule);
           structure.setRgroupMap(rmap);
+          System.out.println(structure.getMolecule().getAttachments().size());
           return structure;
 
         } else {
@@ -333,6 +340,18 @@ structure.setRgroupMap(rmap);
 return structure;
   }
 
+  private static AbstractMolecule buildSingleMolecule(AbstractMolecule molecule) throws CTKException, IOException {
+    for (org.helm.chemtoolkit.Attachment attachment : molecule.getAttachments()) {
+      int groupId = AbstractMolecule.getIdFromLabel(attachment.getLabel());
+      String smiles = attachment.getSmiles();
+      LOG.debug(smiles);
+      AbstractMolecule rMol = ChemicalToolKit.getTestINSTANCE("").getManipulator().getMolecule(smiles, null);
+      molecule = ChemicalToolKit.getTestINSTANCE("").getManipulator().merge(molecule, molecule.getRGroupAtom(groupId, true), rMol, rMol.getRGroupAtom(groupId, true));
+
+    }
+
+    return molecule;
+  }
 
 
 }

@@ -149,7 +149,7 @@ public final class MethodsForContainerHELM2 {
    * @return true if the monomer is specific, false otherwise
    */
   protected static boolean isMonomerSpecific(PolymerNotation not, int position) {
-    if (not.getPolymerElements().getListOfElements().get(position) instanceof MonomerNotationUnit) {
+    if (not.getPolymerElements().getListOfElements().get(position - 1) instanceof MonomerNotationUnit) {
       return true;
     }
  else {

@@ -198,8 +198,9 @@ public class WebService {
    * @throws ParserException
    * @throws ValidationException
    * @throws BuilderMoleculeException
+   * @throws CTKException
    */
-  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException, BuilderMoleculeException {
+  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException {
     validateHELM(notation);
     return MoleculeInformation.getMolecularWeight(containerhelm2.getHELM2Notation());
   }
@@ -212,8 +213,9 @@ public class WebService {
    * @throws ValidationException
    * @throws ParserException
    * @throws BuilderMoleculeException
+   * @throws CTKException
    */
-  public String getMolecularFormula(String notation) throws ParserException, ValidationException, BuilderMoleculeException {
+  public String getMolecularFormula(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException {
     validateHELM(notation);
     return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
   }
@@ -226,7 +228,7 @@ public class WebService {
 
   }
 
-  public void getImageHELMMolecule(String notation) throws BuilderMoleculeException, ParserException, ValidationException {
+  public void getImageHELMMolecule(String notation) throws BuilderMoleculeException, ParserException, ValidationException, CTKException {
     validateHELM(notation);
     Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
   }

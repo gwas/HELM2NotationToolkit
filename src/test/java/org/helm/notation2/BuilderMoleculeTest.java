@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
+import org.helm.chemtoolkit.chemaxon.ChemMolecule;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
@@ -59,6 +60,12 @@ public class BuilderMoleculeTest {
         node.getPolymerID().getType());
     node.getPolymerElements().getListOfElements().add(mon);
     AbstractMolecule molecule = BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(), "")).getMolecule();
+    System.out.println(molecule.getAttachments().size());
+    System.out.println(ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularFormula());
+  }
+
+  @Test
+  public void testBuildMoleculeTwoChems() {
 
   }
 

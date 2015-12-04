@@ -24,6 +24,8 @@
 package org.helm.notation2;
 
 import org.helm.chemtoolkit.AbstractMolecule;
+import org.helm.chemtoolkit.CTKException;
+import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
@@ -43,8 +45,9 @@ public final class MoleculeInformation {
    * method to build from one notation one molecule
    * 
    * @throws BuilderMoleculeException
+   * @throws CTKException
    */
-  private static AbstractMolecule buildMolecule() throws BuilderMoleculeException {
+  private static AbstractMolecule buildMolecule() throws BuilderMoleculeException, CTKException {
 
     return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
   }
@@ -54,8 +57,9 @@ public final class MoleculeInformation {
    * 
    * @return MolecularWeight
    * @throws BuilderMoleculeException if the whole molecule can not be built
+   * @throws CTKException
    */
-  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException {
+  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     MoleculeInformation.helm2notation = helm2notation;
     /* First build one big molecule; List of molecules? */
     AbstractMolecule molecule = buildMolecule();
@@ -70,8 +74,9 @@ public final class MoleculeInformation {
    * @param helm2notation
    * @return ExactMass
    * @throws BuilderMoleculeException if the whole molecule can not be built
+   * @throws CTKException
    */
-  protected static double getExaxtMass(HELM2Notation helm2notation) throws BuilderMoleculeException {
+  protected static double getExaxtMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big moleucle; List of molecules */
     MoleculeInformation.helm2notation = helm2notation;
     AbstractMolecule molecule = buildMolecule();
@@ -85,13 +90,14 @@ public final class MoleculeInformation {
    * @param helm2notation
    * @return MolecularFormular
    * @throws BuilderMoleculeException if the whole molecule can not be built
+   * @throws CTKException
    */
-  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException {
+  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big molecule */
     MoleculeInformation.helm2notation = helm2notation;
     AbstractMolecule molecule = buildMolecule();
-    System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
-    return null;
+    return ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
+
   }
 
   /**
@@ -100,8 +106,9 @@ public final class MoleculeInformation {
    * @param helm2notation
    * @return Molecule
    * @throws BuilderMoleculeException if the whole molecule can not be built
+   * @throws CTKException
    */
-  protected static AbstractMolecule getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
+  protected static AbstractMolecule getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     MoleculeInformation.helm2notation = helm2notation;
     return buildMolecule();
   }

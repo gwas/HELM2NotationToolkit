@@ -258,8 +258,14 @@ public class ContainerHELM2 {
   }
 
 
-  private static PolymerNotation generateChangePolymer(PolymerNotation polymer) {
-    PolymerNotation changedPolymer = null;
+  private static PolymerNotation generateChangePolymer(PolymerNotation polymer) throws NotationException {
+    String id = polymer.getPolymerID().getID();
+    PolymerNotation changedPolymer = new PolymerNotation("changedID");
+    if (polymer.isAnnotationTrue()) {
+      changedPolymer = new PolymerNotation(changedPolymer.getPolymerID(), polymer.getPolymerElements(), polymer.getAnnotation());
+    } else {
+      changedPolymer = new PolymerNotation(changedPolymer.getPolymerID(), polymer.getPolymerElements(), polymer.getAnnotation());
+    }
     return changedPolymer;
   }
 
