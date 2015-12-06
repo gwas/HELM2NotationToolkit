@@ -21,15 +21,16 @@
  ******************************************************************************/
 package org.helm.notation.model;
 
-import org.helm.notation.MonomerFactory;
-import org.helm.notation.MonomerStore;
-import org.helm.notation.NotationException;
-import org.helm.notation.tools.SimpleNotationParser;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerStore;
+import org.helm.notation.tools.SimpleNotationParser;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This is a data model class for nucleotide
@@ -485,5 +486,32 @@ public class Nucleotide implements Serializable {
 		baseSymbol = baseSymbol.replaceAll("\\[|\\]", "");
 		return baseSymbol;
 	}
+
+  public static Nucleotide fromJSON(String json) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      Nucleotide nuc = mapper.readValue(json, Nucleotide.class);
+      return nuc;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public String toJSON() {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      String jsonINString = mapper.writeValueAsString(this);
+      jsonINString = mapper.writerWithDefaultPrettyPrinter()
+          .writeValueAsString(this);
+
+      return jsonINString;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 
 }

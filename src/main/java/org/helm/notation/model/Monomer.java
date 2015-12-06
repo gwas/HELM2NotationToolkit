@@ -21,15 +21,19 @@
  ******************************************************************************/
 package org.helm.notation.model;
 
-import chemaxon.marvin.plugin.PluginException;
-import chemaxon.struc.MolAtom;
-import chemaxon.struc.Molecule;
-import org.helm.notation.tools.StructureParser;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.helm.notation.tools.StructureParser;
+
+import chemaxon.marvin.plugin.PluginException;
+import chemaxon.struc.MolAtom;
+import chemaxon.struc.Molecule;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This is a data model for Monomer. alternateId is used in polymer notation.
@@ -368,4 +372,31 @@ public class Monomer implements Serializable {
 		}
 		return containsA;
 	}
+
+  public static Monomer fromJSON(String json) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      Monomer mon = mapper.readValue(json, Monomer.class);
+      return mon;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public String toJSON() {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      String jsonINString = mapper.writeValueAsString(this);
+      jsonINString = mapper.writerWithDefaultPrettyPrinter()
+          .writeValueAsString(this);
+
+      return jsonINString;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }
