@@ -1,43 +1,32 @@
 /**
- * *****************************************************************************
- * Copyright C 2015, The Pistoia Alliance
+ * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
 
 package org.helm.notation2;
 
-
 import java.io.IOException;
 import java.math.BigDecimal;
 
-
 import org.helm.notation.CalculationException;
-import org.helm.notation2.ContainerHELM2;
-import org.helm.notation2.InterConnections;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
-import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,9 +38,9 @@ import org.testng.annotations.Test;
 public class ExtinctionCalculatorTest {
   StateMachineParser parser;
 
-
   @Test
-  public void testCalculationOnePeptide() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException
+  public void testCalculationOnePeptide() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException
 
   {
     parser = new StateMachineParser();
@@ -66,15 +55,14 @@ public class ExtinctionCalculatorTest {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
 
-
-
     Float f = (float) 1.55;
     Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
 
   }
 
   @Test
-  public void testCalculationOneRNA() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationOneRNA() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}$$$$";
@@ -93,7 +81,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test
-  public void testCalculationRepeatingRNA() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationRepeatingRNA() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{P.(R(A)P.R(G)P)'2'.R([5meC])P.R(G)P.[mR](A)}$$$$";
@@ -112,7 +101,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test
-  public void testCalculationRepeatingMonomer() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationRepeatingMonomer() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{C'2'}$$$$";
@@ -128,13 +118,11 @@ public class ExtinctionCalculatorTest {
     Float f = (float) 0.12;
     Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
 
-
   }
 
-
-
   @Test
-  public void testCalculationRepeatingList() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationRepeatingList() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{(F.C.F)'3'}$$$$";
@@ -151,7 +139,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test
-  public void testCalculationWithCHEMAndBlob() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithCHEMAndBlob() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "CHEM1{[MCC]}|RNA1{R(U)}|BLOB1{?}$$$$";
@@ -168,7 +157,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException() throws ExtinctionCoefficientException, CalculationException, ExceptionState, IOException, JDOMException {
+  public void testCalculationWithException() throws ExtinctionCoefficientException, CalculationException,
+      ExceptionState, IOException, JDOMException {
     parser = new StateMachineParser();
 
     String test = "CHEM1{[MCC]}|RNA1{(R(U)+R(A))}|BLOB1{?}$$$$";
@@ -185,7 +175,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException2() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithException2() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{?}$$$$";
@@ -202,7 +193,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException3() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithException3() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{A.C._}$$$$";
@@ -218,7 +210,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException4() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithException4() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{A.C.(_.K)}$$$$";
@@ -234,7 +227,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException5() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithException5() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{X}$$$$";
@@ -250,7 +244,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException6() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithException6() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{?}$$$$";
@@ -266,7 +261,8 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException7() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithException7() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{R(N)P}$$$$";
@@ -282,10 +278,12 @@ public class ExtinctionCalculatorTest {
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
-  public void testCalculationWithException8() throws ExceptionState, IOException, JDOMException, ExtinctionCoefficientException, CalculationException {
+  public void testCalculationWithException8() throws ExceptionState, IOException, JDOMException,
+      ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
 
-    String test = "RNA1{[[H]OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1O[H])N1C=CC(=O)NC1=O)N1C=CC(=O)NC1=O)N1C=CC(=O)NC1=O]}$$$$";
+    String test =
+        "RNA1{[[H]OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1O[H])N1C=CC(=O)NC1=O)N1C=CC(=O)NC1=O)N1C=CC(=O)NC1=O]}$$$$";
     ;
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));

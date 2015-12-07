@@ -1,30 +1,23 @@
 /**
- * *****************************************************************************
- * Copyright C 2015, The Pistoia Alliance
+ * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation2;
 
 import java.io.IOException;
-
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
@@ -38,7 +31,7 @@ import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.exceptionparser.HELM1ConverterException;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -71,7 +64,8 @@ public class TestCanonicalHELM {
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|RNA3{R(A)P.R(C)}$RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$$";
+    String test =
+        "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|RNA3{R(A)P.R(C)}$RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$$";
     ;
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
@@ -85,13 +79,15 @@ public class TestCanonicalHELM {
   }
 
   @Test
-  public void testCanonicalHELMExtended2() throws ClassNotFoundException, HELM1FormatException, NotationException, MonomerException, IOException, StructureException, org.jdom2.JDOMException,
+  public void testCanonicalHELMExtended2() throws ClassNotFoundException, HELM1FormatException, NotationException,
+      MonomerException, IOException, StructureException, org.jdom2.JDOMException,
       ExceptionState, JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{R.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{R.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -103,11 +99,13 @@ public class TestCanonicalHELM {
   }
 
   @Test
-  public void testCanonicalHELMExtendedWithCounts() throws HELM1FormatException, ExceptionState, IOException, JDOMException 
+  public void testCanonicalHELMExtendedWithCounts() throws HELM1FormatException, ExceptionState, IOException,
+      JDOMException
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{R'3'.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{R'3'.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -120,12 +118,14 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testCanonicalHELMExtendedWithCountsWithException() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMExtendedWithCountsWithException() throws HELM1FormatException, ExceptionState,
+      IOException, JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{R'3-5'.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{R'3-5'.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -138,12 +138,14 @@ public class TestCanonicalHELM {
   }
 
   @Test
-  public void testCanonicalHELMExtendedWithMonomerNotationList() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMExtendedWithMonomerNotationList() throws HELM1FormatException, ExceptionState,
+      IOException, JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{(R.T.L)'3'.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{(R.T.L)'3'.I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -156,12 +158,14 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testCanonicalHELMExtendedWithMonomerNotationGroup() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMExtendedWithMonomerNotationGroup() throws HELM1FormatException, ExceptionState,
+      IOException, JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{(R,T).I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{(R,T).I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -174,12 +178,14 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testCanonicalHELMExtendedWithBLOB() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMExtendedWithBLOB() throws HELM1FormatException, ExceptionState, IOException,
+      JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|BLOB1{Hallo}|PEPTIDE1{I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|BLOB1{Hallo}|PEPTIDE1{I.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -192,12 +198,14 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testCanonicalHELMExtendedWithUnknownMonomer() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMExtendedWithUnknownMonomer() throws HELM1FormatException, ExceptionState, IOException,
+      JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(N)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{_.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(N)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{_.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -209,12 +217,14 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforPeptide() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforPeptide() throws HELM1FormatException, ExceptionState,
+      IOException, JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "RNA1{R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{X.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
+    String test =
+        "RNA1{R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE1{X.P}|PEPTIDE2{R.E}|PEPTIDE3{C}$PEPTIDE3,PEPTIDE2,1:R2-2:R3$$$";
     for (int i = 0; i < test.length(); ++i) {
       parser.doAction(test.charAt(i));
     }
@@ -226,7 +236,8 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforRNA() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMExtendedWithUnknownMonomerTypeforRNA() throws HELM1FormatException, ExceptionState,
+      IOException, JDOMException
 
   {
     parser = new StateMachineParser();
@@ -243,7 +254,8 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testCanonicalHELMConnectionWithGroup() throws HELM1FormatException, ExceptionState, IOException, JDOMException
+  public void testCanonicalHELMConnectionWithGroup() throws HELM1FormatException, ExceptionState, IOException,
+      JDOMException
 
   {
     parser = new StateMachineParser();
@@ -261,13 +273,15 @@ public class TestCanonicalHELM {
   }
 
   @Test
-  public void testCanonicalHELMConnection() throws HELM1FormatException, ExceptionState, IOException, JDOMException, ClassNotFoundException, NotationException, MonomerException, StructureException,
+  public void testCanonicalHELMConnection() throws HELM1FormatException, ExceptionState, IOException, JDOMException,
+      ClassNotFoundException, NotationException, MonomerException, StructureException,
       org.jdom2.JDOMException
 
   {
     parser = new StateMachineParser();
 
-    String test = "PEPTIDE1{C}|RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE2{R.E}|PEPTIDE3{R.I.P}|RNA3{R(A)P.R(C)}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|RNA2,RNA3,2:pair-5:pair|RNA2,RNA3,5:pair-2:pair$$$";
+    String test =
+        "PEPTIDE1{C}|RNA1{R(C)P.R(T)P.R(G)}|RNA2{R(G)P.R(T)}|PEPTIDE2{R.E}|PEPTIDE3{R.I.P}|RNA3{R(A)P.R(C)}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|RNA2,RNA3,2:pair-5:pair|RNA2,RNA3,5:pair-2:pair$$$";
     for (int i = 0; i < test.length(); i++) {
       parser.doAction(test.charAt(i));
     }
@@ -315,7 +329,8 @@ public class TestCanonicalHELM {
   @Test
   public void testCanonicalSMILES2() throws ExceptionState, IOException,
       JDOMException, ClassNotFoundException, HELM1ConverterException,
-      MonomerException, org.jdom2.JDOMException, CTKSmilesException, CTKException, NotationException, StructureException, HELM1FormatException {
+      MonomerException, org.jdom2.JDOMException, CTKSmilesException, CTKException, NotationException,
+      StructureException, HELM1FormatException {
 
     /* Füge Monomer bei der Datenbank hinzu -> */
     parser = new StateMachineParser();
@@ -333,9 +348,9 @@ public class TestCanonicalHELM {
   }
 
   @Test
-  public void testStandardHELM() throws ExceptionState, IOException, JDOMException, HELM1FormatException, CTKSmilesException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException,
+  public void testStandardHELM() throws ExceptionState, IOException, JDOMException, HELM1FormatException,
+      CTKSmilesException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException,
       CTKException {
-
 
     parser = new StateMachineParser();
 
@@ -353,7 +368,8 @@ public class TestCanonicalHELM {
   }
 
   @Test(expectedExceptions = HELM1FormatException.class)
-  public void testStandardHELMWithException() throws ExceptionState, IOException, JDOMException, HELM1FormatException, CTKSmilesException, HELM1ConverterException, MonomerException,
+  public void testStandardHELMWithException() throws ExceptionState, IOException, JDOMException, HELM1FormatException,
+      CTKSmilesException, HELM1ConverterException, MonomerException,
       org.jdom2.JDOMException,
       CTKException {
 
@@ -373,38 +389,45 @@ public class TestCanonicalHELM {
   }
 
   @Test
-  public void testOldExamples() throws CTKSmilesException, ExceptionState, IOException, JDOMException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException, CTKException,
+  public void testOldExamples() throws CTKSmilesException, ExceptionState, IOException, JDOMException,
+      HELM1ConverterException, MonomerException, org.jdom2.JDOMException, CTKException,
       HELM1FormatException {
-    String notation = "PEPTIDE1{H.H.E.E.E}|CHEM1{SS3}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+    String notation =
+        "PEPTIDE1{H.H.E.E.E}|CHEM1{SS3}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetCanonicalNotation(notation);
 
     // change node order
-    notation = "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+    notation =
+        "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetCanonicalNotation(notation);
 
     // change edge order
-    notation = "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM2,5:R2-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+    notation =
+        "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM2,5:R2-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetCanonicalNotation(notation);
 
     // change edge direction
-    notation = "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM1,1:R1-1:R2|CHEM2,PEPTIDE1,1:R2-5:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+    notation =
+        "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM1,1:R1-1:R2|CHEM2,PEPTIDE1,1:R2-5:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetCanonicalNotation(notation);
 
     // change node id
-    notation = "CHEM4{SS3}|PEPTIDE2{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM4,1:R1-1:R2|CHEM2,PEPTIDE2,1:R2-5:R2|PEPTIDE2,CHEM4,1:R1-1:R1$$$";
+    notation =
+        "CHEM4{SS3}|PEPTIDE2{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM4,1:R1-1:R2|CHEM2,PEPTIDE2,1:R2-5:R2|PEPTIDE2,CHEM4,1:R1-1:R1$$$";
     testGetCanonicalNotation(notation);
-
 
     // backbone cyclic peptide
     notation = "PEPTIDE1{K.A.A.G.K}$PEPTIDE1,PEPTIDE1,1:R1-5:R2$$$";
     testGetCanonicalNotation(notation);
 
     // annotated peptides
-    notation = "PEPTIDE1{K.A.A.G.K}|PEPTIDE2{K.A.A.G.K}|RNA1{R(A)P.R(G)}|CHEM1{Alexa}$PEPTIDE1,PEPTIDE1,1:R1-5:R2$$PEPTIDE1{hc}|PEPTIDE2{lc}$";
+    notation =
+        "PEPTIDE1{K.A.A.G.K}|PEPTIDE2{K.A.A.G.K}|RNA1{R(A)P.R(G)}|CHEM1{Alexa}$PEPTIDE1,PEPTIDE1,1:R1-5:R2$$PEPTIDE1{hc}|PEPTIDE2{lc}$";
     testGetCanonicalNotation(notation);
 
     // chemical connection
-    notation = "RNA1{R(A)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(C)P.R(C)P.R(C)P.R(C)}|CHEM1{CovX-2}$RNA1,CHEM1,1:R1-1:R1$$$";
+    notation =
+        "RNA1{R(A)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(C)P.R(C)P.R(C)P.R(C)}|CHEM1{CovX-2}$RNA1,CHEM1,1:R1-1:R1$$$";
     testGetCanonicalNotation(notation);
 
     notation =
@@ -425,7 +448,8 @@ public class TestCanonicalHELM {
    * @throws CTKSmilesException
    * @throws HELM1FormatException
    */
-  private void testGetCanonicalNotation(String notation) throws ExceptionState, IOException, JDOMException, CTKSmilesException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException,
+  private void testGetCanonicalNotation(String notation) throws ExceptionState, IOException, JDOMException,
+      CTKSmilesException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException,
       CTKException, HELM1FormatException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
@@ -435,6 +459,5 @@ public class TestCanonicalHELM {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
     HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
   }
-
 
 }

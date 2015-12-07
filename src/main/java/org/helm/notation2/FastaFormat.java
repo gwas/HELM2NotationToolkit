@@ -1,24 +1,18 @@
 /**
- * *****************************************************************************
- * Copyright C 2015, The Pistoia Alliance
+ * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation2;
@@ -32,7 +26,6 @@ import java.util.Map;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
-import org.helm.notation.NotationException;
 import org.helm.notation.NucleotideFactory;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.AnalogSequenceException;
@@ -52,11 +45,10 @@ import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerListElements;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import org.w3c.dom.DOMException;
 
 /**
  * FastaFormat
@@ -66,6 +58,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 public final class FastaFormat {
 
   private static HELM2Notation helm2notation = new HELM2Notation();
+
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(FastaFormat.class);
 
@@ -74,20 +67,20 @@ public final class FastaFormat {
   private static Map<String, String> transformNucleotides = null;
 
   private static Map<String, Monomer> nucleotidesNaturalAnalog = null;
+
   private static Map<String, Monomer> aminoacids = null;
 
-
-
   /**
-   * method to read the information from a FastaFile-Format + generate Peptide
-   * Polymers be careful -> it produces only polymers in the HELM1 standard, no
-   * ambiguity
+   * method to read the information from a FastaFile-Format + generate Peptide Polymers be careful -> it produces only
+   * polymers in the HELM1 standard, no ambiguity
    * 
    * @param fasta FastaFile in string format
    * @return HELM2Notation
    * @throws FastaFormatException
+   * @throws JDOMException
    */
-  protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
+  protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException,
+      DOMException {
     if (null == fasta) {
       LOG.error("Peptide Sequence must be specified");
       throw new FastaFormatException("Peptide Sequence must be specified");
@@ -106,9 +99,10 @@ public final class FastaFormat {
     String annotation = "";
     for (String line : fasta.split("\n")) {
       if (line.startsWith(">")) {
-        counter ++;
+        counter++;
         if (counter > 1) {
-          helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), generateElementsOfPeptide(elements.toString(), polymer.getPolymerID()), annotation));
+          helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
+              generateElementsOfPeptide(elements.toString(), polymer.getPolymerID()), annotation));
           try {
             polymer = new PolymerNotation("PEPTIDE" + counter);
           } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
@@ -117,19 +111,19 @@ public final class FastaFormat {
         }
         annotation = line.substring(1);
       }
- else {
+      else {
         line = cleanup(line);
         elements.append(line);
       }
     }
-    helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), generateElementsOfPeptide(elements.toString(), polymer.getPolymerID()), annotation));
+    helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
+        generateElementsOfPeptide(elements.toString(), polymer.getPolymerID()), annotation));
     return helm2notation;
   }
 
   /**
-   * method to read the information from a FastaFile-Format + generate RNA
-   * Polymers be careful -> it produces only polymers in the HELM1 standard, no
-   * ambiguity
+   * method to read the information from a FastaFile-Format + generate RNA Polymers be careful -> it produces only
+   * polymers in the HELM1 standard, no ambiguity
    * 
    * @param fasta FastaFile in string format
    * @return HELM2Notation
@@ -158,14 +152,14 @@ public final class FastaFormat {
       if (line.startsWith(">")) {
         counter++;
         if (counter > 1) {
-          
-            helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), generateElementsforRNA(elements.toString(), polymer.getPolymerID()), annotation));
-            try {
-              polymer = new PolymerNotation("RNA" + counter);
-            } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
+
+          helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
+              generateElementsforRNA(elements.toString(), polymer.getPolymerID()), annotation));
+          try {
+            polymer = new PolymerNotation("RNA" + counter);
+          } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
             throw new FastaFormatException(e.getMessage());
-            }
-          
+          }
 
         }
         annotation = line.substring(1);
@@ -176,7 +170,8 @@ public final class FastaFormat {
 
     }
 
-    helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), generateElementsforRNA(elements.toString(), polymer.getPolymerID()), annotation));
+    helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
+        generateElementsforRNA(elements.toString(), polymer.getPolymerID()), annotation));
 
     return helm2notation;
   }
@@ -189,19 +184,19 @@ public final class FastaFormat {
   private static void initMapNucleotides() throws FastaFormatException {
     try {
       nucleotides = NucleotideFactory.getInstance().getNucleotideTemplates().get("HELM Notation");
-    } catch (IOException | org.jdom2.JDOMException | NotationException e) {
+    } catch (IOException e) {
       LOG.error("NucleotideFactory can not be initialized");
       throw new FastaFormatException(e.getMessage());
     }
   }
 
-  private static void InitMapTransformNucleotides(){
-    transformNucleotides = new HashMap<String,String>();
-    for(Map.Entry e : nucleotides.entrySet()){
+  private static void InitMapTransformNucleotides() {
+    transformNucleotides = new HashMap<String, String>();
+    for (Map.Entry e : nucleotides.entrySet()) {
       transformNucleotides.put(e.getValue().toString(), e.getKey().toString());
     }
   }
-  
+
   /**
    * method to initialize map of existing nucleotides in the database
    * 
@@ -210,7 +205,7 @@ public final class FastaFormat {
   private static void initMapNucleotidesNaturalAnalog() throws FastaFormatException {
     try {
       nucleotidesNaturalAnalog = MonomerFactory.getInstance().getMonomerDB().get("RNA");
-    } catch (MonomerException | IOException | org.jdom2.JDOMException e) {
+    } catch (IOException e) {
       LOG.error("Nucleotides can not be initialized");
       throw new FastaFormatException(e.getMessage());
     }
@@ -224,7 +219,7 @@ public final class FastaFormat {
   private static void initMapAminoAcid() throws FastaFormatException {
     try {
       aminoacids = MonomerFactory.getInstance().getMonomerDB().get("PEPTIDE");
-    } catch (MonomerException | IOException | org.jdom2.JDOMException e) {
+    } catch (IOException e) {
       LOG.error("AminoAcids can not be initialized");
       throw new FastaFormatException(e.getMessage());
     }
@@ -238,15 +233,16 @@ public final class FastaFormat {
    * @return PolymerListElements
    * @throws FastaFormatException
    */
-  protected static PolymerListElements generateElementsOfPeptide(String fasta, HELMEntity entity) throws FastaFormatException {
-    try{
+  protected static PolymerListElements generateElementsOfPeptide(String fasta, HELMEntity entity)
+      throws FastaFormatException {
+    try {
       PolymerListElements elements = new PolymerListElements(entity);
       for (Character c : fasta.toCharArray()) {
         /* Hier fehlt noch der MonomerCheck */
         if (aminoacids.get(c.toString()) != null) {
           elements.addMonomerNotation(c.toString());
         }
- else {
+        else {
           throw new FastaFormatException("Not appropriate amino acid for HELM " + c);
         }
       }
@@ -265,17 +261,19 @@ public final class FastaFormat {
    * @return PolymerListElements
    * @throws FastaFormatException
    */
-  protected static PolymerListElements generateElementsforRNA(String fasta, HELMEntity entity) throws FastaFormatException {
+  protected static PolymerListElements generateElementsforRNA(String fasta, HELMEntity entity)
+      throws FastaFormatException {
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();
     PolymerListElements elements = new PolymerListElements(entity);
     for (Character c : fasta.toCharArray()) {
-      /*-> get for each single nucleotide code the contents from the nucleotidefactory*/
-        try {
-          elements.addMonomerNotation(nucleotides.get(c.toString()));
-      } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | NullPointerException e) {
+      /* -> get for each single nucleotide code the contents from the nucleotidefactory */
+      try {
+        elements.addMonomerNotation(nucleotides.get(c.toString()));
+      } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException
+          | NullPointerException e) {
         throw new FastaFormatException("Monomer can not be found:" + c.toString());
-        }
+      }
     }
     /* remove the phosphat of the last group */
 
@@ -289,7 +287,6 @@ public final class FastaFormat {
     /* fertig */
     return elements;
   }
-
 
   /**
    * remove white space, and convert all lower case to upper case
@@ -323,7 +320,8 @@ public final class FastaFormat {
       }
       fasta.append(">" + header + "\n");
       try {
-        fasta.append(generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers())) + "\n");
+        fasta.append(generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()))
+            + "\n");
       } catch (HELM2HandledException e) {
         throw new FastaFormatException(e.getMessage());
       }
@@ -363,14 +361,14 @@ public final class FastaFormat {
 
       fasta.append(">" + header + "\n");
       try {
-        fasta.append(generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers())) + "\n");
+        fasta.append(generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()))
+            + "\n");
       } catch (HELM2HandledException e) {
         throw new FastaFormatException(e.getMessage());
       }
     }
     return fasta.toString();
   }
-
 
   /**
    * method to generate Fasta for a list of rna monomers
@@ -388,15 +386,14 @@ public final class FastaFormat {
   }
 
   /**
-   * method to generate for the whole HELM2Notation fasta-files -> it contains
-   * fasta for all rna and peptides
+   * method to generate for the whole HELM2Notation fasta-files -> it contains fasta for all rna and peptides
    * 
    * @param helm2Notation2
    * @return
    * @throws FastaFormatException
    * @throws CTKException
    * @throws HELM2HandledException
-   * @throws org.jdom2.JDOMException
+   * @throws JDOMException
    * @throws IOException
    * @throws MonomerException
    */
@@ -430,7 +427,9 @@ public final class FastaFormat {
    * @throws FastaFormatException
    * @throws AnalogSequenceException
    */
-  protected static void convertIntoAnalogSequence(HELM2Notation helm2Notation) throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException, FastaFormatException,
+  protected static void convertIntoAnalogSequence(HELM2Notation helm2Notation)
+      throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
+      FastaFormatException,
       AnalogSequenceException {
     initMapAminoAcid();
     initMapNucleotides();
@@ -445,17 +444,17 @@ public final class FastaFormat {
       if (helm2Notation.getListOfPolymers().get(i).getPolymerID() instanceof PeptideEntity) {
         helm2Notation.getListOfPolymers().set(i, convertPeptideIntoAnalogSequence(polymers.get(i)));
       }
-      }
     }
+  }
 
-
-  private static PolymerNotation convertPeptideIntoAnalogSequence(PolymerNotation polymer) throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
+  private static PolymerNotation convertPeptideIntoAnalogSequence(PolymerNotation polymer)
+      throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
       AnalogSequenceException {
     /* ändere dies nur wenn es möglich ist sonst lasse die alte Notation */
     for (int i = 0; i < polymer.getPolymerElements().getListOfElements().size(); i++) {
       /* list, group */
-      
-      /*Change current MonomerNotation*/
+
+      /* Change current MonomerNotation */
       polymer.getPolymerElements().getListOfElements().set(i, generateMonomerNotationPeptide(polymer.getPolymerElements().getListOfElements().get(i)));
     }
     /* müssen Connections geändert werden ?? */
@@ -463,7 +462,8 @@ public final class FastaFormat {
     return polymer;
   }
 
-  private static MonomerNotation generateMonomerNotationPeptide(MonomerNotation current) throws org.helm.notation2.parser.exceptionparser.NotationException, IOException,
+  private static MonomerNotation generateMonomerNotationPeptide(MonomerNotation current)
+      throws org.helm.notation2.parser.exceptionparser.NotationException, IOException,
       JDOMException,
       AnalogSequenceException {
     MonomerNotation change = null;
@@ -478,8 +478,8 @@ public final class FastaFormat {
         change.setAnnotation(current.getAnnotation());
       }
     }
-    
-    else if(current instanceof MonomerNotationGroup){
+
+    else if (current instanceof MonomerNotationGroup) {
       if (current instanceof MonomerNotationGroupOr) {
         StringBuilder sb = new StringBuilder();
         String id = current.getID();
@@ -488,29 +488,27 @@ public final class FastaFormat {
         }
         sb.setLength(sb.length() - 1);
         change = new MonomerNotationList(sb.toString(), current.getType());
-    
+
       }
- else if (current instanceof MonomerNotationGroupMixture) {
-   StringBuilder sb = new StringBuilder();
-   String id = current.getID();
-   for (String element : id.split("\\+")) {
+      else if (current instanceof MonomerNotationGroupMixture) {
+        StringBuilder sb = new StringBuilder();
+        String id = current.getID();
+        for (String element : id.split("\\+")) {
           sb.append(aminoacids.get(element.replace("[", "").replace("]", "")).getNaturalAnalog() + "+");
-   }
-   sb.setLength(sb.length() - 1);
-   change = new MonomerNotationList(sb.toString(), current.getType());
+        }
+        sb.setLength(sb.length() - 1);
+        change = new MonomerNotationList(sb.toString(), current.getType());
 
       }
-      
-   else{
-     /*throw new exception*/
-        throw new AnalogSequenceException("j");
-   }
 
+      else {
+        /* throw new exception */
+        throw new AnalogSequenceException("j");
+      }
 
     }
-    
 
-    else if(current instanceof MonomerNotationList){
+    else if (current instanceof MonomerNotationList) {
       StringBuilder sb = new StringBuilder();
       String id = current.getID();
       for (String element : id.split("\\.")) {
@@ -518,16 +516,16 @@ public final class FastaFormat {
       }
       sb.setLength(sb.length() - 1);
       change = new MonomerNotationList(sb.toString(), current.getType());
-  
+
     }
 
-    else{
-      /*throw new exception*/
+    else {
+      /* throw new exception */
       throw new AnalogSequenceException("j");
     }
-    
+
     change.setCount(current.getCount());
-    if(current.getAnnotation() != null){
+    if (current.getAnnotation() != null) {
       change.setAnnotation(current.getAnnotation());
     }
 
@@ -535,7 +533,8 @@ public final class FastaFormat {
 
   }
 
-  private static MonomerNotation generateMonomerNotationRNA(MonomerNotation current) throws org.helm.notation2.parser.exceptionparser.NotationException, IOException,
+  private static MonomerNotation generateMonomerNotationRNA(MonomerNotation current)
+      throws org.helm.notation2.parser.exceptionparser.NotationException, IOException,
       JDOMException,
       AnalogSequenceException {
     MonomerNotation change = null;
@@ -580,7 +579,7 @@ public final class FastaFormat {
       String id = current.getID();
       String[] elements = id.split(".");
       for (MonomerNotation element : ((MonomerNotationList) current).getListofMonomerUnits()) {
-        sb.append( changeIdForRNA(element) + ".");
+        sb.append(changeIdForRNA(element) + ".");
       }
       sb.setLength(sb.length() - 1);
       change = new MonomerNotationList(sb.toString(), current.getType());
@@ -601,7 +600,8 @@ public final class FastaFormat {
 
   }
 
-  private static PolymerNotation convertRNAIntoAnalogSequence(PolymerNotation polymer) throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
+  private static PolymerNotation convertRNAIntoAnalogSequence(PolymerNotation polymer)
+      throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
       AnalogSequenceException {
 
     /* ändere dies nur wenn es möglich ist sonst lasse die alte Notation */
@@ -613,28 +613,27 @@ public final class FastaFormat {
     return polymer;
   }
 
-
   private static String changeIdForRNA(MonomerNotation monomerNotation) {
     if (monomerNotation instanceof MonomerNotationUnitRNA) {
       StringBuilder changeid = new StringBuilder();
 
       for (MonomerNotation not : ((MonomerNotationUnitRNA) monomerNotation).getContents()) {
         Monomer monomer = nucleotidesNaturalAnalog.get(not.getID().replace("[", "").replace("]", ""));
-          String id = monomer.getNaturalAnalog();
-          if (monomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
-            id = "(" + id + ")";
-          }
-          changeid.append(id);
-        } 
-      return changeid.toString();
-    }
-      else{
-      Monomer monomer = nucleotidesNaturalAnalog.get(monomerNotation.getID().replace("[", "").replace("]", ""));
         String id = monomer.getNaturalAnalog();
         if (monomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
           id = "(" + id + ")";
         }
-       return id;
+        changeid.append(id);
       }
-}
+      return changeid.toString();
+    }
+    else {
+      Monomer monomer = nucleotidesNaturalAnalog.get(monomerNotation.getID().replace("[", "").replace("]", ""));
+      String id = monomer.getNaturalAnalog();
+      if (monomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
+        id = "(" + id + ")";
+      }
+      return id;
+    }
+  }
 }

@@ -21,14 +21,13 @@
  ******************************************************************************/
 package org.helm.notation;
 
-import org.helm.notation.tools.NucleotideSequenceParser;
-import org.helm.notation.tools.SimpleNotationParser;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +35,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.helm.notation.tools.NucleotideSequenceParser;
+import org.helm.notation.tools.SimpleNotationParser;
+import org.helm.notation.wsadapter.MonomerStoreConfiguration;
+import org.helm.notation.wsadapter.NucleotideWSLoader;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -92,10 +96,16 @@ public class NucleotideFactory {
 	private NucleotideFactory() {
 	}
 
-	public static NucleotideFactory getInstance() throws IOException,
-			JDOMException, NotationException {
+	public static NucleotideFactory getInstance()
+			throws NucleotideLoadingException {
 		if (null == instance) {
-			initializeNucleotideTemplates();
+			// initializeNucleotideTemplates();
+			// check for webservice properties file
+			if (MonomerStoreConfiguration.getInstance().isUseWebservice()) {
+				initializeNucleotideTemplatesFromWebService();
+			} else {
+				initializeNucleotideTemplates();
+			}
 			instance = new NucleotideFactory();
 		}
 		return instance;
@@ -123,13 +133,13 @@ public class NucleotideFactory {
 	/**
 	 * This method is called during startup, use local version if exist,
 	 * otherwise use XML version in jar
+	 * @throws NucleotideLoadingException 
 	 * 
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
-	private static void initializeNucleotideTemplates() throws IOException,
-			JDOMException, NotationException {
+	private static void initializeNucleotideTemplates() throws NucleotideLoadingException {
 
 		InputStream in = null;
 		File localFile = new File(LOCAL_NUCLEOTIDE_TEMPLATE_FILE_PATH);
@@ -154,13 +164,35 @@ public class NucleotideFactory {
 		if (null == templates) {
 			in = NucleotideFactory.class
 					.getResourceAsStream(NUCLEOTIDE_TEMPLATE_XML_RESOURCE);
-			templates = buildNucleotideTemplates(in);
-			validate(templates);
+			try {
+				templates = buildNucleotideTemplates(in);
+				validate(templates);
+			} catch (IOException | JDOMException | NotationException e) {
+				throw new NucleotideLoadingException(
+						"Initializing NucleotideStore failed because of "
+								+ e.getClass().getSimpleName(), e);
+			}
+			
+			
 			logger.log(Level.INFO, NUCLEOTIDE_TEMPLATE_XML_RESOURCE
 					+ " is used for nucleotide templates initialization");
 		}
 
 		nucleotideTemplates = templates;
+		reverseNucleotideMap = getReverseNucleotideTemplateMap(NotationConstant.NOTATION_SOURCE);
+	}
+
+	public static void initializeNucleotideTemplatesFromWebService()
+			throws NucleotideLoadingException {
+		nucleotideTemplates = new HashMap<String, Map<String, String>>();
+		try {
+			nucleotideTemplates.put("HELM Notation",
+					new NucleotideWSLoader().loadNucleotideStore());
+		} catch (IOException | URISyntaxException e) {
+			throw new NucleotideLoadingException(
+					"Initializing NucleotideStore failed because of "
+							+ e.getClass().getSimpleName(), e);
+		}
 		reverseNucleotideMap = getReverseNucleotideTemplateMap(NotationConstant.NOTATION_SOURCE);
 	}
 

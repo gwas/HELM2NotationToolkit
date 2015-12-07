@@ -1,24 +1,18 @@
 /**
- * *****************************************************************************
- * Copyright C 2015, The Pistoia Alliance
+ * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation2;
@@ -30,7 +24,7 @@ import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.testng.annotations.Test;
 
 public class FastaFormatTest {
@@ -59,7 +53,6 @@ public class FastaFormatTest {
     FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(">seq0\nFQTWEEFSRAAEKLYLADPMKVRVVLKYRHVDGNLCIKVTDDLVCLVYRTDQAQDVKKIEKF\n>seq1\nKYRTWEEFTRAAEKLYQADPMKVRVVLKYRHCDGNLCIKVTDDVVCLLYRTDQAQDVKKIEKFHSQLMRLMELKVTDNKECLKFKTDQAQEAKKMEKLNNIFFTLM\n>seq2\nEEYQTWEEFARAAEKLYLTDPMKVRVVLKYRHCDGNLCMKVTDDAVCLQYKTDQAQDVKKVEKLHGK\n>seq3\nMYQVWEEFSRAVEKLYLTDPMKVRVVLKYRHCDGNLCIKVTDNSVCLQYKTDQAQDVK\n>seq4\nEEFSRAVEKLYLTDPMKVRVVLKYRHCDGNLCIKVTDNSVVSYEMRLFGVQKDNFALEHSLL\n>seq5\nSWEEFAKAAEVLYLEDPMKCRMCTKYRHVDHKLVVKLTDNHTVLKYVTDMAQDVKKIEKLTTLLM\n>seq6\nFTNWEEFAKAAERLHSANPEKCRFVTKYNHTKGELVLKLTDDVVCLQYSTNQLQDVKKLEKLSSTLLRSI\n>seq7\nSWEEFVERSVQLFRGDPNATRYVMKYRHCEGKLVLKVTDDRECLKFKTDQAQDAKKMEKLNNIFF\n>seq8\nSWDEFVDRSVQLFRADPESTRYVMKYRHCDGKLVLKVTDNKECLKFKTDQAQEAKKMEKLNNIFFTLM\n>seq9\nKNWEDFEIAAENMYMANPQNCRYTMKYVHSKGHILLKMSDNVKCVQYRAENMPDLKK\n>seq10\nFDSWDEFVSKSVELFRNHPDTTRYVVKYRHCEGKLVLKVTDNHECLKFKTDQAQDAKKMEK");
   }
 
-
   @Test
   public void testHELMToFastaPeptide() throws ExceptionState, IOException, JDOMException, FastaFormatException {
     String notation = "PEPTIDE1{[dY]'3'.I.K}|PEPTIDE2{G.H}$$$$";
@@ -67,7 +60,8 @@ public class FastaFormatTest {
   }
 
   @Test(expectedExceptions = FastaFormatException.class)
-  public void testHELMToFastaPeptideWithException() throws ExceptionState, IOException, JDOMException, FastaFormatException {
+  public void testHELMToFastaPeptideWithException() throws ExceptionState, IOException, JDOMException,
+      FastaFormatException {
     String notation = "PEPTIDE1{[dY]'3-5'.I.K}|PEPTIDE2{G.H}$$$$";
     testHELMtoFastaPEPTIDE(notation);
   }
@@ -78,7 +72,8 @@ public class FastaFormatTest {
     testHELMtoFastaRNA(notation);
   }
 
-  private void testHELMtoFastaPEPTIDE(String notation) throws ExceptionState, IOException, JDOMException, FastaFormatException {
+  private void testHELMtoFastaPEPTIDE(String notation) throws ExceptionState, IOException, JDOMException,
+      FastaFormatException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
@@ -88,7 +83,8 @@ public class FastaFormatTest {
     FastaFormat.generateFastaFromPeptidePolymer(containerhelm2.getHELM2Notation().getListOfPolymers());
   }
 
-  private void testHELMtoFastaRNA(String notation) throws ExceptionState, IOException, JDOMException, FastaFormatException {
+  private void testHELMtoFastaRNA(String notation) throws ExceptionState, IOException, JDOMException,
+      FastaFormatException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
@@ -99,7 +95,8 @@ public class FastaFormatTest {
   }
 
   @Test
-  public void testHELMToAnalogSequenceExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException {
+  public void testHELMToAnalogSequenceExamples() throws ExceptionState, IOException, JDOMException,
+      FastaFormatException, AnalogSequenceException {
     String notation = "RNA1{[dR](U)P.R(T)P.R(G)P.R(C)}$$$$";
     testHELMAnalogSequence(notation);
 
@@ -113,7 +110,8 @@ public class FastaFormatTest {
     testHELMAnalogSequence(notation);
   }
 
-  private void testHELMAnalogSequence(String notation) throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException {
+  private void testHELMAnalogSequence(String notation) throws ExceptionState, IOException, JDOMException,
+      FastaFormatException, AnalogSequenceException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
@@ -123,7 +121,5 @@ public class FastaFormatTest {
     FastaFormat.convertIntoAnalogSequence(containerhelm2.getHELM2Notation());
     System.out.println(containerhelm2.getHELM2Notation().toHELM2());
   }
-
-
 
 }

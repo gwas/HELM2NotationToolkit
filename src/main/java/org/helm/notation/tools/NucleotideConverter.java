@@ -23,13 +23,16 @@ package org.helm.notation.tools;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.NotationConstant;
 import org.helm.notation.NotationException;
 import org.helm.notation.NucleotideFactory;
+import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.model.Nucleotide;
 import org.helm.notation.model.PolymerNode;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +51,7 @@ public class NucleotideConverter {
 	private NucleotideConverter() {
 	}
 
-	public static NucleotideConverter getInstance() throws IOException,
-			JDOMException, NotationException, MonomerException {
+	public static NucleotideConverter getInstance() throws NucleotideLoadingException, MonomerLoadingException {
 		if (null == instance) {
 			MonomerFactory.getInstance();
 			NucleotideFactory.getInstance();
@@ -71,10 +73,11 @@ public class NucleotideConverter {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public String getNucleotideSequencesFromComplexNotation(
 			String complexNotation) throws NotationException, MonomerException,
-			IOException, JDOMException, StructureException {
+			IOException, JDOMException, StructureException, NucleotideLoadingException {
 		List<PolymerNode> polymerNodes = ComplexNotationParser
 				.getPolymerNodeList(complexNotation);
 
@@ -101,6 +104,7 @@ public class NucleotideConverter {
 	 * 
 	 * @param simpleRNANotation
 	 * @return nucleotide sequence
+	 * @throws NucleotideLoadingException 
 	 * @throws NotationException
 	 * @throws MonomerException
 	 * @throws IOException
@@ -108,8 +112,7 @@ public class NucleotideConverter {
 	 * @throws StructureException
 	 */
 	public String getNucleotideSequenceFromSimpleRNANotation(
-			String simpleRNANotation) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			String simpleRNANotation) throws NucleotideLoadingException, NotationException, IOException, StructureException {
 		List<Nucleotide> nucList = SimpleNotationParser.getNucleotideList(
 				simpleRNANotation, false);
 
@@ -157,10 +160,12 @@ public class NucleotideConverter {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws StructureException
+	 * @throws NucleotideLoadingException 
+	 * @throws MonomerLoadingException 
 	 */
 	public String getComplexNotation(String nucleotideSequences)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			JDOMException, StructureException, NucleotideLoadingException, MonomerLoadingException {
 		if (null == nucleotideSequences
 				|| nucleotideSequences.trim().length() == 0) {
 			return null;
@@ -195,10 +200,12 @@ public class NucleotideConverter {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws StructureException
+	 * @throws NucleotideLoadingException 
+	 * @throws MonomerLoadingException 
 	 */
 	public String getComplexNotationFromSingleNucleotideSequence(
 			String singleOligoSequence) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerException, IOException, JDOMException, StructureException, MonomerLoadingException, NucleotideLoadingException {
 		String simpleNotation = getSimpleRNANotationFromSingleNucleotideSequence(singleOligoSequence);
 		return SimpleNotationParser.getComplextNotationForRNA(simpleNotation);
 	}
@@ -213,10 +220,12 @@ public class NucleotideConverter {
 	 * @throws MonomerException
 	 * @throws IOException
 	 * @throws JDOMException
+	 * @throws MonomerLoadingException 
+	 * @throws NucleotideLoadingException 
 	 */
 	public String getSimpleRNANotationFromSingleNucleotideSequence(
 			String singleOligoSequence) throws NotationException,
-			MonomerException, IOException, JDOMException {
+			MonomerException, IOException, JDOMException, MonomerLoadingException, NucleotideLoadingException {
 		Map<String, Monomer> rnaMonomers = MonomerFactory.getInstance()
 				.getMonomerDB().get(Monomer.NUCLIEC_ACID_POLYMER_TYPE);
 		Map<String, Monomer> linkerMonomers = new HashMap<String, Monomer>();

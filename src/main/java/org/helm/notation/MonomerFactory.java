@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +47,8 @@ import org.helm.notation.model.MonomerCache;
 import org.helm.notation.tools.DeepCopy;
 import org.helm.notation.tools.MonomerParser;
 import org.helm.notation.tools.StructureParser;
+import org.helm.notation.wsadapter.MonomerStoreConfiguration;
+import org.helm.notation.wsadapter.MonomerWSLoader;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -245,8 +248,7 @@ public class MonomerFactory {
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
-	public static MonomerFactory getInstance() throws MonomerException,
-			IOException, JDOMException {
+	public static MonomerFactory getInstance() throws MonomerLoadingException {
 		if (null == instance) {
 			initializeMonomerCache();
 			instance = new MonomerFactory();
@@ -478,9 +480,120 @@ public class MonomerFactory {
 		return l;
 	}
 
+	private static MonomerCache buildMonomerCacheFromWebService()
+			throws MonomerException, IOException, JDOMException {
+
+		Map<String, Attachment> newAttachmentDB = fetchAttachmentDBFromWebService();
+		Map<String, Map<String, Monomer>> newMonomerDB;
+		try {
+			newMonomerDB = fetchMonomerDBFromWebService(newAttachmentDB);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new IOException(
+					"URISyntaxException prevents fetching monomers from webservice.");
+		}
+		// Map<String, Map<String, Monomer>> newMonomerDB =
+		// buildMonomerDB(polymerList);
+		Map<String, Monomer> newSmilesMonomerDB = buildSmilesMonomerDB(newMonomerDB);
+
+		MonomerCache cache = new MonomerCache();
+		cache.setMonomerDB(newMonomerDB);
+		cache.setAttachmentDB(newAttachmentDB);
+		cache.setSmilesMonomerDB(newSmilesMonomerDB);
+
+		return cache;
+	}
+
+	private static Map<String, Attachment> fetchAttachmentDBFromWebService() {
+		Map<String, Attachment> attachments = new HashMap<String, Attachment>();
+
+		Attachment att = new Attachment();
+		att.setAlternateId("R1-X");
+		att.setLabel("R1");
+		att.setCapGroupName("X");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R3-X");
+		att.setLabel("R3");
+		att.setCapGroupName("X");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R3-H");
+		att.setLabel("R3");
+		att.setCapGroupName("H");
+		att.setCapGroupSMILES("[*][H] |$_R3;$|");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R1-H");
+		att.setLabel("R1");
+		att.setCapGroupName("H");
+		att.setCapGroupSMILES("[*][H] |$_R1;$|");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R3-OH");
+		att.setLabel("R3");
+		att.setCapGroupName("OH");
+		att.setCapGroupSMILES("O[*] |$;_R3$|");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R2-H");
+		att.setLabel("R2");
+		att.setCapGroupName("H");
+		att.setCapGroupSMILES("[*][H] |$_R2;$|");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R2-X");
+		att.setLabel("R2");
+		att.setCapGroupName("X");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R2-OH");
+		att.setLabel("R2");
+		att.setCapGroupName("OH");
+		att.setCapGroupSMILES("O[*] |$;_R2$|");
+		attachments.put(att.getAlternateId(), att);
+
+		att = new Attachment();
+		att.setAlternateId("R1-OH");
+		att.setLabel("R1");
+		att.setCapGroupName("OH");
+		att.setCapGroupSMILES("O[*] |$;_R1$|");
+		attachments.put(att.getAlternateId(), att);
+
+		return attachments;
+	}
+
+	private static Map<String, Map<String, Monomer>> fetchMonomerDBFromWebService(
+			Map<String, Attachment> attachments) throws IOException,
+			URISyntaxException {
+		Map<String, Map<String, Monomer>> monomerDB = new HashMap<String, Map<String, Monomer>>();
+
+		monomerDB.put("PEPTIDE",
+				new MonomerWSLoader("PEPTIDE").loadMonomerStore(attachments));
+		monomerDB.put("RNA",
+				new MonomerWSLoader("RNA").loadMonomerStore(attachments));
+		monomerDB.put("CHEM",
+				new MonomerWSLoader("CHEM").loadMonomerStore(attachments));
+
+		return monomerDB;
+	}
+
+	private static MonomerCache buildMonomerCacheFromWS()
+			throws MonomerException, IOException, JDOMException {
+		return buildMonomerCacheFromWebService();
+	}
+
 	private static MonomerCache buildMonomerCacheFromXML(
 			InputStream monomerDBInputStream) throws MonomerException,
 			IOException, JDOMException {
+
 		if (null == builder) {
 			setupBuilder();
 		}
@@ -492,8 +605,8 @@ public class MonomerFactory {
 		Element attachmentList = root.getChild(ATTACHMENT_LIST_ELEMENT,
 				root.getNamespace());
 
-		Map<String, Map<String, Monomer>> newMonomerDB = buildMonomerDB(polymerList);
 		Map<String, Attachment> newAttachmentDB = buildAttachmentDB(attachmentList);
+		Map<String, Map<String, Monomer>> newMonomerDB = buildMonomerDB(polymerList);
 		Map<String, Monomer> newSmilesMonomerDB = buildSmilesMonomerDB(newMonomerDB);
 
 		MonomerCache cache = new MonomerCache();
@@ -561,53 +674,77 @@ public class MonomerFactory {
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
-	private static void initializeMonomerCache() throws MonomerException,
-			IOException, JDOMException {
+	private static void initializeMonomerCache() throws MonomerLoadingException {
 		MonomerCache cache = null;
 		InputStream in = null;
 
-		File cacheFile = new File(MONOMER_CACHE_FILE_PATH);
-		if (cacheFile.exists()) {
+		// check for webservice properties file
+		if (MonomerStoreConfiguration.getInstance().isUseWebservice()) {
 			try {
-				cache = deserializeMonomerCache(MONOMER_CACHE_FILE_PATH);
+				cache = buildMonomerCacheFromWS();
 				validate(cache.getMonomerDB());
-				logger.log(Level.INFO, MONOMER_CACHE_FILE_PATH
-						+ " is used for monomer cache initialization");
-			} catch (Exception e) {
-				logger.log(Level.INFO,
-						"Unable to use local monomer cache file: "
-								+ MONOMER_CACHE_FILE_NAME);
-				cacheFile.delete();
-				logger.log(Level.INFO, "Deleted local monomer cache file: "
-						+ MONOMER_CACHE_FILE_NAME);
+			} catch (MonomerException | IOException | JDOMException e) {
+				throw new MonomerLoadingException(
+						"Initializing MonomerStore failed because of "
+								+ e.getClass().getSimpleName(), e);
 			}
-		}
+			
 
-		File localMonomerDBFile = new File(MONOMER_DB_FILE_PATH);
-		if (null == cache && localMonomerDBFile.exists()) {
-			try {
-				in = new FileInputStream(MONOMER_DB_FILE_PATH);
-				cache = buildMonomerCacheFromXML(in);
-				validate(cache.getMonomerDB());
-				logger.log(Level.INFO, MONOMER_DB_FILE_PATH
-						+ " is used for monomer cache initialization");
-			} catch (Exception e) {
-				logger.log(Level.INFO, "Unable to use local monomer DB file: "
-						+ MONOMER_DB_FILE_NAME);
-				localMonomerDBFile.delete();
-				logger.log(Level.INFO, "Deleted local monomer DB file: "
-						+ MONOMER_DB_FILE_NAME);
+			logger.log(Level.INFO,
+					"WebService '' is used for monomer cache initialization");
+		} else {
+			File cacheFile = new File(MONOMER_CACHE_FILE_PATH);
+			if (cacheFile.exists()) {
+				try {
+					cache = deserializeMonomerCache(MONOMER_CACHE_FILE_PATH);
+					validate(cache.getMonomerDB());
+					logger.log(Level.INFO, MONOMER_CACHE_FILE_PATH
+							+ " is used for monomer cache initialization");
+				} catch (Exception e) {
+					logger.log(Level.INFO,
+							"Unable to use local monomer cache file: "
+									+ MONOMER_CACHE_FILE_NAME);
+					cacheFile.delete();
+					logger.log(Level.INFO, "Deleted local monomer cache file: "
+							+ MONOMER_CACHE_FILE_NAME);
+				}
 			}
-		}
 
-		if (null == cache) {
-			in = MonomerFactory.class
-					.getResourceAsStream(MONOMER_DB_XML_RESOURCE);
-			cache = buildMonomerCacheFromXML(in);
-			validate(cache.getMonomerDB());
+			File localMonomerDBFile = new File(MONOMER_DB_FILE_PATH);
+			if (null == cache && localMonomerDBFile.exists()) {
+				try {
+					in = new FileInputStream(MONOMER_DB_FILE_PATH);
+					cache = buildMonomerCacheFromXML(in);
+					validate(cache.getMonomerDB());
+					logger.log(Level.INFO, MONOMER_DB_FILE_PATH
+							+ " is used for monomer cache initialization");
+				} catch (Exception e) {
+					logger.log(Level.INFO,
+							"Unable to use local monomer DB file: "
+									+ MONOMER_DB_FILE_NAME);
+					localMonomerDBFile.delete();
+					logger.log(Level.INFO, "Deleted local monomer DB file: "
+							+ MONOMER_DB_FILE_NAME);
+				}
+			}
 
-			logger.log(Level.INFO, MONOMER_DB_XML_RESOURCE
-					+ " is used for monomer cache initialization");
+			if (null == cache) {
+				in = MonomerFactory.class
+						.getResourceAsStream(MONOMER_DB_XML_RESOURCE);
+				try {
+					cache = buildMonomerCacheFromXML(in);
+					validate(cache.getMonomerDB());
+				} catch (MonomerException | IOException | JDOMException e) {
+					throw new MonomerLoadingException(
+							"Initializing MonomerStore failed because of "
+									+ e.getClass().getSimpleName(), e);
+				}
+				
+
+				logger.log(Level.INFO, MONOMER_DB_XML_RESOURCE
+						+ " is used for monomer cache initialization");
+			}
+
 		}
 
 		monomerDB = cache.getMonomerDB();
@@ -615,6 +752,7 @@ public class MonomerFactory {
 		smilesMonomerDB = cache.getSmilesMonomerDB();
 
 		dbChanged = true;
+
 	}
 
 	/**

@@ -27,6 +27,7 @@ import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.jdom2.JDOMException;
 
 
 /**
@@ -37,14 +38,13 @@ import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 public class SequenceConverter {
 
   /**
-   * method to read a peptide sequence and generate a containerhelm2 object of
-   * it
+   * method to read a peptide sequence and generate a containerhelm2 object of it
    * 
    * @param notation
    * @return ContainerHELM2 object
-   * @throws FastaFormatException if the peptide sequence is not in the right
-   *           format
+   * @throws FastaFormatException if the peptide sequence is not in the right format
    * @throws NotationException if the notation object can not be built
+   * @throws JDOMException
    */
   protected static ContainerHELM2 readPeptide(String notation) throws FastaFormatException, NotationException {
     HELM2Notation helm2notation = new HELM2Notation();

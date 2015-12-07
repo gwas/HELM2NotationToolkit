@@ -24,8 +24,10 @@ package org.helm.notation.tools;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
+import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.model.PolymerNode;
@@ -151,10 +153,11 @@ public class ExtinctionCoefficientCalculator {
 	 * @throws org.jdom.JDOMException
 	 * @throws org.helm.notation.StructureException
 	 * @throws org.helm.notation.CalculationException
+	 * @throws NucleotideLoadingException 
 	 */
 	public float calculateFromComplexNotation(String complexNotation)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException, CalculationException {
+			JDOMException, StructureException, CalculationException, NucleotideLoadingException {
 		return calculateFromComplexNotation(complexNotation,
 				getDefaultUnitType());
 	}
@@ -162,7 +165,7 @@ public class ExtinctionCoefficientCalculator {
 	public float calculateFromComplexNotation(String complexNotation,
 			int unitType) throws NotationException, MonomerException,
 			IOException, JDOMException, StructureException,
-			CalculationException {
+			CalculationException, NucleotideLoadingException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -188,12 +191,13 @@ public class ExtinctionCoefficientCalculator {
 	 * @throws JDOMException
 	 * @throws StructureException
 	 * @throws CalculationException
+	 * @throws NucleotideLoadingException 
 	 */
 
 	public float calculateFromComplexNotation(String complexNotation,
 			int unitType, MonomerStore monomerStore) throws NotationException,
 			MonomerException, IOException, JDOMException, StructureException,
-			CalculationException {
+			CalculationException, NucleotideLoadingException {
 
 		float result = 0.0f;
 		List<PolymerNode> polymerNodes = ComplexNotationParser
@@ -204,7 +208,7 @@ public class ExtinctionCoefficientCalculator {
 			float ext = 0.0f;
 			if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
 				ext = calculateFromRnaPolymerNotation(notation, monomerStore);
-        if (unitType == PEPTIDE_UNIT_TYPE) {
+				if (unitType == PEPTIDE_UNIT_TYPE) {
 					ext = ext * 1000;
 				}
 			} else if (polymerType.equals(Monomer.PEPTIDE_POLYMER_TYPE)) {
@@ -231,11 +235,13 @@ public class ExtinctionCoefficientCalculator {
 	 * @throws org.jdom.JDOMException
 	 * @throws org.helm.notation.StructureException
 	 * @throws org.helm.notation.CalculationException
+	 * @throws MonomerLoadingException 
+	 * @throws NucleotideLoadingException 
 	 */
 
 	public float calculateFromRnaPolymerNotation(String simpleNotation)
 			throws NotationException, MonomerException, CalculationException,
-			IOException, JDOMException, StructureException {
+			IOException, JDOMException, StructureException, MonomerLoadingException, NucleotideLoadingException {
 		MonomerStore store = MonomerFactory.getInstance().getMonomerStore();
 		return calculateFromRnaPolymerNotation(simpleNotation, store);
 
@@ -244,7 +250,7 @@ public class ExtinctionCoefficientCalculator {
 	public float calculateFromRnaPolymerNotation(String simpleNotation,
 			MonomerStore monomerStore) throws NotationException,
 			MonomerException, CalculationException, IOException, JDOMException,
-			StructureException {
+			StructureException, NucleotideLoadingException {
 		String naturalSequence = SimpleNotationParser
 				.getTrimmedNucleotideSequence(simpleNotation, monomerStore);
 		return calculateFromNucleotideSequence(naturalSequence);
@@ -261,10 +267,11 @@ public class ExtinctionCoefficientCalculator {
 	 * @throws org.helm.notation.NotationException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
+	 * @throws NucleotideLoadingException 
 	 */
 	public float calculateFromModifiedNucleotideSequence(String sequence)
-			throws CalculationException, NotationException, IOException,
-			JDOMException {
+			throws NotationException, IOException, JDOMException,
+			CalculationException, NucleotideLoadingException {
 		String naturalSequence = NucleotideSequenceParser
 				.getNaturalAnalogSequence(sequence);
 		return calculateFromNucleotideSequence(naturalSequence);
@@ -312,7 +319,6 @@ public class ExtinctionCoefficientCalculator {
 			Map<String, Integer> diMap = new HashMap<String, Integer>();
 			String di;
 			for (int i = 0; i < sequence.length() - 1; i++) {
-
 				di = sequence.substring(i, i + 2);
 				if (diNucleotideMap.containsKey(di)) {
 					if (diMap.containsKey(di)) {

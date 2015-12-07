@@ -24,7 +24,9 @@ package org.helm.notation.tools;
 import org.helm.notation.NotationConstant;
 import org.helm.notation.NotationException;
 import org.helm.notation.NucleotideFactory;
+import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.model.Nucleotide;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,16 +92,17 @@ public class NucleotideSequenceParser {
 	 * 
 	 * @param sequence
 	 * @return complement sequence in reverse (3-5) direction
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 */
 	public static String getReverseComplementSequence(String sequence)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 		return getComplementSequence(sequence, false);
 	}
 
 	public static String getReverseComplementSequence(String sequence,
 			String notationSource) throws NotationException, IOException,
-			JDOMException {
+			JDOMException, NucleotideLoadingException {
 		return getComplementSequence(sequence, notationSource, false);
 	}
 
@@ -108,22 +111,23 @@ public class NucleotideSequenceParser {
 	 * 
 	 * @param sequence
 	 * @return complement sequence in normal (5-3) direction
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 */
 	public static String getNormalComplementSequence(String sequence)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 		return getComplementSequence(sequence, true);
 	}
 
 	public static String getNormalComplementSequence(String sequence,
-			String notationSource) throws NotationException, IOException,
-			JDOMException {
+			String notationSource) throws NucleotideLoadingException,
+			NotationException {
 		return getComplementSequence(sequence, notationSource, true);
 	}
 
 	private static String getComplementSequence(String sequence,
-			boolean outNormalDirection) throws NotationException, IOException,
-			JDOMException {
+			boolean outNormalDirection) throws NucleotideLoadingException,
+			NotationException {
 		return getComplementSequence(sequence,
 				NotationConstant.NOTATION_SOURCE, outNormalDirection);
 	}
@@ -137,11 +141,12 @@ public class NucleotideSequenceParser {
 	 * @param outNormalDirection
 	 *            output direction, true for 5-3, false for 3-5
 	 * @return complement sequence
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 */
 	private static String getComplementSequence(String sequence,
 			String notationSource, boolean outNormalDirection)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 		String cleanSequence = cleanup(sequence);
 		List<Nucleotide> nucList = getNucleotideList(cleanSequence,
 				notationSource);
@@ -192,15 +197,19 @@ public class NucleotideSequenceParser {
 	 * @param sequence
 	 *            RNA nucleotide sequence 5' to 3'
 	 * @return notation
+	 * @throws NucleotideLoadingException
+	 * @throws JDOMException
+	 * @throws IOException
 	 * @throws org.helm.notation.NotationException
 	 */
 	public static String getNotation(String sequence) throws NotationException,
-			IOException, JDOMException {
+			IOException, JDOMException, NucleotideLoadingException {
 		return getNotation(sequence, NotationConstant.NOTATION_SOURCE);
 	}
 
 	public static String getNotation(String sequence, String notationSource)
-			throws NotationException, IOException, JDOMException {
+			throws NotationException, IOException, JDOMException,
+			NucleotideLoadingException {
 		StringBuffer sb = new StringBuffer();
 		List<Nucleotide> normalNucleotideList = getNormalList(sequence,
 				notationSource);
@@ -250,7 +259,7 @@ public class NucleotideSequenceParser {
 	}
 
 	public static List<Nucleotide> getNormalList(String sequence)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 		return getNormalList(sequence, NotationConstant.NOTATION_SOURCE);
 	}
 
@@ -260,11 +269,12 @@ public class NucleotideSequenceParser {
 	 * @param sequence
 	 * @param notationSource
 	 * @return normal nucleotide list
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 */
 	public static List<Nucleotide> getNormalList(String sequence,
-			String notationSource) throws NotationException, IOException,
-			JDOMException {
+			String notationSource) throws NucleotideLoadingException,
+			NotationException {
 		boolean inNormalDirection = isNormalDirection(sequence);
 		String cleanSequence = cleanup(sequence);
 		List<Nucleotide> nucList = getNucleotideList(cleanSequence,
@@ -324,11 +334,12 @@ public class NucleotideSequenceParser {
 	 * 
 	 * @param nonDirectionSeuqence
 	 * @return list of nucleotides
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 */
 	private static List<Nucleotide> getNucleotideList(
-			String nonDirectionSeuqence) throws NotationException, IOException,
-			JDOMException {
+			String nonDirectionSeuqence) throws NucleotideLoadingException,
+			NotationException {
 		return getNucleotideList(nonDirectionSeuqence,
 				NotationConstant.NOTATION_SOURCE);
 	}
@@ -339,11 +350,12 @@ public class NucleotideSequenceParser {
 	 * 
 	 * @param nonDirectionSeuqence
 	 * @return list of nucleotides
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 */
 	private static List<Nucleotide> getNucleotideList(
 			String nonDirectionSeuqence, String notationSource)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 
 		if (null == nonDirectionSeuqence) {
 			throw new NotationException("Nucleotide Sequence must be specified");
@@ -484,9 +496,14 @@ public class NucleotideSequenceParser {
 	 * @param antiSenseSeq
 	 *            5-3 nucleotide sequence for default notation
 	 * @return HELM notation for siRNA
+	 * @throws JDOMException
+	 * @throws IOException
+	 * @throws NotationException
+	 * @throws NucleotideLoadingException
 	 */
 	public static String getSirnaNotation(String senseSeq, String antiSenseSeq)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException, IOException,
+			JDOMException {
 		return getSirnaNotation(senseSeq, antiSenseSeq, RNA_DESIGN_NONE);
 	}
 
@@ -498,13 +515,14 @@ public class NucleotideSequenceParser {
 	 * @param antiSenseSeq
 	 * @param rnaDesignType
 	 * @return HELM Notation for siRNA
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static String getSirnaNotation(String senseSeq, String antiSenseSeq,
-			String rnaDesignType) throws NotationException, IOException,
-			JDOMException {
+			String rnaDesignType) throws NucleotideLoadingException,
+			NotationException, IOException, JDOMException {
 		validateSirnaDesign(senseSeq, antiSenseSeq, rnaDesignType);
 
 		StringBuffer sb = new StringBuffer();
@@ -552,8 +570,8 @@ public class NucleotideSequenceParser {
 	}
 
 	private static String hybridization(String senseSeq, String antiSenseSeq,
-			String rnaDesignType) throws NotationException, IOException,
-			JDOMException {
+			String rnaDesignType) throws NucleotideLoadingException,
+			NotationException, IOException, JDOMException {
 		String basePair = "";
 		if (senseSeq != null && senseSeq.length() > 0 && antiSenseSeq != null
 				&& antiSenseSeq.length() > 0) {
@@ -625,7 +643,7 @@ public class NucleotideSequenceParser {
 
 	private static boolean validateSirnaDesign(String senseSeq,
 			String antisenseSeq, String rnaDesignType)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 		if (RNA_DESIGN_NONE.equalsIgnoreCase(rnaDesignType)) {
 			return true;
 		}
@@ -695,12 +713,13 @@ public class NucleotideSequenceParser {
 	 * @param sequence
 	 *            - input nucleotide sequence
 	 * @return sequence in opposite direction (from right to left)
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static String getReverseSequence(String sequence)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 		List<Nucleotide> l = getNucleotideList(sequence);
 		List<Nucleotide> rl = getReverseList(l);
 		StringBuffer sb = new StringBuffer();
@@ -716,12 +735,13 @@ public class NucleotideSequenceParser {
 	 * @param sequence
 	 *            modified sequence
 	 * @return single letter natural analog sequence
+	 * @throws NucleotideLoadingException
 	 * @throws org.helm.notation.NotationException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static String getNaturalAnalogSequence(String sequence)
-			throws NotationException, IOException, JDOMException {
+			throws NucleotideLoadingException, NotationException {
 		List<Nucleotide> l = getNucleotideList(sequence);
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < l.size(); i++) {
@@ -738,21 +758,23 @@ public class NucleotideSequenceParser {
 	 *            - siRNA antisense strand sequence, could be in 5-3 (same
 	 *            direction) or 3-5 (opposition direction)
 	 * @return true if opposite, false is same
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static boolean isInOppositeDirection(String senseSeq,
-			String antiSenseSeq) throws NotationException, IOException,
-			JDOMException {
+			String antiSenseSeq) throws NucleotideLoadingException, NotationException {
 		String upperSS = senseSeq.toUpperCase();
 		String upperAS = antiSenseSeq.toUpperCase();
 		String normalCompAS = NucleotideSequenceParser
 				.getNormalComplementSequence(upperAS);
 		String reverseCompAS = NucleotideSequenceParser
 				.getReverseComplementSequence(upperAS);
+
 		String normalMax = getMaxMatchFragment(upperSS, normalCompAS);
 		String reverseMax = getMaxMatchFragment(upperSS, reverseCompAS);
+
 		if (normalMax.length() < reverseMax.length()) {
 			return true;
 		} else {

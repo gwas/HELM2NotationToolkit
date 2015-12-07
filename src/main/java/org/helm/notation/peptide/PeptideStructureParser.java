@@ -25,13 +25,17 @@ package org.helm.notation.peptide;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.StructureException;
 import org.helm.notation.tools.*;
+
 import chemaxon.struc.MolAtom;
 import chemaxon.struc.MolBond;
 import chemaxon.struc.Molecule;
+
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,7 +104,7 @@ public class PeptideStructureParser {
         this.seedID = seedID;
     }
 
-    public void initAminoAcidLists() throws MonomerException, IOException, JDOMException, StructureException {
+    public void initAminoAcidLists() throws MonomerException, IOException, JDOMException, StructureException, MonomerLoadingException {
         Map<String, Monomer> idMonomerMap = MonomerFactory.getInstance().getMonomerDB().get(Monomer.PEPTIDE_POLYMER_TYPE);
         Set<String> idSet = idMonomerMap.keySet();
         for (Iterator<String> i = idSet.iterator(); i.hasNext();) {

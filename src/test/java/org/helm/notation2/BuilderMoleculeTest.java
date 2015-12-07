@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
-import org.helm.chemtoolkit.chemaxon.ChemMolecule;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
@@ -15,14 +14,14 @@ import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.testng.annotations.Test;
 
 public class BuilderMoleculeTest {
 
   @Test(expectedExceptions = BuilderMoleculeException.class)
   public void testBuildMoleculeFromSinglePolymerBLOBWithException() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
+      IOException, NotationException, org.jdom2.JDOMException,
       StructureException, CalculationException, HELM2HandledException,
       BuilderMoleculeException, CTKException
 
@@ -32,7 +31,6 @@ public class BuilderMoleculeTest {
     BuilderMolecule.buildMoleculefromSinglePolymer(node);
 
   }
-
 
   @Test(expectedExceptions = BuilderMoleculeException.class)
   public void testBuildMoleculeFromSinglePolymerCHEMEmptyWithException() throws ExceptionState, MonomerException,
@@ -59,7 +57,9 @@ public class BuilderMoleculeTest {
     MonomerNotationUnit mon = new MonomerNotationUnit("[MCC]",
         node.getPolymerID().getType());
     node.getPolymerElements().getListOfElements().add(mon);
-    AbstractMolecule molecule = BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(), "")).getMolecule();
+    AbstractMolecule molecule =
+        BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(),
+            node.getPolymerElements(), "")).getMolecule();
     System.out.println(molecule.getAttachments().size());
     System.out.println(ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularFormula());
   }
@@ -82,9 +82,9 @@ public class BuilderMoleculeTest {
     MonomerNotationUnit mon = new MonomerNotationUnit("[CZ]",
         node.getPolymerID().getType());
     node.getPolymerElements().getListOfElements().add(mon);
-    BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(), ""));
+    BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(),
+        ""));
   }
-
 
   @Test
   public void testBuildMoleculeFromSinglePolymerCHEMSMILES() throws ExceptionState, MonomerException,
@@ -98,8 +98,8 @@ public class BuilderMoleculeTest {
     MonomerNotationUnit mon = new MonomerNotationUnit("[OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1]",
         node.getPolymerID().getType());
     node.getPolymerElements().getListOfElements().add(mon);
-    BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(), ""));
+    BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(),
+        ""));
   }
-
 
 }

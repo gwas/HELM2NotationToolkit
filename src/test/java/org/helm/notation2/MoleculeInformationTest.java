@@ -9,18 +9,19 @@ import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.jdom.JDOMException;
-import org.testng.annotations.Test;
+import org.jdom2.JDOMException;
 
 public class MoleculeInformationTest {
   // @Test
-  public void testgetMolecularFormularExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
+  public void testgetMolecularFormularExamples() throws ExceptionState, IOException, JDOMException,
+      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
     String notation = "CHEM1{[MCC]}|CHEM2{[hxy]}$CHEM1,CHEM2,1:R1-1:R1$$$";
     testMolecularFormular(notation);
 
   }
 
-  private void testMolecularFormular(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
+  private void testMolecularFormular(String notation) throws ExceptionState, IOException, JDOMException,
+      BuilderMoleculeException, CTKException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();

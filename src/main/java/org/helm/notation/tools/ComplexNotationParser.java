@@ -21,26 +21,6 @@
  ******************************************************************************/
 package org.helm.notation.tools;
 
-import chemaxon.marvin.plugin.PluginException;
-import chemaxon.struc.MolAtom;
-import chemaxon.struc.Molecule;
-
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
-import org.helm.notation.MonomerStore;
-import org.helm.notation.NotationConstant;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
-import org.helm.notation.model.Attachment;
-import org.helm.notation.model.ComplexPolymer;
-import org.helm.notation.model.MoleculeInfo;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.model.Nucleotide;
-import org.helm.notation.model.RgroupStructure;
-import org.helm.notation.model.PolymerEdge;
-import org.helm.notation.model.PolymerNode;
-import org.helm.notation.model.RNAPolymerNode;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,12 +30,33 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
+import org.helm.notation.MonomerStore;
+import org.helm.notation.NotationConstant;
+import org.helm.notation.NotationException;
+import org.helm.notation.NucleotideLoadingException;
+import org.helm.notation.StructureException;
+import org.helm.notation.model.Attachment;
+import org.helm.notation.model.ComplexPolymer;
+import org.helm.notation.model.MoleculeInfo;
+import org.helm.notation.model.Monomer;
+import org.helm.notation.model.Nucleotide;
+import org.helm.notation.model.PolymerEdge;
+import org.helm.notation.model.PolymerNode;
+import org.helm.notation.model.RNAPolymerNode;
+import org.helm.notation.model.RgroupStructure;
 import org.jdom2.JDOMException;
+
+import chemaxon.marvin.plugin.PluginException;
+import chemaxon.struc.MolAtom;
+import chemaxon.struc.Molecule;
 
 /**
  * 10/4/2011
@@ -128,10 +129,11 @@ public class ComplexNotationParser {
 	 * @throws org.helm.notation.MonomerException
 	 * @throws org.helm.notation.StructureException
 	 * @throws org.jdom.JDOMException
+	 * @throws MonomerLoadingException 
 	 */
 	public static String getComplexPolymerSMILES(String extendedNotation)
 			throws NotationException, IOException, MonomerException,
-			StructureException, JDOMException {
+			StructureException, JDOMException, MonomerLoadingException {
 
 		return getComplexPolymerSMILES(extendedNotation, null);
 	}
@@ -148,10 +150,11 @@ public class ComplexNotationParser {
 	 * @throws org.helm.notation.MonomerException
 	 * @throws org.helm.notation.StructureException
 	 * @throws org.jdom.JDOMException
+	 * @throws MonomerLoadingException 
 	 */
 	public static String getComplexPolymerSMILES(String extendedNotation,
 			MonomerStore monomerStore) throws IOException, NotationException,
-			MonomerException, StructureException, JDOMException {
+			MonomerException, StructureException, JDOMException, MonomerLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -175,7 +178,7 @@ public class ComplexNotationParser {
 
 	public static String getComplexPolymerCanonicalSmiles(
 			String extendedNotation) throws IOException, NotationException,
-			MonomerException, StructureException, JDOMException {
+			MonomerException, StructureException, JDOMException, MonomerLoadingException {
 
 		return getComplexPolymerCanonicalSmiles(extendedNotation, null);
 	}
@@ -183,7 +186,7 @@ public class ComplexNotationParser {
 	public static String getComplexPolymerCanonicalSmiles(
 			String extendedNotation, MonomerStore monomerStore)
 			throws IOException, NotationException, MonomerException,
-			StructureException, JDOMException {
+			StructureException, JDOMException, MonomerLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -266,10 +269,11 @@ public class ComplexNotationParser {
 	 * @throws org.helm.notation.MonomerException
 	 * @throws org.helm.notation.StructureException
 	 * @throws org.jdom.JDOMException
+	 * @throws MonomerLoadingException 
 	 */
 	public static List<Molecule> getComplexPolymerStructure(
 			String extendedNotation) throws IOException, NotationException,
-			MonomerException, StructureException, JDOMException {
+			MonomerException, StructureException, JDOMException, MonomerLoadingException {
 
 		return getComplexPolymerStructure(extendedNotation, null);
 	}
@@ -277,7 +281,7 @@ public class ComplexNotationParser {
 	public static List<Molecule> getComplexPolymerStructure(
 			String extendedNotation, MonomerStore monomerStore)
 			throws IOException, NotationException, MonomerException,
-			StructureException, JDOMException {
+			StructureException, JDOMException, MonomerLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -291,6 +295,7 @@ public class ComplexNotationParser {
 
 		ComplexPolymer complexPolymer = parse(extendedNotation, monomerStore);
 		validateComplexPolymer(complexPolymer, monomerStore);
+
 		List<PolymerNode> nodeList = complexPolymer.getPolymerNodeList();
 		List<PolymerEdge> edgeList = complexPolymer.getPolymerEdgeList();
 
@@ -322,7 +327,6 @@ public class ComplexNotationParser {
 			struc.setRgroupMap(newRgMap);
 		}
 
-
 		// list string could be duplicating for self-connection and multiple
 		// connections
 		// single element list indicates standalone polymer node
@@ -341,7 +345,9 @@ public class ComplexNotationParser {
 			} else {
 				List<PolymerEdge> connEdgeList = getConnectedEdgeList(nList,
 						edgeList);
+
 				Map<List<String>, RgroupStructure> mergedNodeStrucMap = new HashMap<List<String>, RgroupStructure>();
+
 				// reduce the number of edges to 0 by merging the two nodes into
 				// a new node, and updating mergedNodeStrucMap
 				// final merged node structure map size is one since all nodes
@@ -361,8 +367,6 @@ public class ComplexNotationParser {
 						sourceStruc = sourceEntry.getValue();
 					}
 
-
-
 					List<String> targetIDList = new ArrayList<String>();
 					RgroupStructure targetStruc;
 					Entry<List<String>, RgroupStructure> targetEntry = getStructureEntry(
@@ -376,12 +380,10 @@ public class ComplexNotationParser {
 
 					String sourceR = edge.getSourceUID(); // e.g. RNA1:5:R1
 					String targetR = edge.getTargetUID();
-
 					Map<String, MolAtom> sourceAtomMap = sourceStruc
 							.getRgroupMap();
 					Map<String, MolAtom> targetAtomMap = targetStruc
 							.getRgroupMap();
-
 
 					Molecule tempMol = sourceStruc.getMolecule();
 					StructureParser.merge(tempMol,
@@ -455,7 +457,7 @@ public class ComplexNotationParser {
 	private static List<Molecule> getMoleculeList(List<PolymerNode> nodeList,
 			Map<Integer, RgroupStructure> groupStructureMap,
 			MonomerStore monomerStore) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+      MonomerException, IOException, StructureException, MonomerLoadingException, org.jdom2.JDOMException {
 		List<Molecule> l = new ArrayList<Molecule>();
 		Collection<RgroupStructure> c = groupStructureMap.values();
 		for (Iterator i = c.iterator(); i.hasNext();) {
@@ -502,7 +504,6 @@ public class ComplexNotationParser {
 			}
 			l.add(mol);
 		}
-
 		return l;
 	}
 
@@ -652,7 +653,7 @@ public class ComplexNotationParser {
 	 */
 	public static boolean validateComplexNotation(String extendedNotation,
 			MonomerStore monomerStore) throws NotationException,
-			MonomerException, IOException, StructureException, JDOMException {
+			MonomerException, StructureException, JDOMException, IOException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -830,6 +831,7 @@ public class ComplexNotationParser {
 			Map<String, RgroupStructure> polymerNodeStructureMap)
 			throws NotationException {
 		RgroupStructure rstructure = polymerNodeStructureMap.get(node);
+
 		if (!(nodeMap.containsKey(node))) {
 			throw new NotationException(
 					"Polymer edge contains unknown polymer node ID");
@@ -849,7 +851,7 @@ public class ComplexNotationParser {
 
 	private static void validateGenericAttachment(String[] nodes,
 			Map<String, String> nodeMap) throws NotationException {
-    for (String node : nodes) {
+		for (String node : nodes) {
 			if (!(nodeMap.containsKey(node))) {
 				throw new NotationException(
 						"Polymer edge contains unknown polymer node ID");
@@ -1202,14 +1204,14 @@ public class ComplexNotationParser {
 
 	public static List<RNAPolymerNode> getRNAPolymerNodeList(
 			String complexNotation) throws NotationException, MonomerException,
-			IOException, JDOMException, StructureException {
+			IOException, JDOMException, StructureException, NucleotideLoadingException {
 		return getRNAPolymerNodeList(complexNotation, null);
 	}
 
 	public static List<RNAPolymerNode> getRNAPolymerNodeList(
 			String complexNotation, MonomerStore monomerStore)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			JDOMException, StructureException, NucleotideLoadingException {
 		monomerStore = checkForMonomerStore(monomerStore);
 		List<PolymerNode> list = getPolymerNodeList(getAllNodeString(complexNotation));
 		String allNodeAnnotationString = getAllNodeLabelString(complexNotation);
@@ -1248,10 +1250,11 @@ public class ComplexNotationParser {
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 * @throws org.helm.notation.StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static String[] getFormatedSirnaSequences(String complexNotaton)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			JDOMException, StructureException, NucleotideLoadingException {
 		return getFormatedSirnaSequences(complexNotaton, DEFAULT_PADDING_CHAR,
 				DEFAULT_BASE_PAIR_CHAR);
 	}
@@ -1269,10 +1272,11 @@ public class ComplexNotationParser {
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 * @throws org.helm.notation.StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static String[] getFormatedSirnaSequences(String complexNotation,
 			String paddingChar, String basePairChar) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerException, IOException, JDOMException, StructureException, NucleotideLoadingException {
 		if (null == paddingChar || paddingChar.length() != 1) {
 			throw new NotationException(
 					"Padding string must be single character");
@@ -1498,10 +1502,11 @@ public class ComplexNotationParser {
 	 * @throws ClassNotFoundException
 	 * @throws StructureException
 	 * @throws JDOMException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static String getCanonicalNotation(String complexNotation)
 			throws NotationException, MonomerException, IOException,
-			ClassNotFoundException, StructureException, JDOMException {
+			ClassNotFoundException, StructureException, JDOMException, NucleotideLoadingException {
 
 		return getCanonicalNotation(complexNotation, null);
 	}
@@ -1518,11 +1523,12 @@ public class ComplexNotationParser {
 	 * @throws ClassNotFoundException
 	 * @throws StructureException
 	 * @throws JDOMException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static String getCanonicalNotation(String complexNotation,
 			MonomerStore monomerStore) throws NotationException,
 			MonomerException, IOException, ClassNotFoundException,
-			StructureException, JDOMException {
+			StructureException, JDOMException, NucleotideLoadingException {
 
 		return getCanonicalNotation(complexNotation, false, monomerStore);
 	}
@@ -1539,12 +1545,13 @@ public class ComplexNotationParser {
 	 * @throws ClassNotFoundException
 	 * @throws StructureException
 	 * @throws JDOMException
+	 * @throws NucleotideLoadingException 
 	 */
 
 	public static String getCanonicalNotation(String complexNotation,
 			boolean includeValidation) throws NotationException,
 			MonomerException, IOException, ClassNotFoundException,
-			StructureException, JDOMException {
+			StructureException, JDOMException, NucleotideLoadingException {
 
 		return getCanonicalNotation(complexNotation, includeValidation, null);
 	}
@@ -1552,7 +1559,7 @@ public class ComplexNotationParser {
 	public static String getCanonicalNotation(String complexNotation,
 			boolean includeValidation, MonomerStore monomerStore)
 			throws NotationException, MonomerException, IOException,
-			ClassNotFoundException, StructureException, JDOMException {
+			ClassNotFoundException, StructureException, JDOMException, NucleotideLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -1572,7 +1579,6 @@ public class ComplexNotationParser {
 							.startsWith(
 									SimpleNotationParser
 											.getAdHocMonomerIDPrefix(Monomer.CHEMICAL_POLYMER_TYPE))) {
-
 
 				Monomer m = monomerStore.getMonomer(
 						Monomer.CHEMICAL_POLYMER_TYPE, node.getLabel());
@@ -1980,10 +1986,11 @@ public class ComplexNotationParser {
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 * @throws org.helm.notation.StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static String hybridize(String complexNotation)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			JDOMException, StructureException, NucleotideLoadingException {
 		String result = null;
 		List<RNAPolymerNode> l = getRNAPolymerNodeList(complexNotation);
 		String basePairString = getAllBasePairString(complexNotation);
@@ -2002,14 +2009,14 @@ public class ComplexNotationParser {
 
 	private static String getBasePairString(RNAPolymerNode node1,
 			RNAPolymerNode node2) throws NotationException, IOException,
-			JDOMException, MonomerException, StructureException {
+			JDOMException, MonomerException, StructureException, NucleotideLoadingException {
 		return getBasePairString(node1, node2, null);
 	}
 
 	private static String getBasePairString(RNAPolymerNode node1,
 			RNAPolymerNode node2, MonomerStore monomerStore)
 			throws NotationException, IOException, JDOMException,
-			MonomerException, StructureException {
+			MonomerException, StructureException, NucleotideLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -2317,9 +2324,11 @@ public class ComplexNotationParser {
 	 * @throws org.jdom.JDOMException
 	 * @throws org.helm.notation.NotationException
 	 * @throws org.helm.notation.StructureException
+	 * @throws MonomerLoadingException
 	 */
 	public static String standardize(String notation) throws MonomerException,
-			IOException, JDOMException, NotationException, StructureException {
+			IOException, JDOMException, NotationException, StructureException,
+			MonomerLoadingException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -2339,6 +2348,7 @@ public class ComplexNotationParser {
 	 *            RNA, Peptide, and Chem
 	 * @param monomerStore
 	 * @return complex notation
+	 * @throws MonomerLoadingException
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
@@ -2346,8 +2356,8 @@ public class ComplexNotationParser {
 	 * @throws org.helm.notation.StructureException
 	 */
 	public static String standardize(String notation, MonomerStore monomerStore)
-			throws MonomerException, IOException, JDOMException,
-			NotationException, StructureException {
+			throws MonomerLoadingException, NotationException,
+			MonomerException, StructureException, JDOMException, IOException {
 		if (null == notation || notation.length() == 0) {
 			return notation;
 		}
@@ -2386,10 +2396,11 @@ public class ComplexNotationParser {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static boolean hasNucleotideModification(
 			List<PolymerNode> polymerNodes) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerException, IOException, JDOMException, StructureException, NucleotideLoadingException {
 
 		return hasNucleotideModification(polymerNodes, null);
 	}
@@ -2407,11 +2418,12 @@ public class ComplexNotationParser {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static boolean hasNucleotideModification(
 			List<PolymerNode> polymerNodes, MonomerStore monomerStore)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			JDOMException, StructureException, NucleotideLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -2471,10 +2483,11 @@ public class ComplexNotationParser {
 	 * @throws JDOMException
 	 * @throws PluginException
 	 * @throws StructureException
+	 * @throws MonomerLoadingException 
 	 */
 	public static MoleculeInfo getMoleculeInfo(String extendedNotation)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, PluginException, StructureException {
+			JDOMException, PluginException, StructureException, MonomerLoadingException {
 
 		return getMoleculeInfo(extendedNotation, null);
 	}
@@ -2492,11 +2505,12 @@ public class ComplexNotationParser {
 	 * @throws JDOMException
 	 * @throws PluginException
 	 * @throws StructureException
+	 * @throws MonomerLoadingException 
 	 */
 	public static MoleculeInfo getMoleculeInfo(String extendedNotation,
 			MonomerStore monomerStore) throws NotationException,
 			MonomerException, IOException, JDOMException, PluginException,
-			StructureException {
+			StructureException, MonomerLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -2519,12 +2533,13 @@ public class ComplexNotationParser {
 	 * @throws JDOMException
 	 * @throws PluginException
 	 * @throws StructureException
+	 * @throws MonomerLoadingException 
 	 */
 
 	public static MoleculeInfo getMoleculeInfo(String extendedNotation,
 			boolean includeValidation) throws NotationException,
 			MonomerException, IOException, JDOMException, PluginException,
-			StructureException {
+			StructureException, MonomerLoadingException {
 		return getMoleculeInfo(extendedNotation, includeValidation, null);
 	}
 
@@ -2545,11 +2560,12 @@ public class ComplexNotationParser {
 	 * @throws JDOMException
 	 * @throws PluginException
 	 * @throws StructureException
+	 * @throws MonomerLoadingException 
 	 */
 	public static MoleculeInfo getMoleculeInfo(String extendedNotation,
 			boolean includeValidation, MonomerStore monomerStore)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, PluginException, StructureException {
+			JDOMException, PluginException, StructureException, MonomerLoadingException {
 
 		monomerStore = checkForMonomerStore(monomerStore);
 
@@ -2654,7 +2670,6 @@ public class ComplexNotationParser {
 			}
 			nodeStrucMap.put(nodeId, struc);
 		}
-
 		return nodeStrucMap;
 	}
 

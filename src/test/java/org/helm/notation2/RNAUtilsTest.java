@@ -9,14 +9,15 @@ import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class RNAUtilsTest {
 
   @Test
-  public void getReverseSequenceTest() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, RNAUtilsException, HELM2HandledException, NotationException,
+  public void getReverseSequenceTest() throws ExceptionState, IOException, JDOMException, FastaFormatException,
+      AnalogSequenceException, RNAUtilsException, HELM2HandledException, NotationException,
       org.jdom2.JDOMException {
     String notation = "UTA";
     ContainerHELM2 containerhelm2 = produceContainerHELM2(notation);
@@ -25,7 +26,8 @@ public class RNAUtilsTest {
   }
 
   @Test
-  public void getNaturalAnalogSequenceTest() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, RNAUtilsException, HELM2HandledException,
+  public void getNaturalAnalogSequenceTest() throws ExceptionState, IOException, JDOMException, FastaFormatException,
+      AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
       org.jdom2.JDOMException {
     String notation = "UTA";
@@ -35,7 +37,8 @@ public class RNAUtilsTest {
   }
 
   @Test
-  public void generateComplementTest() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, RNAUtilsException, HELM2HandledException,
+  public void generateComplementTest() throws ExceptionState, IOException, JDOMException, FastaFormatException,
+      AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
       org.jdom2.JDOMException {
     String notation = "UTACCGG";
@@ -45,7 +48,8 @@ public class RNAUtilsTest {
   }
 
   @Test
-  public void generateAntiparallel() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, RNAUtilsException, HELM2HandledException,
+  public void generateAntiparallel() throws ExceptionState, IOException, JDOMException, FastaFormatException,
+      AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
       org.jdom2.JDOMException {
     String notation = "UTACCGG";
@@ -54,7 +58,8 @@ public class RNAUtilsTest {
   }
 
   @Test
-  public void generateInverse() throws ExceptionState, IOException, JDOMException, FastaFormatException, AnalogSequenceException, RNAUtilsException, HELM2HandledException,
+  public void generateInverse() throws ExceptionState, IOException, JDOMException, FastaFormatException,
+      AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
       org.jdom2.JDOMException {
     String notation = "UTA";
@@ -63,7 +68,8 @@ public class RNAUtilsTest {
   }
 
   @Test
-  public void AreInOppositeDirectionTest() throws RNAUtilsException, HELM2HandledException, org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, NotationException,
+  public void AreInOppositeDirectionTest() throws RNAUtilsException, HELM2HandledException,
+      org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, NotationException,
       IOException, org.jdom2.JDOMException {
     String notationOne = "CAGTT";
     String notationTwo = "AACUG";
@@ -73,15 +79,16 @@ public class RNAUtilsTest {
   }
 
   @Test
-  public void getSirnaSequence() throws RNAUtilsException, HELM2HandledException, org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, NotationException,
+  public void getSirnaSequence() throws RNAUtilsException, HELM2HandledException,
+      org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, NotationException,
       IOException, org.jdom2.JDOMException, JDOMException {
     String notation = "CAGTT";
-    
+
     System.out.println(RNAUtils.getSirnaNotation(notation).getHELM2Notation().toHELM2());
   }
 
-
-  private ContainerHELM2 produceContainerHELM2(String notation) throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException {
+  private ContainerHELM2 produceContainerHELM2(String notation)
+      throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException {
     ContainerHELM2 containerhelm2 = SequenceConverter.readRNA(notation);
     return containerhelm2;
   }

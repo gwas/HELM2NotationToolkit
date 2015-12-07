@@ -1,24 +1,18 @@
 /**
- * *****************************************************************************
- * Copyright C 2015, The Pistoia Alliance
+ * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation2;
@@ -33,16 +27,13 @@ import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
-import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.HELM2HandledException;
-import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
-
 
 /**
  * MethodsForContainerHELM2
@@ -51,17 +42,15 @@ import org.jdom2.JDOMException;
  */
 public final class MethodsForContainerHELM2 {
 
-
-
   /**
-   * method to get all HELM1 valid MonomerNotations Only on these monomers
-   * required HELM1 functions are performed
+   * method to get all HELM1 valid MonomerNotations Only on these monomers required HELM1 functions are performed
    * 
    * @param monomerNotations
    * @return
    * @throws HELM2HandledException
    */
-  public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations) throws HELM2HandledException {
+  public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations)
+      throws HELM2HandledException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (MonomerNotation monomerNotation : monomerNotations) {
       /* group element */
@@ -115,7 +104,8 @@ public final class MethodsForContainerHELM2 {
    * @throws HELM2HandledException
    * @throws CTKException
    */
-  protected static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException, IOException, JDOMException, HELM2HandledException, CTKException {
+  protected static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException,
+      IOException, JDOMException, HELM2HandledException, CTKException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (MonomerNotation monomerNotation : monomerNotations) {
       items.addAll(Validation.getAllMonomers(monomerNotation));
@@ -152,7 +142,7 @@ public final class MethodsForContainerHELM2 {
     if (not.getPolymerElements().getListOfElements().get(position - 1) instanceof MonomerNotationUnit) {
       return true;
     }
- else {
+    else {
       return false;
     }
   }
@@ -167,11 +157,11 @@ public final class MethodsForContainerHELM2 {
    */
   protected static Monomer getMonomer(String type, String id) throws MonomerException {
     try {
-    MonomerFactory monomerFactory = MonomerFactory.getInstance();
-    MonomerStore monomerStore = monomerFactory.getMonomerStore();
-    Monomer monomer;
-    monomer = monomerStore.getMonomer(type, id);
-    if (monomer == null) {
+      MonomerFactory monomerFactory = MonomerFactory.getInstance();
+      MonomerStore monomerStore = monomerFactory.getMonomerStore();
+      Monomer monomer;
+      monomer = monomerStore.getMonomer(type, id);
+      if (monomer == null) {
         AbstractChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
         manipulator.validateSMILES(id);
         monomer = new Monomer(type, "Undefined", "", "");
@@ -181,16 +171,12 @@ public final class MethodsForContainerHELM2 {
         monomer.setCanSMILES(manipulator.canonicalize(id));
       }
       return monomer;
-    } catch (CTKException | IOException | JDOMException e) {
+    } catch (CTKException | IOException e) {
       /*
-       * monomer is not in the database and also not a valid SMILES -> throw
-       * exception
+       * monomer is not in the database and also not a valid SMILES -> throw exception
        */
       throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES");
     }
   }
 
-
-
 }
-

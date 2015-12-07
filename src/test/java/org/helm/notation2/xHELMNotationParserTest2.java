@@ -1,11 +1,5 @@
 package org.helm.notation2;
 
-import org.testng.annotations.Test;
-
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.Assert;
-import org.testng.AssertJUnit;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +10,6 @@ import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
-import org.helm.notation.model.MonomerCache;
-import org.helm.notation.tools.xHelmNotationExporter;
 import org.helm.notation.tools.xHelmNotationParser;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
@@ -32,12 +24,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
+import org.testng.AssertJUnit;
 
 import chemaxon.marvin.plugin.PluginException;
-public class xHELMNotationParserTest2 {
 
+public class xHELMNotationParserTest2 {
 
   private ContainerHELM2 containerhelm2 = null;
 
@@ -52,8 +43,7 @@ public class xHELMNotationParserTest2 {
     return doc.getRootElement();
   }
 
-  private void readNotation(String notation) throws ParserException,
-      org.jdom.JDOMException {
+  private void readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0"))) {
       notation = new ConverterHELM1ToHELM2().doConvert(notation);
@@ -77,7 +67,7 @@ public class xHELMNotationParserTest2 {
    * @throws org.jdom.JDOMException
    */
   public void validateHELM(String helm) throws ParserException,
-      ValidationException, org.jdom.JDOMException {
+      ValidationException, JDOMException {
     /* Read */
     readNotation(helm);
 
@@ -90,14 +80,15 @@ public class xHELMNotationParserTest2 {
   }
 
   // @Test
- public void testParseXHelmNotation() throws JDOMException, IOException,
- MonomerException, NotationException, StructureException,
- ClassNotFoundException, PluginException, ParserException,
- ValidationException, HELM1FormatException, org.jdom.JDOMException {
+  public void testParseXHelmNotation() throws JDOMException, IOException,
+      MonomerException, NotationException, StructureException,
+      ClassNotFoundException, PluginException, ParserException,
+      ValidationException, HELM1FormatException, JDOMException {
 
     String workingDir = System.getProperty("user.dir");
     System.out.println("Current working directory : " + workingDir);
-    Element xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/PeptideLinkerNucleotide.xhelm");
+    Element xHELMRootElement =
+        getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/PeptideLinkerNucleotide.xhelm");
     String helmString = xHelmNotationParser.getHELMNotationString((xHELMRootElement));
 
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
@@ -149,15 +140,12 @@ public class xHELMNotationParserTest2 {
   // @Test
   public void testQRPeptide() throws JDOMException, IOException,
       MonomerException, NotationException, StructureException,
-      ClassNotFoundException, ParserException, ValidationException,
-      org.jdom.JDOMException {
+      ClassNotFoundException, ParserException, ValidationException, JDOMException {
     Element xHELMRootElement = getXHELMRootElement("resources/qr_peptide.xhelm");
     String helmString = xHelmNotationParser.getComplexNotationString(xHELMRootElement);
     MonomerStore store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
     AssertJUnit.assertEquals("PEPTIDE1{[QR]}$$$$", helmString);
     validateHELM(helmString);
   }
-
-
 
 }

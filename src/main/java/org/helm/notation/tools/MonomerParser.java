@@ -24,13 +24,16 @@ package org.helm.notation.tools;
 import chemaxon.struc.MolAtom;
 import chemaxon.struc.MolBond;
 import chemaxon.struc.Molecule;
+
 import com.pfizer.pgrd.sdlib.EncoderException;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -27,10 +27,12 @@ import chemaxon.struc.Molecule;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationConstant;
 import org.helm.notation.NotationException;
 import org.helm.notation.NucleotideFactory;
+import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.MoleculeInfo;
@@ -260,8 +262,7 @@ public class SimpleNotationParser {
 	 * @throws org.jdom.JDOMException
 	 */
 	public static boolean validateSimpleNotationForRNA(String polymerNotation,
-			MonomerStore monomerStore) throws IOException, NotationException,
-			MonomerException, StructureException, JDOMException {
+			MonomerStore monomerStore) throws NotationException, IOException, StructureException  {
 		return validateSimpleNotation(polymerNotation,
 				Monomer.NUCLIEC_ACID_POLYMER_TYPE, monomerStore);
 	}
@@ -306,9 +307,7 @@ public class SimpleNotationParser {
 	 * @throws org.jdom.JDOMException
 	 */
 	public static boolean validateSimpleNotation(String polymerNotation,
-			String polymerType, MonomerStore monomerStore) throws IOException,
-			NotationException, MonomerException, StructureException,
-			JDOMException {
+			String polymerType, MonomerStore monomerStore) throws NotationException, IOException, StructureException  {
 		getSimplePolymerStructure(polymerNotation, polymerType, monomerStore);
 		return true;
 	}
@@ -346,6 +345,7 @@ public class SimpleNotationParser {
 	 * @param polymerType
 	 * @param monomerStore
 	 * @return RgroupStructure
+	 * @throws JDOMException 
 	 * @throws java.io.IOException
 	 * @throws org.helm.notation.NotationException
 	 * @throws org.helm.notation.MonomerException
@@ -353,15 +353,14 @@ public class SimpleNotationParser {
 	 */
 	public static RgroupStructure getSimplePolymerStructure(
 			String polymerNotation, String polymerType,
-			MonomerStore monomerStore) throws IOException, NotationException,
-			MonomerException, StructureException, JDOMException {
+			MonomerStore monomerStore) throws NotationException, IOException, StructureException{
 		List<Monomer> monomerList = getMonomerList(polymerNotation,
 				polymerType, monomerStore);
 		if (monomerList == null || monomerList.size() == 0) {
 			throw new NotationException("Polymer notation contains no monomer");
 		}
-
 		List<RgroupStructure> structureList = getMonomerStructureList(monomerList);
+
 		if (monomerList.size() == structureList.size()) {
 
 			Molecule molecule = null;
@@ -605,9 +604,7 @@ public class SimpleNotationParser {
 	 * @throws org.jdom.JDOMException
 	 */
 	public static List<Monomer> getMonomerList(String polymerNotation,
-			String polymerType, MonomerStore monomerStore) throws IOException,
-			NotationException, MonomerException, JDOMException,
-			StructureException {
+			String polymerType, MonomerStore monomerStore) throws NotationException{
 		List<Monomer> list = new ArrayList<Monomer>();
 		List<String> ids = getMonomerIDList(polymerNotation, polymerType,
 				monomerStore);
@@ -626,14 +623,14 @@ public class SimpleNotationParser {
 	 * @param polymerNotation
 	 *            - simple RNA polymer notation
 	 * @return Nucleotide list
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
+	 * @throws StructureException 
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
-	public static List<Nucleotide> getNucleotideList(String polymerNotation)
-			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+	public static List<Nucleotide> getNucleotideList(String polymerNotation) throws NucleotideLoadingException, NotationException, IOException, StructureException{
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -653,14 +650,15 @@ public class SimpleNotationParser {
 	 *            - simple RNA polymer notation
 	 * @param monomerStore
 	 * @return Nucleotide list
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
+	 * @throws StructureException 
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static List<Nucleotide> getNucleotideList(String polymerNotation,
-			MonomerStore monomerStore) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerStore monomerStore) throws NucleotideLoadingException, NotationException, IOException, StructureException  {
 		return getNucleotideList(polymerNotation, true, monomerStore);
 	}
 
@@ -674,14 +672,15 @@ public class SimpleNotationParser {
 	 *            - true will run structure validation, false will not run
 	 *            structure validation.
 	 * @return Nucleotide list
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
+	 * @throws StructureException 
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static List<Nucleotide> getNucleotideList(String polymerNotation,
-			boolean validate) throws NotationException, MonomerException,
-			IOException, JDOMException, StructureException {
+			boolean validate) throws NucleotideLoadingException, NotationException, IOException, StructureException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -704,15 +703,15 @@ public class SimpleNotationParser {
 	 *            structure validation.
 	 * @param monomerStore
 	 * @return Nucleotide list
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
+	 * @throws StructureException 
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static List<Nucleotide> getNucleotideList(String polymerNotation,
-			boolean validate, MonomerStore monomerStore)
-			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			boolean validate, MonomerStore monomerStore) throws NucleotideLoadingException, NotationException, IOException, StructureException{
 		if (validate) {
 			validateSimpleNotationForRNA(polymerNotation, monomerStore);
 		}
@@ -832,10 +831,11 @@ public class SimpleNotationParser {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static List<Nucleotide> getStrictNucleotideList(
 			String polymerNotation, boolean validate) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerException, IOException, JDOMException, StructureException, NucleotideLoadingException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -863,11 +863,12 @@ public class SimpleNotationParser {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws StructureException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static List<Nucleotide> getStrictNucleotideList(
 			String polymerNotation, boolean validate, MonomerStore monomerStore)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			JDOMException, StructureException, NucleotideLoadingException {
 		if (validate) {
 			validateSimpleNotationForRNA(polymerNotation, monomerStore);
 		}
@@ -1348,14 +1349,15 @@ public class SimpleNotationParser {
 	 * 
 	 * @param polymerNotation
 	 * @return single letter (natural analog) sequence
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
+	 * @throws StructureException 
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
-	public static String getTrimmedNucleotideSequence(String polymerNotation)
-			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+	public static String getTrimmedNucleotideSequence(String polymerNotation) throws NucleotideLoadingException, NotationException, IOException, StructureException
+ {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -1374,14 +1376,15 @@ public class SimpleNotationParser {
 	 * @param polymerNotation
 	 * @param monomerStore
 	 * @return single letter (natural analog) sequence
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
+	 * @throws StructureException 
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static String getTrimmedNucleotideSequence(String polymerNotation,
-			MonomerStore monomerStore) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerStore monomerStore) throws NucleotideLoadingException, NotationException, IOException, StructureException  {
 		List<Nucleotide> list = getNucleotideList(polymerNotation, monomerStore);
 
 		int start = 0;
@@ -1411,14 +1414,15 @@ public class SimpleNotationParser {
 	 * 
 	 * @param polymerNotation
 	 * @return single letter (natural analog) sequence
+	 * @throws StructureException 
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
-	public static String getNucleotideSequence(String polymerNotation)
-			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+	public static String getNucleotideSequence(String polymerNotation) throws NucleotideLoadingException, NotationException, IOException, StructureException
+			{
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -1436,14 +1440,15 @@ public class SimpleNotationParser {
 	 * @param polymerNotation
 	 * @param monomerStore
 	 * @return single letter (natural analog) sequence
+	 * @throws StructureException 
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static String getNucleotideSequence(String polymerNotation,
-			MonomerStore monomerStore) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerStore monomerStore) throws NucleotideLoadingException, NotationException, IOException, StructureException {
 		List<Nucleotide> list = getNucleotideList(polymerNotation, monomerStore);
 		return getNucleotideSequence(list);
 	}
@@ -1466,10 +1471,11 @@ public class SimpleNotationParser {
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
+	 * @throws NucleotideLoadingException 
 	 */
 	public static String getModifiedNucleotideSequence(String polymerNotation)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, StructureException {
+			JDOMException, StructureException, NucleotideLoadingException {
 
 		MonomerFactory factory = null;
 		try {
@@ -1489,14 +1495,15 @@ public class SimpleNotationParser {
 	 * @param polymerNotation
 	 * @param monomerStore
 	 * @return modified nucleotide sequence string
+	 * @throws StructureException 
+	 * @throws NucleotideLoadingException 
 	 * @throws org.helm.notation.NotationException
 	 * @throws org.helm.notation.MonomerException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 */
 	public static String getModifiedNucleotideSequence(String polymerNotation,
-			MonomerStore monomerStore) throws NotationException,
-			MonomerException, IOException, JDOMException, StructureException {
+			MonomerStore monomerStore) throws NucleotideLoadingException, NotationException, IOException, StructureException, MonomerException, JDOMException {
 		List<Nucleotide> list = getNucleotideList(polymerNotation, monomerStore);
 		return getModifiedNucleotideSequence(list);
 	}
@@ -2267,9 +2274,7 @@ public class SimpleNotationParser {
 		return sb.toString();
 	}
 
-	public static String getSimpleCanonicalNotationForRNA(String simpleNotation)
-			throws NotationException, MonomerException, StructureException,
-			JDOMException, IOException {
+	public static String getSimpleCanonicalNotationForRNA(String simpleNotation) throws NotationException, MonomerException, StructureException, JDOMException, IOException, NucleotideLoadingException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -2284,7 +2289,7 @@ public class SimpleNotationParser {
 	public static String getSimpleCanonicalNotationForRNA(
 			String simpleNotation, MonomerStore monomerStore)
 			throws NotationException, MonomerException, StructureException,
-			JDOMException, IOException {
+			JDOMException, IOException, NucleotideLoadingException {
 		validateSimpleNotation(simpleNotation,
 				Monomer.NUCLIEC_ACID_POLYMER_TYPE, monomerStore);
 
@@ -2367,7 +2372,7 @@ public class SimpleNotationParser {
 
 	public static String getSimpleCanonicalNotation(String simpleNotation,
 			String polymerType) throws NotationException, MonomerException,
-			StructureException, JDOMException, IOException {
+			StructureException, JDOMException, IOException, NucleotideLoadingException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -2382,7 +2387,7 @@ public class SimpleNotationParser {
 	public static String getSimpleCanonicalNotation(String simpleNotation,
 			String polymerType, MonomerStore monomerStore)
 			throws NotationException, MonomerException, StructureException,
-			JDOMException, IOException {
+			JDOMException, IOException, NucleotideLoadingException {
 		if (Monomer.NUCLIEC_ACID_POLYMER_TYPE.equals(polymerType)) {
 			return getSimpleCanonicalNotationForRNA(simpleNotation,
 					monomerStore);
@@ -2418,7 +2423,7 @@ public class SimpleNotationParser {
 	public static Map.Entry<Integer, String> getSimpleCanonicalNotationMapEntry(
 			String simpleNotation, String polymerType)
 			throws NotationException, MonomerException, JDOMException,
-			IOException, StructureException {
+			IOException, StructureException, NucleotideLoadingException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -2433,7 +2438,7 @@ public class SimpleNotationParser {
 	public static Map.Entry<Integer, String> getSimpleCanonicalNotationMapEntry(
 			String simpleNotation, String polymerType, MonomerStore monomerStore)
 			throws NotationException, MonomerException, JDOMException,
-			IOException, StructureException {
+			IOException, StructureException, NucleotideLoadingException {
 		List<String> list = new ArrayList<String>();
 		if (Monomer.NUCLIEC_ACID_POLYMER_TYPE.equals(polymerType)) {
 			List<Nucleotide> nucList = getNucleotideList(simpleNotation, false,
@@ -2525,10 +2530,11 @@ public class SimpleNotationParser {
 	 * @throws JDOMException
 	 * @throws PluginException
 	 * @throws StructureException
+	 * @throws MonomerLoadingException 
 	 */
 	public static MoleculeInfo getMoleculeInfo(String notation,
 			String polymerType) throws NotationException, MonomerException,
-			IOException, JDOMException, PluginException, StructureException {
+			IOException, JDOMException, PluginException, StructureException, MonomerLoadingException {
 		MonomerFactory factory = null;
 		try {
 			factory = MonomerFactory.getInstance();
@@ -2555,11 +2561,12 @@ public class SimpleNotationParser {
 	 * @throws JDOMException
 	 * @throws PluginException
 	 * @throws StructureException
+	 * @throws MonomerLoadingException 
 	 */
 	public static MoleculeInfo getMoleculeInfo(String notation,
 			String polymerType, MonomerStore monomerStore)
 			throws NotationException, MonomerException, IOException,
-			JDOMException, PluginException, StructureException {
+			JDOMException, PluginException, StructureException, MonomerLoadingException {
 
 		if (polymerType.equals(Monomer.CHEMICAL_POLYMER_TYPE)) {
 			notation = processNode(notation, Monomer.CHEMICAL_POLYMER_TYPE,

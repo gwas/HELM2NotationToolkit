@@ -1,24 +1,18 @@
 /**
- * *****************************************************************************
- * Copyright C 2015, The Pistoia Alliance
+ * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation2;
@@ -28,7 +22,6 @@ import java.io.IOException;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ConnectionNotationException;
@@ -36,14 +29,13 @@ import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM1FormatException;
-import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.jdom.JDOMException;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +98,7 @@ public class WebService {
       throw new ValidationException(e.getMessage());
     }
   }
-  
+
   /**
    * method to convert the input-HELM into a canonical HELM
    * 
@@ -116,7 +108,8 @@ public class WebService {
    * @throws ParserException
    * @throws ValidationException
    */
-  public String convertStandardHELMToCanonicalHELM(String notation) throws HELM1FormatException, ParserException, ValidationException {
+  public String convertStandardHELMToCanonicalHELM(String notation) throws HELM1FormatException, ParserException,
+      ValidationException {
     validateHELM(notation);
     return HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
@@ -130,11 +123,11 @@ public class WebService {
    * @throws ParserException
    * @throws ValidationException
    */
-  public String convertIntoStandardHELM(String notation) throws HELM1FormatException, ParserException, ValidationException {
+  public String convertIntoStandardHELM(String notation) throws HELM1FormatException, ParserException,
+      ValidationException {
     validateHELM(notation);
     return HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
   }
-
 
   /**
    * method to calculate the ExtinctionCoefficient from an input-HELM
@@ -145,11 +138,11 @@ public class WebService {
    * @throws ValidationException
    * @throws ExtinctionCoefficientException
    */
-  public Float calculateExtinctionCoefficient(String notation) throws ParserException, ValidationException, ExtinctionCoefficientException, CalculationException {
+  public Float calculateExtinctionCoefficient(String notation) throws ParserException, ValidationException,
+      ExtinctionCoefficientException, CalculationException {
     validateHELM(notation);
     return ExtinctionCoefficient.getInstance().calculate(containerhelm2);
   }
-  
 
   /**
    * method to generate FASTA-Formats for all rna and peptide sequences
@@ -173,7 +166,8 @@ public class WebService {
    * @throws FastaFormatException
    */
   public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException {
-    containerhelm2 = new ContainerHELM2(FastaFormat.generateRNAPolymersFromFastaFormatHELM1(notation), new InterConnections());
+    containerhelm2 =
+        new ContainerHELM2(FastaFormat.generateRNAPolymersFromFastaFormatHELM1(notation), new InterConnections());
     return containerhelm2.getHELM2Notation().toHELM2();
   }
 
@@ -185,10 +179,10 @@ public class WebService {
    * @throws FastaFormatException
    */
   public String generateHELMFromFastaPeptide(String notation) throws FastaFormatException {
-    containerhelm2 = new ContainerHELM2(FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation), new InterConnections());
+    containerhelm2 =
+        new ContainerHELM2(FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation), new InterConnections());
     return containerhelm2.getHELM2Notation().toHELM2();
   }
-
 
   /**
    * method to calculate the molecular weight of the HELM string
@@ -200,7 +194,8 @@ public class WebService {
    * @throws BuilderMoleculeException
    * @throws CTKException
    */
-  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException {
+  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException,
+      BuilderMoleculeException, CTKException {
     validateHELM(notation);
     return MoleculeInformation.getMolecularWeight(containerhelm2.getHELM2Notation());
   }
@@ -215,7 +210,8 @@ public class WebService {
    * @throws BuilderMoleculeException
    * @throws CTKException
    */
-  public String getMolecularFormula(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException {
+  public String getMolecularFormula(String notation) throws ParserException, ValidationException,
+      BuilderMoleculeException, CTKException {
     validateHELM(notation);
     return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
   }
@@ -228,18 +224,15 @@ public class WebService {
 
   }
 
-  public void getImageHELMMolecule(String notation) throws BuilderMoleculeException, ParserException, ValidationException, CTKException {
+  public void getImageHELMMolecule(String notation) throws BuilderMoleculeException, ParserException,
+      ValidationException, CTKException {
     validateHELM(notation);
     Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
   }
-
 
   /* To Do */
   public void doMonomerManagmentStoreActions() {
 
   }
-
-
-
 
 }

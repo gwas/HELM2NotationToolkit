@@ -23,8 +23,10 @@ package org.helm.notation.tools;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,9 +56,10 @@ public class PeptideSequenceParser {
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
 	 * @throws org.helm.notation.MonomerException
+	 * @throws MonomerLoadingException 
 	 */
 	public static String getNotation(String sequence) throws NotationException,
-			IOException, JDOMException, MonomerException {
+			IOException, JDOMException, MonomerException, MonomerLoadingException {
 		return getNotation(sequence, null);
 	}
 
@@ -72,10 +75,11 @@ public class PeptideSequenceParser {
 	 * @throws IOException
 	 * @throws JDOMException
 	 * @throws MonomerException
+	 * @throws MonomerLoadingException 
 	 */
 	public static String getNotation(String sequence, String delimiter)
 			throws NotationException, IOException, JDOMException,
-			MonomerException {
+			MonomerException, MonomerLoadingException {
 		StringBuffer sb = new StringBuffer();
 		List<String> aaList = getAminoAcidList(sequence, delimiter);
 
@@ -89,7 +93,6 @@ public class PeptideSequenceParser {
 			}
 			sb.append(aa);
 		}
-
 		return sb.toString();
 	}
 
@@ -102,10 +105,11 @@ public class PeptideSequenceParser {
 	 * @throws org.helm.notation.NotationException
 	 * @throws java.io.IOException
 	 * @throws org.jdom.JDOMException
+	 * @throws MonomerLoadingException 
 	 */
 	public static List<String> getAminoAcidList(String peptideSequence)
 			throws MonomerException, NotationException, IOException,
-			JDOMException {
+			JDOMException, MonomerLoadingException {
 
 		if (null == peptideSequence) {
 			throw new NotationException("Peptide Sequence must be specified");
@@ -155,10 +159,11 @@ public class PeptideSequenceParser {
 	 * @throws NotationException
 	 * @throws IOException
 	 * @throws JDOMException
+	 * @throws MonomerLoadingException 
 	 */
 	public static List<String> getAminoAcidList(String peptideSequence,
 			String delimiter) throws MonomerException, NotationException,
-			IOException, JDOMException {
+			IOException, JDOMException, MonomerLoadingException {
 
 		if (null == peptideSequence) {
 			throw new NotationException("Peptide Sequence must be specified");
