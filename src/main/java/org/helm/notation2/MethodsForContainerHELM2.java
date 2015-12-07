@@ -78,6 +78,42 @@ public final class MethodsForContainerHELM2 {
   }
 
   /**
+   * method to get all HELM1 valid MonomerNotations Only on these monomers
+   * required HELM1 functions are performed
+   * 
+   * @param monomerNotations
+   * @return
+   * @throws HELM2HandledException
+   */
+  public static List<Monomer> getListOfHandledMonomersOnlyBase(List<MonomerNotation> monomerNotations)
+      throws HELM2HandledException {
+    List<Monomer> items = new ArrayList<Monomer>();
+    for (MonomerNotation monomerNotation : monomerNotations) {
+      /* group element */
+      if (monomerNotation instanceof MonomerNotationGroup) {
+        throw new HELM2HandledException("Functions can't be called for HELM2 objects");
+      }
+
+      else {
+        try {
+          int count = Integer.parseInt(monomerNotation.getCount());
+          if (count == 0) {
+            throw new HELM2HandledException("Functions can't be called for HELM2 objects");
+          }
+
+          for (int j = 0; j < count; j++) {
+            items.addAll(Validation.getAllMonomersOnlyBase(monomerNotation));
+          }
+        } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
+          throw new HELM2HandledException("Functions can't be called for HELM2 objects");
+        }
+
+      }
+    }
+    return items;
+  }
+
+  /**
    * method to get all MonomerNotations for all given polymers
    * 
    * @param polymers

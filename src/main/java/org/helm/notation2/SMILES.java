@@ -26,8 +26,12 @@ package org.helm.notation2;
 import java.io.IOException;
 import java.util.List;
 
+import org.helm.chemtoolkit.AbstractMolecule;
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.StructureParser;
+import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +66,33 @@ public class SMILES {
     
   }
 
-  protected void getCanonicalSmilesForAll() {
+  protected String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+    /* Build Molecues */
+    List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
+
+    /* get for every molecule the smiles */
+    StringBuffer sb = new StringBuffer();
+    for (AbstractMolecule molecule : molecules) {
+      sb.append(".");
+      System.out.println("ToDo");
+    }
+    sb.setLength(sb.length() - 1);
+    return sb.toString();
+
+  }
+
+  protected String getCanonicalSmilesForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+    /* Build Molecues */
+    List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
+
+    /* get for every molecule the canonical smiles */
+    StringBuffer sb = new StringBuffer();
+    for (AbstractMolecule molecule : molecules) {
+      sb.append(".");
+      System.out.println("ToDo");
+    }
+    sb.setLength(sb.length() - 1);
+    return sb.toString();
 
   }
 

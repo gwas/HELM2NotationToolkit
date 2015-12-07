@@ -158,7 +158,7 @@ public class ExtinctionCoefficient {
       not.add(polymerNode);
       if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
         try {
-          ext = calculateExtinctionFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+          ext = calculateExtinctionFromRNA(MethodsForContainerHELM2.getListOfHandledMonomersOnlyBase(polymerNode.getPolymerElements().getListOfElements()));
         } catch (CalculationException | IOException | HELM2HandledException e) {
           throw new ExtinctionCoefficientException(e.getMessage());
         }

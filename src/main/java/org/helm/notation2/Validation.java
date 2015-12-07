@@ -577,6 +577,58 @@ public class Validation {
   }
 
   /**
+   * method to get for one MonomerNotation all valid contained monomers
+   * 
+   * 
+   * @param not
+   * @return
+   * @throws HELM2HandledException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
+   */
+  protected static List<Monomer> getAllMonomersOnlyBase(MonomerNotation not) throws HELM2HandledException, MonomerException,
+      IOException, JDOMException {
+    List<Monomer> monomers = new ArrayList<Monomer>();
+
+    MonomerFactory monomerFactory = MonomerFactory.getInstance();
+    MonomerStore monomerStore = monomerFactory.getMonomerStore();
+    if (not instanceof MonomerNotationUnitRNA) {
+      monomers.addAll(getMonomersRNAOnlyBase((MonomerNotationUnitRNA) not, monomerStore));
+
+    } else if (not instanceof MonomerNotationUnit) {
+      String id = not.getID();
+      if (id.startsWith("[") && id.endsWith("]")) {
+        id = id.substring(1, id.length() - 1);
+      }
+      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+    } else if (not instanceof MonomerNotationGroup) {
+      for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
+        String id = groupElement.getMonomerNotation().getID();
+        if (id.startsWith("[") && id.endsWith("]")) {
+          id = id.substring(1, id.length() - 1);
+        }
+        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+      }
+    } else if (not instanceof MonomerNotationList) {
+      for (MonomerNotation listElement : ((MonomerNotationList) not).getListofMonomerUnits()) {
+        if (listElement instanceof MonomerNotationUnitRNA) {
+          monomers.addAll(getMonomersRNAOnlyBase(((MonomerNotationUnitRNA) listElement), monomerStore));
+        } else {
+          String id = listElement.getID();
+          if (id.startsWith("[") && id.endsWith("]")) {
+            id = id.substring(1, id.length() - 1);
+          }
+          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+        }
+      }
+
+    }
+
+    return monomers;
+  }
+
+  /**
    * method to check the attachment point's existence
    * 
    * @param mon
@@ -736,9 +788,7 @@ public class Validation {
         Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id);
 
         String detail = mon.getMonomerType();
-        if (detail.equals("Branch")) {
-          monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id));
-        }
+        monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id));
       }
       return monomers;
     } catch (Exception e) {
@@ -747,4 +797,24 @@ public class Validation {
 
   }
 
+  
+  private static List<Monomer> getMonomersRNAOnlyBase(MonomerNotationUnitRNA rna, MonomerStore monomerStore)
+      throws HELM2HandledException {
+    try {
+      List<Monomer> monomers = new ArrayList<Monomer>();
+      for (MonomerNotationUnit unit : rna.getContents()) {
+        String id = unit.getID().replace("[", "");
+        id = id.replace("]", "");
+        Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id);
+
+        if(mon.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)){
+          monomers.add(mon);
+        }
+      }
+      return monomers;
+    } catch (Exception e) {
+      throw new HELM2HandledException(e.getMessage());
+    }
+
+  }
 }

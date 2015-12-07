@@ -209,9 +209,10 @@ public class WebService {
    * @throws ParserException
    * @throws BuilderMoleculeException
    * @throws CTKException
+   * @throws IOException
    */
   public String getMolecularFormula(String notation) throws ParserException, ValidationException,
-      BuilderMoleculeException, CTKException {
+      BuilderMoleculeException, CTKException, IOException {
     validateHELM(notation);
     return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
   }

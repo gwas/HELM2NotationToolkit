@@ -269,6 +269,7 @@ public final class FastaFormat {
     for (Character c : fasta.toCharArray()) {
       /* -> get for each single nucleotide code the contents from the nucleotidefactory */
       try {
+        System.out.println(c);
         elements.addMonomerNotation(nucleotides.get(c.toString()));
       } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException
           | NullPointerException e) {
@@ -379,7 +380,10 @@ public final class FastaFormat {
   protected static String generateFastaFromRNA(List<Monomer> monomers) {
     StringBuilder fasta = new StringBuilder();
     for (Monomer monomer : monomers) {
-      fasta.append(monomer.getNaturalAnalog());
+      if (monomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
+
+        fasta.append(monomer.getNaturalAnalog());
+      }
     }
 
     return fasta.toString();

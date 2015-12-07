@@ -23,6 +23,14 @@
  */
 package org.helm.notation2;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ChemicalToolKit;
@@ -47,8 +55,7 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException
    * @throws CTKException
    */
-  private static AbstractMolecule buildMolecule() throws BuilderMoleculeException, CTKException {
-
+  private static List<AbstractMolecule> buildMolecule() throws BuilderMoleculeException, CTKException {
     return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
   }
 
@@ -62,9 +69,12 @@ public final class MoleculeInformation {
   protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     MoleculeInformation.helm2notation = helm2notation;
     /* First build one big molecule; List of molecules? */
-    AbstractMolecule molecule = buildMolecule();
-    System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
-    return 0;
+    List<AbstractMolecule> molecules = buildMolecule();
+    Double result = 0.0;
+    for (AbstractMolecule molecule : molecules) {
+      result += ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularWeight();
+    }
+    return result;
 
   }
 
@@ -76,12 +86,15 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
    */
-  protected static double getExaxtMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big moleucle; List of molecules */
     MoleculeInformation.helm2notation = helm2notation;
-    AbstractMolecule molecule = buildMolecule();
-    System.out.println("Rufe vom Chemistry Plugin die MoleculeInfo auf");
-    return 0;
+    List<AbstractMolecule> molecules = buildMolecule();
+    Double result = 0.0;
+    for (AbstractMolecule molecule : molecules) {
+      result += ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getExactMass();
+    }
+    return result;
   }
 
   /**
@@ -91,12 +104,29 @@ public final class MoleculeInformation {
    * @return MolecularFormular
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
+   * @throws IOException
    */
-  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
     /* First build one big molecule */
     MoleculeInformation.helm2notation = helm2notation;
-    AbstractMolecule molecule = buildMolecule();
-    return ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
+    List<AbstractMolecule> molecules = buildMolecule();
+    Map<String, Integer> atomNumberMap = new TreeMap<String, Integer>();
+    for(AbstractMolecule molecule : molecules){
+      atomNumberMap = generateAtomNumberMap(molecule, atomNumberMap);
+    }
+    
+    StringBuilder sb = new StringBuilder();
+    Set<String> atoms = atomNumberMap.keySet();
+    for (Iterator<String> i = atoms.iterator(); i.hasNext();) {
+      String atom = i.next();
+      String num = atomNumberMap.get(atom).toString();
+      if (num.equals("1")) {
+        num = "";
+      }
+      sb.append(atom);
+      sb.append(num.toString());
+    }
+    return sb.toString();
 
   }
 
@@ -108,9 +138,77 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
    */
-  protected static AbstractMolecule getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     MoleculeInformation.helm2notation = helm2notation;
     return buildMolecule();
+  }
+
+  private static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws CTKException, IOException {
+    for (org.helm.chemtoolkit.Attachment attachment : molecule.getAttachments()) {
+      System.out.println("Geht das");
+      System.out.println(attachment.getLabel());
+      int groupId = AbstractMolecule.getIdFromLabel(attachment.getLabel());
+      System.out.println(groupId);
+      String smiles = attachment.getSmiles();
+      System.out.println(attachment.getSmiles());
+      LOG.debug(smiles);
+      AbstractMolecule rMol = ChemicalToolKit.getTestINSTANCE("").getManipulator().getMolecule(smiles, null);
+      molecule = ChemicalToolKit.getTestINSTANCE("").getManipulator().merge(molecule, molecule.getRGroupAtom(groupId, true), rMol, rMol.getRGroupAtom(groupId, true));
+
+    }
+
+    return molecule;
+  }
+
+  private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws CTKException, IOException {
+    molecule = mergeRgroups(molecule);
+    String formula = ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
+    String atom = "";
+    String number = "";
+
+    for (int i = 0; i < formula.length(); i++) {
+      String oneChar = String.valueOf(formula.charAt(i));
+      if (oneChar.matches("[A-Z]")) {
+        if (atom.length() == 0) {
+          atom = oneChar;
+        } else {
+          if (number == "") {
+            number = "1";
+          }
+          if (mapAtoms.get(atom) != null) {
+            mapAtoms.put(atom, mapAtoms.get(atom) + Integer.valueOf(number));
+          }
+ else {
+
+            mapAtoms.put(atom, Integer.valueOf(number));
+          }
+          atom = oneChar;
+          number = "";
+        }
+      } else if (oneChar.matches("[a-z]")) {
+        if (atom.length() > 0) {
+          atom = atom + oneChar;
+        }
+      } else {
+        if (number.length() == 0) {
+          number = oneChar;
+        } else {
+          number = number + oneChar;
+        }
+      }
+    }
+
+    if (number == "") {
+      number = "1";
+    }
+
+    if (mapAtoms.get(atom) != null) {
+      mapAtoms.put(atom, mapAtoms.get(atom) + Integer.valueOf(number));
+    } else {
+
+      mapAtoms.put(atom, Integer.valueOf(number));
+    }
+    return mapAtoms;
   }
 
 }

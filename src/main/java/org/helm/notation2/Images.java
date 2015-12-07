@@ -6,8 +6,11 @@
  */
 package org.helm.notation2;
 
+import java.util.List;
+
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
+import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
@@ -31,7 +34,11 @@ public final class Images {
   }
 
   protected static void generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
-    AbstractMolecule molecule = MoleculeInformation.getMolecule(helm2notation);
+    List<AbstractMolecule> molecules = MoleculeInformation.getMolecule(helm2notation);
     /* rufe ChemistryToolKit auf */
+    for(AbstractMolecule molecule : molecules){
+      /* Rufe für jedes Molecule einzeln die Methode auf */
+      ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule);
+    }
   }
 }
