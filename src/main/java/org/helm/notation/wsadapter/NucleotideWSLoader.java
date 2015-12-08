@@ -1,11 +1,15 @@
 package org.helm.notation.wsadapter;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -25,23 +29,18 @@ public class NucleotideWSLoader {
 
 	public Map<String, String> loadNucleotideStore() throws IOException,
 			URISyntaxException {
+
 		Map<String, String> nucleotides = new HashMap<String, String>();
 		System.out.println("Loading nucleotide store by Webservice Loader");
 		System.out.println(MonomerStoreConfiguration.getInstance().toString());
-// if (!WinHttpClients.isWinAuthAvailable()) {
-// System.out.println("Integrated Win auth is not supported!!!");
-// }
 
     CloseableHttpClient httpclient = HttpClients.createDefault();
-		// There is no need to provide user credentials
-		// HttpClient will attempt to access current user security context
-		// through Windows platform specific methods via JNI.
 		CloseableHttpResponse response = null;
-		try {
-			HttpGet httpget = new HttpGet(new URIBuilder(
-					MonomerStoreConfiguration.getInstance()
-							.getWebserviceNucleotidesFullURL()).build());
+    URI uri = new URIBuilder(MonomerStoreConfiguration.getInstance().getWebserviceNucleotidesFullURL()).build();
 
+		try {
+      /* read url */
+      HttpGet httpget = new HttpGet(uri);
 			System.out.println("Executing request " + httpget.getRequestLine());
 			response = httpclient.execute(httpget);
 			System.out.println(response.getStatusLine());
@@ -55,7 +54,19 @@ public class NucleotideWSLoader {
 
 			EntityUtils.consume(response.getEntity());
 
-		} finally {
+    } catch (ClientProtocolException e) {
+
+      /* read file */
+      JsonFactory jsonf = new JsonFactory();
+      InputStream instream = new FileInputStream(new File(uri));
+
+      JsonParser jsonParser = jsonf.createJsonParser(instream);
+      nucleotides = deserializeNucleotideStore(jsonParser);
+      System.out.println(nucleotides.size() + " nucleotides loaded");
+
+
+    } finally {
+
 			if (response != null) {
 				response.close();
 			}
