@@ -17,11 +17,17 @@
  */
 package org.helm.notation2;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.NotationException;
+import org.helm.notation.model.Monomer;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ConnectionNotationException;
@@ -107,9 +113,10 @@ public class WebService {
    * @throws HELM1FormatException
    * @throws ParserException
    * @throws ValidationException
+   * @throws NotationException
    */
   public String convertStandardHELMToCanonicalHELM(String notation) throws HELM1FormatException, ParserException,
-      ValidationException {
+      ValidationException, NotationException {
     validateHELM(notation);
     return HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
   }
@@ -122,9 +129,10 @@ public class WebService {
    * @throws HELM1FormatException
    * @throws ParserException
    * @throws ValidationException
+   * @throws NotationException
    */
   public String convertIntoStandardHELM(String notation) throws HELM1FormatException, ParserException,
-      ValidationException {
+      ValidationException, NotationException {
     validateHELM(notation);
     return HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
   }
@@ -193,9 +201,17 @@ public class WebService {
    * @throws ValidationException
    * @throws BuilderMoleculeException
    * @throws CTKException
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   * @throws SecurityException
+   * @throws NoSuchMethodException
+   * @throws ClassNotFoundException
    */
   public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException,
-      BuilderMoleculeException, CTKException {
+      BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+      InvocationTargetException {
     validateHELM(notation);
     return MoleculeInformation.getMolecularWeight(containerhelm2.getHELM2Notation());
   }
@@ -210,9 +226,17 @@ public class WebService {
    * @throws BuilderMoleculeException
    * @throws CTKException
    * @throws IOException
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   * @throws SecurityException
+   * @throws NoSuchMethodException
+   * @throws ClassNotFoundException
    */
   public String getMolecularFormula(String notation) throws ParserException, ValidationException,
-      BuilderMoleculeException, CTKException, IOException {
+      BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+      InvocationTargetException {
     validateHELM(notation);
     return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
   }
@@ -225,15 +249,37 @@ public class WebService {
 
   }
 
-  public void getImageHELMMolecule(String notation) throws BuilderMoleculeException, ParserException,
-      ValidationException, CTKException {
+  public List<byte[]> generateImageForHELMMolecule(String notation) throws BuilderMoleculeException, ParserException,
+      ValidationException, CTKException, FileNotFoundException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+      IllegalArgumentException, InvocationTargetException {
     validateHELM(notation);
-    Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+    return Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
   }
 
-  /* To Do */
-  public void doMonomerManagmentStoreActions() {
+  public byte[] generateImageForMonomer(Monomer monomer) throws CTKException, IOException {
+    return Images.generateImageofMonomer(monomer);
+  }
+
+  public void store() {
 
   }
+
+  public void retrieve() {
+
+  }
+
+  public void submit(){
+  }
+
+
+    
+  public void editMonomer() {
+    
+  }
+  
+  public void reconcileMonomers(){
+    
+  }
+
 
 }

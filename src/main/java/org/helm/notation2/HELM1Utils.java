@@ -9,20 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
-import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
+import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
+import org.helm.notation.model.Nucleotide;
 import org.helm.notation.tools.PermutationAndExpansion;
+import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.HELM1FormatException;
 import org.helm.notation2.parser.exceptionparser.HELM1ConverterException;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
@@ -36,11 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class HELM1Utils {
 
-  private static final String CHEM_ADHOC = "CM#";
-
-  private static final String PEPTIDE_ADHOC = "PM#";
-
-  private static final String RNA_ADHOC = "NM#";
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(HELM1Utils.class);
@@ -61,8 +58,9 @@ public final class HELM1Utils {
    * @param helm2notation
    * @return
    * @throws HELM1FormatException
+   * @throws NotationException
    */
-  public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException {
+  public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException, NotationException {
     HELM1Utils.helm2notation = helm2notation;
     try {
       setStandardHELMFirstSection();
@@ -71,7 +69,7 @@ public final class HELM1Utils {
     } catch (HELM1ConverterException | MonomerException | IOException | JDOMException | CTKException e) {
       throw new HELM1FormatException(e.getMessage());
     } // -> this methods also sets the
-                                    // thirdSection
+      // thirdSection
 
     return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$";
   }
@@ -82,8 +80,9 @@ public final class HELM1Utils {
    * @param helm2notation
    * @return
    * @throws HELM1FormatException
+   * @throws NotationException
    */
-  public static String getCanonical(HELM2Notation helm2notation) throws HELM1FormatException {
+  public static String getCanonical(HELM2Notation helm2notation) throws HELM1FormatException, NotationException {
     HELM1Utils.helm2notation = helm2notation;
     Map<String, String> convertsortedIdstoIds;
     try {
@@ -99,13 +98,13 @@ public final class HELM1Utils {
   }
 
   /* polymer section */
-  private static void setStandardHELMFirstSection() throws HELM1ConverterException, CTKSmilesException, MonomerException, IOException, JDOMException, CTKException {
+  private static void setStandardHELMFirstSection() throws HELM1ConverterException, CTKSmilesException, MonomerException, IOException, JDOMException, CTKException, NotationException {
     StringBuilder notation = new StringBuilder();
 
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       String id = polymer.getPolymerID().getID();
       String elements_toHELM = polymer.getPolymerElements().toHELM();
-      Map<String, String> AdHocList = findAdHocMonomers(elements_toHELM);
+      Map<String, String> AdHocList = findAdHocMonomers(elements_toHELM, polymer.getPolymerID().getType());
       Map<String, String> convert = convertAdHocMonomersIntoSMILES(AdHocList);
       for (Map.Entry<String, String> e : convert.entrySet()) {
         elements_toHELM = elements_toHELM.replaceAll(e.getKey(), e.getValue());
@@ -145,18 +144,28 @@ public final class HELM1Utils {
 
   /* annotation section : will be the same of the HELM2 section */
   private static void setStandardHELMFourthSection() {
-    fourthSection = helm2notation.getAnnotation().getAnnotation();
+    StringBuilder sb = new StringBuilder();
+
+    for (AnnotationNotation annotation : helm2notation.getListOfAnnotations()) {
+      sb.append(annotation.toHELM2() + "|");
+    }
+    if (sb.length() > 1) {
+      sb.setLength(sb.length() - 1);
+    }
+    fourthSection = sb.toString();
   }
 
   private static Map<String, String> setCanonicalHELMFirstSection() throws CTKSmilesException, MonomerException, IOException, JDOMException, CTKException,
-      HELM1ConverterException, ClassNotFoundException {
+      HELM1ConverterException, ClassNotFoundException, NotationException {
     Map<String, String> idLabelMap = new HashMap<String, String>();
     Map<String, List<String>> labelIdMap = new TreeMap<String, List<String>>();
 
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       String id = polymer.getPolymerID().getID();
       String elements_toHELM = polymer.getPolymerElements().toHELM();
-      Map<String, String> AdHocList = findAdHocMonomers(elements_toHELM);
+      // MethodsForContainerHELM2.getListOfHandledMonomers();
+      System.out.println(elements_toHELM);
+      Map<String, String> AdHocList = findAdHocMonomers(elements_toHELM, polymer.getPolymerID().getType());
       Map<String, String> convert = convertAdHocMonomersIntoSMILES(AdHocList);
       for (Map.Entry<String, String> e : convert.entrySet()) {
         elements_toHELM = elements_toHELM.replaceAll(e.getKey(), e.getValue());
@@ -280,21 +289,47 @@ public final class HELM1Utils {
    * 
    * @param elements
    * @return
+   * @throws MonomerLoadingException
+   * @throws NotationException
+   * @throws CTKException
    */
-  private static Map<String, String> findAdHocMonomers(String elements) {
-    Pattern pattern = Pattern.compile(CHEM_ADHOC + "\\d+" + "|" + PEPTIDE_ADHOC + "\\d+" + "|" + RNA_ADHOC + "\\d+");
-    Matcher matcher = pattern.matcher(elements);
+  private static Map<String, String> findAdHocMonomers(String elements, String type) throws MonomerLoadingException, NotationException, CTKException {
+    /*find adHocMonomers*/
     Map<String, String> listMatches = new HashMap<String, String>();
-    while (matcher.find()) {
-      if (matcher.group(0).contains(CHEM_ADHOC)) {
-        listMatches.put(matcher.group(0), Monomer.CHEMICAL_POLYMER_TYPE);
-      } else if (matcher.group(0).contains(PEPTIDE_ADHOC)) {
-        listMatches.put(matcher.group(0), Monomer.PEPTIDE_POLYMER_TYPE);
-      } else {
-        listMatches.put(matcher.group(0), Monomer.PEPTIDE_POLYMER_TYPE);
+    String[] listelements = elements.split("\\.");
+    if(type == "RNA"){
+      for (String element : listelements) {
+        List<String> monomerIds = SimpleNotationParser.getMonomerIDList(element, type, MonomerFactory.getInstance().getMonomerStore());
+        for(String id : monomerIds){
+     
+      
+          Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, id);
+        if (monomer.isAdHocMonomer()) {
+          listMatches.put(element, "[" + monomer.getCanSMILES() + "]");
+
+        }
+      }
+      }
+      
+    }
+    
+    else{
+      for(String element : listelements){
+        System.out.println(element);
+        System.out.println(type);
+        Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, element.replace("[", "").replace("]", ""));
+        try {
+          if (monomer.isAdHocMonomer()) {
+            listMatches.put(element, "[" + monomer.getCanSMILES() + "]");
+          }
+        } catch (NullPointerException e) {
+          if (!(Chemistry.getInstance().getManipulator().validateSMILES(element))) {
+            System.out.println("False");
+          }
+        }
       }
     }
-
+   
     return listMatches;
   }
 
@@ -316,7 +351,7 @@ public final class HELM1Utils {
 
       Monomer m = MonomerFactory.getInstance().getMonomerStore().getMonomer(element.getValue().toString(), element.getKey().toString());
       String smiles = m.getCanSMILES();
-      AbstractChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
+      AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
       String canSmiles = manipulator.canonicalize(smiles);
       // to Do
       convert.put(element.getKey().toString(), canSmiles);

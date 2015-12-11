@@ -24,8 +24,10 @@
 package org.helm.notation2;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.model.Monomer;
@@ -44,12 +46,12 @@ import chemaxon.struc.Molecule;
  * 
  * @author hecht
  */
-public class SMILES {
+public final class SMILES {
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
 
-  protected String getSMILES(List<Monomer> monomerlist) throws IOException {
+  protected static String getSMILES(List<Monomer> monomerlist) throws IOException, CTKException {
     StringBuffer sb = new StringBuffer();
     for (Monomer element : monomerlist) {
       String smi = element.getCanSMILES();
@@ -60,28 +62,28 @@ public class SMILES {
     }
     String mixtureSmiles = sb.toString();
     
-    Molecule mol = StructureParser.getMolecule(mixtureSmiles);
-    return mol.toFormat("smiles:u");
-    
-    
+    AbstractMolecule mol = Chemistry.getInstance().getManipulator().getMolecule(mixtureSmiles, null);
+    return Chemistry.getInstance().getManipulator().convertMolecule(mol, AbstractChemistryManipulator.StType.SMILES);
   }
 
-  protected String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
     /* Build Molecues */
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
 
     /* get for every molecule the smiles */
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
-      sb.append(".");
-      System.out.println("ToDo");
+      molecule = BuilderMolecule.mergeRgroups(molecule);
+      sb.append(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES) + ".");
     }
     sb.setLength(sb.length() - 1);
     return sb.toString();
 
   }
 
-  protected String getCanonicalSmilesForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static String getCanonicalSmilesForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     /* Build Molecues */
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
 

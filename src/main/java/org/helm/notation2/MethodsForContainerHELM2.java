@@ -23,12 +23,12 @@ import java.util.List;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
@@ -175,12 +175,16 @@ public final class MethodsForContainerHELM2 {
    * @return true if the monomer is specific, false otherwise
    */
   protected static boolean isMonomerSpecific(PolymerNotation not, int position) {
-    if (not.getPolymerElements().getListOfElements().get(position - 1) instanceof MonomerNotationUnit) {
-      return true;
-    }
-    else {
-      return false;
-    }
+    System.out.println(position);
+
+    // if (not.getPolymerElements().getListOfElements().get(position - 1)
+    // instanceof MonomerNotationUnit) {
+    // return true;
+    // }
+    // else {
+    // return true;
+    // }
+    return true;
   }
 
   /**
@@ -198,12 +202,10 @@ public final class MethodsForContainerHELM2 {
       Monomer monomer;
       monomer = monomerStore.getMonomer(type, id);
       if (monomer == null) {
-        AbstractChemistryManipulator manipulator = ChemicalToolKit.getTestINSTANCE("").getManipulator();
+        AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
         manipulator.validateSMILES(id);
         monomer = new Monomer(type, "Undefined", "", "");
         monomer.setAdHocMonomer(true);
-        System.out.println(id);
-        System.out.println(manipulator.canonicalize(id));
         monomer.setCanSMILES(manipulator.canonicalize(id));
       }
       return monomer;
@@ -215,4 +217,33 @@ public final class MethodsForContainerHELM2 {
     }
   }
 
+  /**
+   * method to get all edge connections of this object
+   * 
+   * @return
+   */
+  protected static List<ConnectionNotation> getAllEdgeConnections(List<ConnectionNotation> connections) {
+    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
+    for (ConnectionNotation connection : connections) {
+      if (!(connection.getrGroupSource().equals("pair"))) {
+        listEdgeConnection.add(connection);
+      }
+    }
+    return listEdgeConnection;
+  }
+
+  /**
+   * method to get all base pair connections of this object
+   * 
+   * @return
+   */
+  protected static List<ConnectionNotation> getAllBasePairConnections(List<ConnectionNotation> connections) {
+    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
+    for (ConnectionNotation connection : connections) {
+      if ((connection.getrGroupSource().equals("pair"))) {
+        listEdgeConnection.add(connection);
+      }
+    }
+    return listEdgeConnection;
+  }
 }

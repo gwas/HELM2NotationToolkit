@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.MonomerParser;
 import org.helm.notation.tools.xHelmNotationExporter;
@@ -95,7 +96,8 @@ public final class xHELM {
   }
 
   /**
-   * method to get xhelm for the helm notation, only if it was possible to convert the helm in the old format
+   * method to get xhelm for the helm notation, only if it was possible to
+   * convert the helm in the old format
    * 
    * @param containerhelm2, helm's notations objects
    * @return xhelm
@@ -103,9 +105,10 @@ public final class xHELM {
    * @throws HELM1FormatException
    * @throws JDOMException
    * @throws IOException
+   * @throws NotationException
    */
   protected static String getXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException,
-      IOException, JDOMException {
+      IOException, JDOMException, NotationException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
@@ -155,9 +158,7 @@ public final class xHELM {
    * @throws IOException
    */
   private static void addAdHocMonomer(MonomerNotation monomerNotation) throws IOException, JDOMException {
-    System.out.println(monomerNotation.getID());
-    Monomer monomer =
-        MonomerFactory.getInstance().getMonomerStore().getMonomer(monomerNotation.getType(), monomerNotation.getID());
+    Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(monomerNotation.getType(), monomerNotation.getID().replace("[", "").replace("]", ""));
     if (monomer.isAdHocMonomer()) {
       set.add(monomer);
     }

@@ -18,6 +18,7 @@
 package org.helm.notation2;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
@@ -26,10 +27,12 @@ import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.tools.ComplexNotationParser;
+import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom2.JDOMException;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -40,10 +43,11 @@ import org.testng.annotations.Test;
 public class SMILESTest {
   ParserHELM2 parser;
 
-  @Test
+  // @Test
   public void testSMILES() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException,
       org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, CTKException {
+      HELM2HandledException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+      InvocationTargetException, BuilderMoleculeException {
     parser = new ParserHELM2();
 
     String test =
@@ -52,9 +56,10 @@ public class SMILESTest {
     parser.parse(test);
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
         new InterConnections());
-    SMILES smiles = new SMILES();
-    String smile =
-        smiles.getSMILES(MethodsForContainerHELM2.getListOfHandledMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
+    String smile = SMILES.getSMILESForAll(containerhelm2.getHELM2Notation());
+    System.out.println(smile);
+    String expectedResult = "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.[H]N[C@@H](CCC(=O)C(=O)[C@@H](N[H])CC(=O)C(=O)[C@H](CCCNC(N)=N)NC(=O)[C@@H](N[H])CC(C)C)C(O)=O";
+    Assert.assertEquals(smile, expectedResult);
   }
 
   @Test

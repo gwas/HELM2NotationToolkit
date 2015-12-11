@@ -1,6 +1,7 @@
 package org.helm.notation2;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import org.helm.chemtoolkit.CTKException;
@@ -56,7 +57,8 @@ public class MoleculeInformationTest {
     // System.out.println(MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation()));
   }
 
-  private Double testExactMass(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
+  private Double testExactMass(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException,
+      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
@@ -67,7 +69,8 @@ public class MoleculeInformationTest {
 
   }
 
-  private Double testMolecularWeight(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
+  private Double testMolecularWeight(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException,
+      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();

@@ -24,7 +24,7 @@
 package org.helm.notation2;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,6 @@ import java.util.TreeMap;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
@@ -54,9 +53,18 @@ public final class MoleculeInformation {
    * 
    * @throws BuilderMoleculeException
    * @throws CTKException
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   * @throws SecurityException
+   * @throws NoSuchMethodException
+   * @throws ClassNotFoundException
    */
-  private static List<AbstractMolecule> buildMolecule() throws BuilderMoleculeException, CTKException {
-    return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
+  private static List<AbstractMolecule> buildMolecule() throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
+      IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+    return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
   }
 
   /**
@@ -65,14 +73,22 @@ public final class MoleculeInformation {
    * @return MolecularWeight
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   * @throws SecurityException
+   * @throws NoSuchMethodException
+   * @throws ClassNotFoundException
    */
-  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     MoleculeInformation.helm2notation = helm2notation;
     /* First build one big molecule; List of molecules? */
     List<AbstractMolecule> molecules = buildMolecule();
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
-      result += ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularWeight();
+      result += Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularWeight();
     }
     return result;
 
@@ -85,14 +101,22 @@ public final class MoleculeInformation {
    * @return ExactMass
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   * @throws SecurityException
+   * @throws NoSuchMethodException
+   * @throws ClassNotFoundException
    */
-  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     /* First build one big moleucle; List of molecules */
     MoleculeInformation.helm2notation = helm2notation;
     List<AbstractMolecule> molecules = buildMolecule();
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
-      result += ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getExactMass();
+      result += Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getExactMass();
     }
     return result;
   }
@@ -105,8 +129,16 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
    * @throws IOException
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   * @throws SecurityException
+   * @throws NoSuchMethodException
+   * @throws ClassNotFoundException
    */
-  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
+  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException,
+      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     /* First build one big molecule */
     MoleculeInformation.helm2notation = helm2notation;
     List<AbstractMolecule> molecules = buildMolecule();
@@ -114,7 +146,6 @@ public final class MoleculeInformation {
     for(AbstractMolecule molecule : molecules){
       atomNumberMap = generateAtomNumberMap(molecule, atomNumberMap);
     }
-    
     StringBuilder sb = new StringBuilder();
     Set<String> atoms = atomNumberMap.keySet();
     for (Iterator<String> i = atoms.iterator(); i.hasNext();) {
@@ -137,32 +168,26 @@ public final class MoleculeInformation {
    * @return Molecule
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
+   * @throws InvocationTargetException
+   * @throws IllegalArgumentException
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   * @throws SecurityException
+   * @throws NoSuchMethodException
+   * @throws ClassNotFoundException
    */
-  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     MoleculeInformation.helm2notation = helm2notation;
     return buildMolecule();
   }
 
-  private static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws CTKException, IOException {
-    for (org.helm.chemtoolkit.Attachment attachment : molecule.getAttachments()) {
-      System.out.println("Geht das");
-      System.out.println(attachment.getLabel());
-      int groupId = AbstractMolecule.getIdFromLabel(attachment.getLabel());
-      System.out.println(groupId);
-      String smiles = attachment.getSmiles();
-      System.out.println(attachment.getSmiles());
-      LOG.debug(smiles);
-      AbstractMolecule rMol = ChemicalToolKit.getTestINSTANCE("").getManipulator().getMolecule(smiles, null);
-      molecule = ChemicalToolKit.getTestINSTANCE("").getManipulator().merge(molecule, molecule.getRGroupAtom(groupId, true), rMol, rMol.getRGroupAtom(groupId, true));
 
-    }
-
-    return molecule;
-  }
 
   private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws CTKException, IOException {
-    molecule = mergeRgroups(molecule);
-    String formula = ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
+    molecule = BuilderMolecule.mergeRgroups(molecule);
+    String formula = Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
+    System.out.println(formula);
     String atom = "";
     String number = "";
 

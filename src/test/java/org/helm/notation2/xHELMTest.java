@@ -20,6 +20,7 @@ package org.helm.notation2;
 import java.io.IOException;
 
 import org.helm.notation.MonomerException;
+import org.helm.notation.NotationException;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM1FormatException;
@@ -30,9 +31,9 @@ import org.jdom2.JDOMException;
 
 public class xHELMTest {
 
-  // @Test
+
   public void testxHELMExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException,
-      AnalogSequenceException, MonomerException, HELM1FormatException, org.jdom2.JDOMException {
+      AnalogSequenceException, MonomerException, HELM1FormatException, org.jdom2.JDOMException, NotationException {
     String notation = "RNA1{R(U)P.R(T)P.R(G)P.R(C)}$$$$";
     testxHELM1(notation);
 
@@ -46,7 +47,7 @@ public class xHELMTest {
   // @Test(expectedExceptions = HELM1FormatException.class)
   public void testxHELMWithException() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, MonomerException, HELM1FormatException,
-      org.jdom2.JDOMException {
+      org.jdom2.JDOMException, NotationException {
     String notation;
 
     notation = "PEPTIDE1{(A+G).L}$$$$";
@@ -66,7 +67,7 @@ public class xHELMTest {
   }
 
   private void testxHELM1(String notation) throws ExceptionState, IOException, JDOMException, MonomerException,
-      HELM1FormatException, org.jdom2.JDOMException {
+      HELM1FormatException, org.jdom2.JDOMException, NotationException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();

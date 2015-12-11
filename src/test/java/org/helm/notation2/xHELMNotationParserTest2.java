@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
@@ -25,6 +26,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.testng.AssertJUnit;
+import org.testng.annotations.Test;
 
 import chemaxon.marvin.plugin.PluginException;
 
@@ -79,7 +81,7 @@ public class xHELMNotationParserTest2 {
     }
   }
 
-  // @Test
+  @Test
   public void testParseXHelmNotation() throws JDOMException, IOException,
       MonomerException, NotationException, StructureException,
       ClassNotFoundException, PluginException, ParserException,
@@ -96,16 +98,9 @@ public class xHELMNotationParserTest2 {
     System.out.println(monomerStore.getAllMonomersList().size()); // monomers to
                                                                   // store
 
-    MonomerStore store =
-        xHelmNotationParser.getMonomerStore(xHELMRootElement);
-    for (Monomer monomer : store.getAllMonomersList()) {
-      MonomerFactory.getInstance().getMonomerStore().addNewMonomer(monomer);
-      // save monomer db to local file after successful update //
-      MonomerFactory.getInstance().saveMonomerCache();
-    }
+    MonomerStore store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
+    updateMonomerStore(store);
 
-    System.out.println(MonomerFactory.getInstance().getMonomerDB().size());
-    System.out.println(MonomerFactory.getInstance().getMonomerStore().getAllMonomersList().size());
     AssertJUnit.assertEquals("RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|CHEM1{SMCC}$PEPTIDE1,CHEM1,2:R3-1:R2|RNA1,CHEM1,1:R1-1:R1$$$", helmString);
 
     /* Read + Validate */
@@ -121,31 +116,44 @@ public class xHELMNotationParserTest2 {
     helmString = xHelmNotationParser.getHELMNotationString(xHELMRootElement);
 
     monomerStore = xHelmNotationParser.getMonomerStore(xHELMRootElement);
+    updateMonomerStore(monomerStore);
+
     AssertJUnit.assertEquals("PEPTIDE1{G.K.A.[A_copy]}$$$$", helmString);
     validateHELM(helmString);
 
-    xHELMRootElement = getXHELMRootElement("resources/InlineSmiles.xhelm");
+    xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/InlineSmiles.xhelm");
     helmString = xHelmNotationParser.getComplexNotationString(xHELMRootElement);
 
     monomerStore = xHelmNotationParser.getMonomerStore(xHELMRootElement);
-    AssertJUnit.assertEquals("PEPTIDE1{A.A.G.[O[C@@H]([C@H](N[*])C([*])=O)c1ccc2ccccc2c1|$;;;;_R1;;_R2;;;;;;;;;;;$|].C.T.T}$$$$", helmString);
+    updateMonomerStore(monomerStore);
+    AssertJUnit.assertEquals("PEPTIDE1{A.A.G.[O[C@@H]([C@H](N[*])C([*])=O)c1ccc2ccccc2c1 |$;;;;_R1;;_R2;;;;;;;;;;;$|].C.T.T}$$$$", helmString);
     validateHELM(helmString);
-    xHELMRootElement = getXHELMRootElement("resources/RNAWithInline.xhelm");
+    xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/RNAWithInline.xhelm");
     helmString = xHelmNotationParser.getComplexNotationString(xHELMRootElement);
     monomerStore = xHelmNotationParser.getMonomerStore(xHELMRootElement);
-    AssertJUnit.assertEquals("RNA1{[C[C@@]1([*])O[C@H](CO[*])[C@@H](O[*])[C@H]1O|$;;_R3;;;;;_R1;;;_R2;;$|](A)P.RP.[C[C@@]1([*])O[C@H](CO[*])[C@@H](O[*])[C@H]1O|$;;_R3;;;;;_R1;;;_R2;;$|](T)P.R([Cc1nc2c(nc(N)[nH]c2=O)n1[*]|$;;;;;;;;;;;;_R1$|])P.R([Cc1cc(N)nc(=O)n1[*] |$;;;;;;;;;_R1$|])}$$$$", helmString);
+    updateMonomerStore(monomerStore);
+    AssertJUnit.assertEquals("RNA1{[C[C@@]1([*])O[C@H](CO[*])[C@@H](O[*])[C@H]1O |$;;_R3;;;;;_R1;;;_R2;;$|](A)P.RP.[C[C@@]1([*])O[C@H](CO[*])[C@@H](O[*])[C@H]1O |$;;_R3;;;;;_R1;;;_R2;;$|](T)P.R([Cc1nc2c(nc(N)[nH]c2=O)n1[*] |$;;;;;;;;;;;;_R1$|])P.R([Cc1cc(N)nc(=O)n1[*] |$;;;;;;;;;_R1$|])}$$$$", helmString);
     validateHELM(helmString);
   }
 
-  // @Test
+  @Test
   public void testQRPeptide() throws JDOMException, IOException,
       MonomerException, NotationException, StructureException,
       ClassNotFoundException, ParserException, ValidationException, JDOMException {
-    Element xHELMRootElement = getXHELMRootElement("resources/qr_peptide.xhelm");
+    Element xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/qr_peptide.xhelm");
     String helmString = xHelmNotationParser.getComplexNotationString(xHELMRootElement);
     MonomerStore store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
+    updateMonomerStore(store);
     AssertJUnit.assertEquals("PEPTIDE1{[QR]}$$$$", helmString);
     validateHELM(helmString);
+  }
+
+  private void updateMonomerStore(MonomerStore monomerStore) throws MonomerLoadingException, IOException, MonomerException {
+    for (Monomer monomer : monomerStore.getAllMonomersList()) {
+      MonomerFactory.getInstance().getMonomerStore().addNewMonomer(monomer);
+      // save monomer db to local file after successful update //
+      MonomerFactory.getInstance().saveMonomerCache();
+    }
   }
 
 }

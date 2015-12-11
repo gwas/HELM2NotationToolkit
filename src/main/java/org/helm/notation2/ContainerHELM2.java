@@ -38,8 +38,13 @@ import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
+import org.helm.notation2.parser.notation.grouping.GroupingAmbiguity;
+import org.helm.notation2.parser.notation.grouping.GroupingElement;
+import org.helm.notation2.parser.notation.grouping.GroupingNotation;
 import org.helm.notation2.parser.notation.polymer.BlobEntity;
 import org.helm.notation2.parser.notation.polymer.ChemEntity;
+import org.helm.notation2.parser.notation.polymer.GroupEntity;
+import org.helm.notation2.parser.notation.polymer.HELMEntity;
 import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
@@ -157,8 +162,8 @@ public class ContainerHELM2 {
    * 
    * @return
    */
-  public AnnotationNotation getAllAnnotation() {
-    return helm2notation.getAnnotation();
+  public List<AnnotationNotation> getAllAnnotations() {
+    return helm2notation.getListOfAnnotations();
   }
 
   /**
@@ -225,49 +230,126 @@ public class ContainerHELM2 {
 
 
 
-  public void addHELM2notation(HELM2Notation newHELM2Notation) {
+  public void addHELM2notation(HELM2Notation newHELM2Notation) throws NotationException {
+    Map<String, String> mapIds = generateMapChangeIds(newHELM2Notation.getPolymerAndGroupingIDs());
     /* method to merge the new HELM2Notation into the existing one */
 
     /* section 1 */
     /* id's müssen angepasst werden */
-
+    section1(newHELM2Notation.getListOfPolymers(), mapIds);
     /* section 2 */
-
+    section2(newHELM2Notation.getListOfConnections(), mapIds);
     /* section 3 */
-
+    section3(newHELM2Notation.getListOfGroupings(), mapIds);
     /* section 4 */
+    section4(newHELM2Notation.getListOfAnnotations(), mapIds);
+
 
   }
 
-  private void section1(HELM2Notation newHELM2Notation) throws NotationException {
-    List<String> ids_one = helm2notation.getPolymerIDs();
-    Map<String, String> l = new HashMap<String, String>();
+  private Map<String, String> generateMapChangeIds(List<String> newIDs) {
+    Map<String, String> mapIds = new HashMap<String, String>();
+    List<String> oldIds = helm2notation.getPolymerAndGroupingIDs();
+    
+    Map<String, String> mapOldIds = new HashMap<String, String>();
+    for(String oldID : oldIds){
+      mapOldIds.put(oldID, "");
+    }
+    for (String newId : newIDs) {
+      if(mapOldIds.containsKey(newId)){
+        int i = 1;
+        String type = newId.split("\\d")[0];
 
-    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
-      if (ids_one.contains(polymer.getPolymerID().getID())) {
-        /* change id */
-        polymer = new PolymerNotation("");
-        l.put(polymer.getPolymerID().getID(), "");
-      } else {
-        l.put(polymer.getPolymerID().getID(), polymer.getPolymerID().getID());
+        while (mapOldIds.containsKey(type + i)) {
+          i++;
+        }
+        mapIds.put(newId, type + i);
       }
-      helm2notation.addPolymer(polymer);
+    }
+
+    return mapIds;
+
+  }
+
+  private void section1(List<PolymerNotation> polymers, Map<String, String> mapIds) throws NotationException {
+    for (PolymerNotation polymer : polymers) {
+      if (mapIds.containsKey(polymer.getPolymerID().getID())) {
+        /* change id */
+        PolymerNotation newpolymer = new PolymerNotation(mapIds.get(polymer.getPolymerID().getID()));
+        newpolymer = new PolymerNotation(newpolymer.getPolymerID(), polymer.getPolymerElements());
+        helm2notation.addPolymer(newpolymer);
+      } else {
+        helm2notation.addPolymer(polymer);
+      }
+     
     }
     
     
   }
 
+  private void section2(List<ConnectionNotation> connections, Map<String, String> mapIds) throws NotationException {
 
-  private static PolymerNotation generateChangePolymer(PolymerNotation polymer) throws NotationException {
-    String id = polymer.getPolymerID().getID();
-    PolymerNotation changedPolymer = new PolymerNotation("changedID");
-    if (polymer.isAnnotationTrue()) {
-      changedPolymer = new PolymerNotation(changedPolymer.getPolymerID(), polymer.getPolymerElements(), polymer.getAnnotation());
-    } else {
-      changedPolymer = new PolymerNotation(changedPolymer.getPolymerID(), polymer.getPolymerElements(), polymer.getAnnotation());
+    for (ConnectionNotation connection : connections) {
+      HELMEntity first = connection.getSourceId();
+      String idFirst = first.getID();
+
+      HELMEntity second = connection.getTargetId();
+      String idSecond = second.getID();
+
+      if (mapIds.containsKey(idFirst)) {
+        first = new ConnectionNotation(mapIds.get(idFirst)).getSourceId();
+      }
+
+      if (mapIds.containsKey(idSecond)) {
+        second = new ConnectionNotation(mapIds.get(idSecond)).getSourceId();
+      }
+
+      ConnectionNotation newConnection = new ConnectionNotation(first, second, connection.getSourceUnit(), connection.getrGroupSource(), connection.getTargetUnit(), connection.getrGroupTarget(),
+          connection.getAnnotation());
+
+      helm2notation.addConnection(newConnection);
     }
-    return changedPolymer;
+
   }
+
+  private void section3(List<GroupingNotation> groupings, Map<String, String> mapIds) throws NotationException {
+
+    for (GroupingNotation grouping : groupings) {
+      GroupEntity groupID = grouping.getGroupID();
+      if (mapIds.containsKey(groupID.getID())) {
+        groupID = new GroupingNotation(mapIds.get(groupID.getID())).getGroupID();
+      }
+      
+      String details = grouping.toHELM2().split("\\(")[1].split("\\)")[0];
+      details = changeIDs(details, mapIds);
+      helm2notation.addGrouping(new GroupingNotation(groupID, details));
+        
+    }
+  }
+
+  private void section4(List<AnnotationNotation> annotations, Map<String, String> mapIds) {
+    for (AnnotationNotation annotation : annotations) {
+      String notation = annotation.getAnnotation();
+      notation = changeIDs(notation, mapIds);
+      helm2notation.addAnnotation(new AnnotationNotation(notation));
+    }
+  }
+
+  /**
+   * 
+   * @param text
+   * @param mapIds
+   * @return
+   */
+  private String changeIDs(String text, Map<String, String> mapIds) {
+    String result = text;
+    for (String key : mapIds.keySet()) {
+      result = result.replace(key, mapIds.get(key));
+    }
+    return result;
+  }
+
+
 
 
   public void replaceMonomer() {
@@ -281,7 +363,7 @@ public class ContainerHELM2 {
 
 
 
-  public static void getNotationByReplacingSMILES() {
+  public void getNotationByReplacingSMILES() {
 
   }
 }

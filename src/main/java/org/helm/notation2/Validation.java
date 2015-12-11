@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.ChemicalToolKit;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
@@ -498,7 +497,7 @@ public class Validation {
       str = str.substring(1, str.length() - 1);
     }
     try {
-      ChemicalToolKit.getTestINSTANCE("").getManipulator().validateSMILES(str);
+      Chemistry.getInstance().getManipulator().validateSMILES(str);
       return true;
     } catch (CTKException e) {
       LOG.info("Monomer id is not valid : " + str);

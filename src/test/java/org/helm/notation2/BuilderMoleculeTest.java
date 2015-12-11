@@ -1,11 +1,13 @@
 package org.helm.notation2;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.ChemicalToolKit;
+import org.helm.chemtoolkit.AbstractChemistryManipulator.OutputType;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
@@ -66,47 +68,62 @@ public class BuilderMoleculeTest {
         BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(),
             node.getPolymerElements(), ""));
     System.out.println(molecule.getAttachments().size());
-    System.out.println(ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule).getMolecularFormula());
+    System.out.println(Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula());
   }
 
   @Test
-  public void testBuildMoleculeTwoChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
+  public void testBuildMoleculeTwoChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecule = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
   }
 
   @Test
-  public void testBuildMoleculeThreeChemsWithoutConnection() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
+  public void testBuildMoleculeThreeChemsWithoutConnection() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException,
+      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}|CHEM3{[hxy]}$CHEM1,CHEM2,1:R1-1:R1$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecule = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
-    System.out.println(ChemicalToolKit.getTestINSTANCE("").getManipulator().getMoleculeInfo(molecule.get(0)).getMolecularFormula());
+    System.out.println(Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule.get(1)).getMolecularFormula());
+    System.out.println(molecule.size());
   }
 
   @Test
-  public void testBuildMoleculeFourChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
+  public void testBuildMoleculeFourChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     String notation = "CHEM1{[MCC]}|CHEM2{[PEG2]}|CHEM3{[EG]}|CHEM4{[MCC]}$CHEM3,CHEM4,1:R1-1:R1|CHEM2,CHEM1,1:R1-1:R1|CHEM2,CHEM3,1:R2-1:R2$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
-    System.out.println(molecules.size());
-    // Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()),
-    // "C30H40N2O10");
+    Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C30H40N2O10");
+    System.out.println(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()));
   }
 
   @Test
-  public void testBuildMoleculePeptide() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
+  public void testBuildMoleculePeptide() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     String notation = "PEPTIDE1{L.P.G}$$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C13H23N3O4");
   }
 
   @Test
-  public void testBuildMoleculeRNA() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
-    String notation = "RNA1{R(U)P.R(T)P.R(G)}$$$$";
+  public void testBuildMoleculeRNA() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    String notation = "RNA1{RP}$$$$";
     ContainerHELM2 helm2container = readNotation(notation);
-    // Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()),
-    // "C29H37N9O21P2");
+    Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C5H11O8P");
+
+  }
+
+  @Test
+  public void testBuildMoleculeRNAExtended() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException,
+      SecurityException,
+      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    String notation = "RNA1{R(A)P.R(G)}$$$$";
+    ContainerHELM2 helm2container = readNotation(notation);
+
+    Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C20H25N10O11P");
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
