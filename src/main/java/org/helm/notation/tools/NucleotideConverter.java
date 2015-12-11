@@ -112,7 +112,7 @@ public class NucleotideConverter {
 	 * @throws StructureException
 	 */
 	public String getNucleotideSequenceFromSimpleRNANotation(
-			String simpleRNANotation) throws NucleotideLoadingException, NotationException, IOException, StructureException {
+      String simpleRNANotation) throws NucleotideLoadingException, NotationException, IOException, StructureException, MonomerException, JDOMException {
 		List<Nucleotide> nucList = SimpleNotationParser.getNucleotideList(
 				simpleRNANotation, false);
 
