@@ -249,7 +249,7 @@ public class WebService {
 
   }
 
-  public List<byte[]> generateImageForHELMMolecule(String notation) throws BuilderMoleculeException, ParserException,
+  public byte[] generateImageForHELMMolecule(String notation) throws BuilderMoleculeException, ParserException,
       ValidationException, CTKException, FileNotFoundException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
       IllegalArgumentException, InvocationTargetException {
     validateHELM(notation);
