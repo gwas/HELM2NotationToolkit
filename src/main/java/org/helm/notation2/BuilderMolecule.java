@@ -23,135 +23,107 @@
  */
 package org.helm.notation2;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
-import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.AttachmentList;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.IAtomBase;
-import org.helm.chemtoolkit.ManipulatorFactory;
-import org.helm.chemtoolkit.AbstractChemistryManipulator.OutputType;
-import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
-import org.helm.notation.MonomerException;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
+import org.helm.notation2.parser.notation.polymer.BlobEntity;
+import org.helm.notation2.parser.notation.polymer.ChemEntity;
 import org.helm.notation2.parser.notation.polymer.GroupEntity;
+import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.jdom2.JDOMException;
+import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Molecule
+ * builds for the HELMNotation Molecules
  * 
  * @author hecht
  */
 public final class BuilderMolecule {
-  private static final String POLYMER_TYPE_BLOB = "BLOB";
 
-  private static final String POLYMER_TYPE_CHEM = "CHEM";
-
-  private static final String POLYMER_TYPE_RNA = "RNA";
-
-  private static final String POLYMER_TYPE_PEPTIDE = "PEPTIDE";
-
-  public enum E_PolymerType {
-    Blob, Chem, RNA, Peptide
-  }
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(BuilderMolecule.class);
 
-  private void blub(E_PolymerType pt) {
-    switch (pt) {
-    case Blob:
-
-      break;
-    case Chem:
-      break;
-    case Peptide:
-      break;
-    default:
-      break;
-    }
-  }
-
 
 
   protected static AbstractMolecule buildMoleculefromSinglePolymer(PolymerNotation
- polymernotation) throws BuilderMoleculeException, MonomerException,
- IOException, JDOMException, HELM2HandledException,
- CTKException {
+ polymernotation) throws BuilderMoleculeException, HELM2HandledException {
 
  /* Case 1: BLOB -> throw exception */
- if (polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_BLOB)) {
- LOG.error("Molecule can't be build for BLOB");
- throw new BuilderMoleculeException("Molecule can't be build for BLOB");
- }
-
- /* Case 2: CHEM */
- else if (polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_CHEM))
- {
-      List<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
-      return buildMoleculefromCHEM(validMonomers);
- }
-
- /* Case 3: RNA or PEPTIDE */
- else if (polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_RNA) ||
- polymernotation.getPolymerID().getType().equals(POLYMER_TYPE_PEPTIDE)) {
- List<Monomer> validMonomers =
- MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
-      return buildMoleculefromPeptideOrRNA(validMonomers);
-
+    if (polymernotation.getPolymerID() instanceof BlobEntity) {
+      LOG.error("Molecule can't be build for BLOB");
+      throw new BuilderMoleculeException("Molecule can't be build for BLOB");
     }
 
- else{
- LOG.error("Molecule can't be build for unknown polymer type");
+    /* Case 2: CHEM */
+    else if (polymernotation.getPolymerID() instanceof ChemEntity) {
+      List<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
+      return buildMoleculefromCHEM(validMonomers);
+    }
+
+ /* Case 3: RNA or PEPTIDE */
+    else if (polymernotation.getPolymerID() instanceof RNAEntity ||
+        polymernotation.getPolymerID() instanceof PeptideEntity) {
+      List<Monomer> validMonomers =
+          MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
+      return buildMoleculefromPeptideOrRNA(validMonomers);
+    }
+
+    else {
+      LOG.error("Molecule can't be build for unknown polymer type");
       throw new BuilderMoleculeException("Molecule can't be build for unknown polymer type");
+    }
  }
 
- }
-
-  public static List<AbstractMolecule> buildMoleculefromPolymers(List<PolymerNotation> notlist,
-      List<ConnectionNotation> connectionlist) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
-          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  /**
+   * method to build molecules for the HELMNotation
+   * 
+   * @param polymers
+   * @param connections
+   * @return list of built molecules
+   * @throws BuilderMoleculeException
+   */
+  public static List<AbstractMolecule> buildMoleculefromPolymers(List<PolymerNotation> polymers,
+      List<ConnectionNotation> connections) throws BuilderMoleculeException {
     Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
 
     Map<String, AbstractMolecule> mapMolecules = new HashMap<String, AbstractMolecule>();
     Map<String, String> mapConnections = new HashMap<String, String>();
     Map<String, Map<String, IAtomBase>> mapIAtomBase = new HashMap<String, Map<String, IAtomBase>>();
     
+
     List<AbstractMolecule> listMolecules = new ArrayList<AbstractMolecule>();
     AbstractMolecule molecule = null;
-    /*Build for every single polymer a molecule*/
-    for(PolymerNotation node: notlist){
-      map.put(node.getPolymerID().getID(),node);
+    /* Build for every single polymer a single molecule */
+    for (PolymerNotation polymer : polymers) {
+      map.put(polymer.getPolymerID().getID(),polymer);
         try {
-        AbstractMolecule currentmolecule = buildMoleculefromSinglePolymer(node);
-        mapMolecules.put(node.getPolymerID().getID(), currentmolecule);
-        mapIAtomBase.put(node.getPolymerID().getID(), currentmolecule.getRgroups());
-        } catch (MonomerException | IOException | JDOMException | HELM2HandledException | CTKException e) {
+        AbstractMolecule currentmolecule = buildMoleculefromSinglePolymer(polymer);
+        mapMolecules.put(polymer.getPolymerID().getID(), currentmolecule);
+        mapIAtomBase.put(polymer.getPolymerID().getID(), currentmolecule.getRgroups());
+      } catch (HELM2HandledException | CTKException e) {
           throw new BuilderMoleculeException(e.getMessage());
         }
     }
 
-    Map<String[], IAtomBase[]> toAddConnection = new LinkedHashMap<String[], IAtomBase[]>();
-    for (ConnectionNotation connection : connectionlist) {
+    /* Build interconnections between single molecules */
+    for (ConnectionNotation connection : connections) {
       /*Group Id -> throw exception*/
       if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
         LOG.error("Molecule can't be build for group connection");
@@ -201,14 +173,19 @@ public final class BuilderMolecule {
 
       String RgroupOne = connection.getrGroupSource();
       String RgroupTwo = connection.getrGroupTarget();
-      ;
-      molecule =
-          ManipulatorFactory.buildManipulator(ManipulatorType.MARVIN).merge(one, mapIAtomBase.get(connection.getSourceId().getID()).get(RgroupOne), two, mapIAtomBase.get(connection.getTargetId().getID()).get(RgroupTwo));
+      System.out.println(connection.toHELM2());
+      try {
+        molecule =
+            Chemistry.getInstance().getManipulator().merge(one, mapIAtomBase.get(connection.getSourceId().getID()).get(RgroupOne), two, mapIAtomBase.get(connection.getTargetId().getID()).get(RgroupTwo));
+      } catch (CTKException e) {
+        throw new BuilderMoleculeException(e.getMessage());
+      }
       mapMolecules.put(idFirst + idSecond, molecule);
       mapConnections.put(connection.getSourceId().getID(), idFirst + idSecond);
       mapConnections.put(connection.getTargetId().getID(), idFirst + idSecond);
 
     }
+
 
     for (AbstractMolecule content : mapMolecules.values()) {
       listMolecules.add(content);
@@ -218,8 +195,14 @@ public final class BuilderMolecule {
     return listMolecules;
  }
 
-  private static AbstractMolecule buildMoleculefromCHEM(List<Monomer> validMonomers) throws BuilderMoleculeException, IOException, CTKException {
-    /* MonomerNotationList or Count should be handled */
+  /**
+   * method to build a molecule from a chemical component
+   * 
+   * @param validMonomers all valid Monomers of the chemical component
+   * @return Built Molecule
+   * @throws BuilderMoleculeException
+   */
+  private static AbstractMolecule buildMoleculefromCHEM(List<Monomer> validMonomers) throws BuilderMoleculeException {
     /* a chemical molecule should only contain one monomer */
     if (validMonomers.size() == 1) {
       try {
@@ -234,19 +217,8 @@ public final class BuilderMolecule {
           for (Attachment attachment : listAttachments) {
             list.add(new org.helm.chemtoolkit.Attachment(attachment.getAlternateId(), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
           }
+          
           AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, list);
-
-          // molecule = buildSingleMolecule(molecule);
-
-          LOG.info("");
-          Map<String, IAtomBase> rgroupMap = molecule.getRgroups();
-          Map<String, IAtomBase> rmap = new HashMap<String, IAtomBase>();
-          Set keyset = rgroupMap.keySet();
-          for (Iterator it = keyset.iterator(); it.hasNext();) {
-            String key = (String) it.next();
-            rmap.put("1:" + key, (IAtomBase) rgroupMap.get(key));
-          }
-
           return molecule;
 
         } else {
@@ -255,8 +227,13 @@ public final class BuilderMolecule {
         }
       }
 
-      catch (NullPointerException e) {
+      catch (NullPointerException ex) {
         throw new BuilderMoleculeException("Monomer is not stored in the monomer database");
+      }
+      
+      catch (IOException | CTKException e) {
+        LOG.error("Molecule can't be built");
+        throw new BuilderMoleculeException("Molecule can't be built");
       }
     } else {
       LOG.error("Chemical molecule should contain exactly one monomer");
@@ -264,20 +241,26 @@ public final class BuilderMolecule {
     }
   }
 
-  private static AbstractMolecule buildMoleculefromPeptideOrRNA(List<Monomer> validMonomers) throws BuilderMoleculeException, IOException, CTKException {
+  /**
+   * method to build a molecule from a Peptide or RNA component
+   * 
+   * @param validMonomers
+   * @return Molecule
+   * @throws BuilderMoleculeException
+   */
+  private static AbstractMolecule buildMoleculefromPeptideOrRNA(List<Monomer> validMonomers) throws BuilderMoleculeException {
+    try{
     Map<AbstractMolecule, IAtomBase[]> listMolecules = new LinkedHashMap<AbstractMolecule, IAtomBase[]>();
     AbstractMolecule currentMolecule = null;
-    AbstractMolecule molecule;
     AbstractMolecule prevMolecule =
         Chemistry.getInstance().getManipulator().getMolecule(validMonomers.get(0).getCanSMILES(), generateAttachmentList(validMonomers.get(0).getAttachmentList()));
     AbstractMolecule firstMolecule = null;
-    String smiles = "";
-
     Monomer prevMonomer = null;
 
     if (validMonomers.size() == 0 || validMonomers == null) {
       throw new BuilderMoleculeException("Polymer (Peptide/RNA) has no contents");
     }
+      /* First catch all IAtomBases */
     for (Monomer currentMonomer : validMonomers) {
       if (prevMonomer != null) {
         currentMolecule = Chemistry.getInstance().getManipulator().getMolecule(currentMonomer.getCanSMILES(), generateAttachmentList(currentMonomer.getAttachmentList()));
@@ -288,7 +271,6 @@ public final class BuilderMolecule {
           rgroups[1] = currentMolecule.getRGroupAtom(1, true);
           prevMolecule = currentMolecule;
         }
-
         /* Backbone to Branch Connection */
         else if (currentMonomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
           rgroups[0] = prevMolecule.getRGroupAtom(3, true);
@@ -300,7 +282,6 @@ public final class BuilderMolecule {
           throw new BuilderMoleculeException("Intra connection is unknown");
         }
         listMolecules.put(currentMolecule, rgroups);
-
       }
 
       else {
@@ -311,32 +292,26 @@ public final class BuilderMolecule {
       }
     }
 
+      /* merge the molecules together */
     prevMolecule = firstMolecule;
-    String molFile;
 
-    molFile = Chemistry.getInstance().getManipulator().convertMolecule(firstMolecule, AbstractChemistryManipulator.StType.MOLFILE);
-
-    byte[] output = Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
-    try (FileOutputStream out = new FileOutputStream("test-output\\picture_1.png")) {
-      out.write(output);
-    }
-    int i = 2;
-    for (Entry<AbstractMolecule, IAtomBase[]> entry : listMolecules.entrySet()) {
-      prevMolecule = Chemistry.getInstance().getManipulator().merge(prevMolecule, entry.getValue()[0], entry.getKey(), entry.getValue()[1]);
-      firstMolecule = prevMolecule;
-
-      molFile = Chemistry.getInstance().getManipulator().convertMolecule(firstMolecule, AbstractChemistryManipulator.StType.MOLFILE);
-
-      output = Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
-      try (FileOutputStream out = new FileOutputStream("test-output\\picture_" + i + ".png")) {
-        out.write(output);
+      for (Entry<AbstractMolecule, IAtomBase[]> entry : listMolecules.entrySet()) {
+        prevMolecule = Chemistry.getInstance().getManipulator().merge(prevMolecule, entry.getValue()[0], entry.getKey(), entry.getValue()[1]);
       }
-      i++;
-    }
 
     return prevMolecule;
+    }
+ catch (IOException | CTKException e) {
+      throw new BuilderMoleculeException("Polymer(Peptide/RNA) molecule can't be built " + e.getMessage());
+    }
   }
 
+  /**
+   * method to generate the AttachmentList given a list of attachments
+   * 
+   * @param listAttachments
+   * @return AttachmentList
+   */
   private static AttachmentList generateAttachmentList(List<Attachment> listAttachments) {
     AttachmentList list = new AttachmentList();
 
@@ -346,8 +321,17 @@ public final class BuilderMolecule {
     return list;
   }
 
-  protected static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws CTKException, IOException {
+  /**
+   * method to merge all unused rgroups into the molecule
+   * 
+   * @param molecule
+   * @return Molecule
+   * @throws BuilderMoleculeException
+   */
+  protected static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws BuilderMoleculeException {
+    try{
     Map<AbstractMolecule, IAtomBase[]> listMolecules = new LinkedHashMap<AbstractMolecule, IAtomBase[]>();
+      /* get the merge informations */
     for (org.helm.chemtoolkit.Attachment attachment : molecule.getAttachments()) {
       int groupId = AbstractMolecule.getIdFromLabel(attachment.getLabel());
       String smiles = attachment.getSmiles();
@@ -357,14 +341,24 @@ public final class BuilderMolecule {
       listMolecules.put(rMol, bases);
     }
 
+      /* merge into molecule */
     for (Map.Entry<AbstractMolecule, IAtomBase[]> addedMolecule : listMolecules.entrySet()) {
-
       molecule = Chemistry.getInstance().getManipulator().merge(molecule, addedMolecule.getValue()[0], addedMolecule.getKey(), addedMolecule.getValue()[1]);
     }
-    return molecule;
+      return molecule;
+    } catch (NullPointerException | IOException | CTKException e) {
+      throw new BuilderMoleculeException("Unused rgroups can't be merged into the molecule");
+    }
   }
 
-  protected static AbstractMolecule getMoleculeForMonomer(Monomer monomer) throws IOException, CTKException {
+  /**
+   * method to build a molecule for a given monomer
+   * 
+   * @param monomer
+   * @return Molecule
+   * @throws BuilderMoleculeException
+   */
+  protected static AbstractMolecule getMoleculeForMonomer(Monomer monomer) throws BuilderMoleculeException {
     String smiles = monomer.getCanSMILES();
 
     List<Attachment> listAttachments = monomer.getAttachmentList();
@@ -373,7 +367,11 @@ public final class BuilderMolecule {
     for (Attachment attachment : listAttachments) {
       list.add(new org.helm.chemtoolkit.Attachment(attachment.getAlternateId(), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
     }
-    return Chemistry.getInstance().getManipulator().getMolecule(smiles, list);
+    try {
+      return Chemistry.getInstance().getManipulator().getMolecule(smiles, list);
+    } catch (IOException | CTKException e) {
+      throw new BuilderMoleculeException("Molecule can't be built for the given monomer");
+    }
 
   }
 }

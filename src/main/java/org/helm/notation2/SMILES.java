@@ -69,12 +69,13 @@ public final class SMILES {
   protected static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
       InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
     /* Build Molecues */
-    List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
+    List<AbstractMolecule> molecules =
+        BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
 
     /* get for every molecule the smiles */
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
-      molecule = BuilderMolecule.mergeRgroups(molecule);
+      // molecule = BuilderMolecule.mergeRgroups(molecule);
       sb.append(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES) + ".");
     }
     sb.setLength(sb.length() - 1);

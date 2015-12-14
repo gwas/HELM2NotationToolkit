@@ -27,10 +27,10 @@ public class ImagesTest {
     }
   }
 
-  // @Test
+  @Test
   public void TestGenerationImageOfHELMNotation() throws CTKException, IOException, ParserException, JDOMException, BuilderMoleculeException, ClassNotFoundException, NoSuchMethodException,
       SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    String notation = "RNA1{R(U)P}|RNA2{R(U)P.R(G)}|RNA3{R(C)P.R(A)}|CHEM1{[MCC]}$RNA1,CHEM1,3:R2-1:R1$RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$";
+    String notation = "RNA1{R(U)P}|RNA2{R(U)P.R(G)}|RNA3{R(C)P.R(A)}|CHEM1{[MCC]}$RNA1,CHEM1,3:R2-1:R1|RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$$";
     ContainerHELM2 containerhelm2 = readNotation(notation);
     byte[] result = Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
     System.out.println(result);
