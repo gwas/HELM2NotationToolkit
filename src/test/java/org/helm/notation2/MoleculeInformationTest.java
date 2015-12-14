@@ -19,8 +19,7 @@ import org.testng.annotations.Test;
 public class MoleculeInformationTest {
 
   @Test
-  public void testgetMolecularFormularExamples() throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
+  public void testgetMolecularFormularExamples() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     testMolecularFormular(notation);
 
@@ -57,8 +56,7 @@ public class MoleculeInformationTest {
     // System.out.println(MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation()));
   }
 
-  private Double testExactMass(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException,
-      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  private Double testExactMass(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
@@ -69,8 +67,7 @@ public class MoleculeInformationTest {
 
   }
 
-  private Double testMolecularWeight(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException,
-      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  private Double testMolecularWeight(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();

@@ -1,6 +1,12 @@
 
 package org.helm.notation2;
 
+import java.io.IOException;
+
+import org.helm.chemtoolkit.AbstractChemistryManipulator;
+import org.helm.chemtoolkit.AttachmentList;
+import org.helm.chemtoolkit.CTKException;
+import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +22,9 @@ public final class OutputFiles {
   private static final Logger LOG = LoggerFactory.getLogger(OutputFiles.class);
 
 
-  protected static void generateMDLFile(HELM2Notation helm2notation) {
-
+  protected static String generateMDL(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
+    String smiles = SMILES.getSMILESForAll(helm2notation);
+    return Chemistry.getInstance().getManipulator().convert(smiles, AbstractChemistryManipulator.StType.SMILES);
   }
 
   protected static void generatePDB(HELM2Notation helm2notation) {

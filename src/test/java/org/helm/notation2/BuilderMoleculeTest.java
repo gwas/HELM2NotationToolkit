@@ -1,17 +1,10 @@
 package org.helm.notation2;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.AbstractChemistryManipulator.OutputType;
-import org.helm.notation.CalculationException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
@@ -27,39 +20,19 @@ import org.testng.annotations.Test;
 public class BuilderMoleculeTest {
 
   @Test(expectedExceptions = BuilderMoleculeException.class)
-  public void testBuildMoleculeFromSinglePolymerBLOBWithException() throws ExceptionState, MonomerException,
-      IOException, NotationException, org.jdom2.JDOMException,
-      StructureException, CalculationException, HELM2HandledException,
-      BuilderMoleculeException, CTKException
-
-  {
-
+  public void testBuildMoleculeFromSinglePolymerBLOBWithException() throws org.helm.notation2.parser.exceptionparser.NotationException, BuilderMoleculeException, HELM2HandledException {
     PolymerNotation node = new PolymerNotation("BLOB1");
     BuilderMolecule.buildMoleculefromSinglePolymer(node);
-
   }
 
   @Test(expectedExceptions = BuilderMoleculeException.class)
-  public void testBuildMoleculeFromSinglePolymerCHEMEmptyWithException() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      StructureException, CalculationException, HELM2HandledException,
-      BuilderMoleculeException, CTKException
-
-  {
-
+  public void testBuildMoleculeFromSinglePolymerCHEMEmptyWithException() throws org.helm.notation2.parser.exceptionparser.NotationException, BuilderMoleculeException, HELM2HandledException {
     PolymerNotation node = new PolymerNotation("CHEM1");
     BuilderMolecule.buildMoleculefromSinglePolymer(node);
   }
 
   @Test
-  public void testBuildMoleculeFromSinglePolymerCHEM() throws ExceptionState,
-      MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      StructureException, CalculationException, HELM2HandledException,
-      BuilderMoleculeException, CTKException
-
-  {
-
+  public void testBuildMoleculeFromSinglePolymerCHEM() throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, BuilderMoleculeException, HELM2HandledException, CTKException {
     PolymerNotation node = new PolymerNotation("CHEM1");
     MonomerNotationUnit mon = new MonomerNotationUnit("[MCC]",
         node.getPolymerID().getType());
@@ -72,16 +45,14 @@ public class BuilderMoleculeTest {
   }
 
   @Test
-  public void testBuildMoleculeTwoChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testBuildMoleculeTwoChems() throws ParserException, JDOMException, BuilderMoleculeException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecule = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
   }
 
   @Test
-  public void testBuildMoleculeThreeChemsWithoutConnection() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException,
-      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testBuildMoleculeThreeChemsWithoutConnection() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}|CHEM3{[hxy]}$CHEM1,CHEM2,1:R1-1:R1$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecule = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
@@ -90,8 +61,7 @@ public class BuilderMoleculeTest {
   }
 
   @Test
-  public void testBuildMoleculeFourChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testBuildMoleculeFourChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "CHEM1{[MCC]}|CHEM2{[PEG2]}|CHEM3{[EG]}|CHEM4{[MCC]}$CHEM3,CHEM4,1:R1-1:R1|CHEM2,CHEM1,1:R1-1:R1|CHEM2,CHEM3,1:R2-1:R2$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
@@ -100,40 +70,29 @@ public class BuilderMoleculeTest {
   }
 
   @Test
-  public void testBuildMoleculePeptide() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testBuildMoleculePeptide() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "PEPTIDE1{L.P.G}$$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C13H23N3O4");
   }
 
   @Test
-  public void testBuildMoleculeRNA() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testBuildMoleculeRNA() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "RNA1{RP}$$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C5H11O8P");
-
   }
 
   @Test
-  public void testBuildMoleculeRNAExtended() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException,
-      SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testBuildMoleculeRNAExtended() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "RNA1{R(A)P.R(G)}$$$$";
     ContainerHELM2 helm2container = readNotation(notation);
-
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C20H25N10O11P");
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void testBuildMoleculeFromSinglePolymerCHEMUnknownWithException()
-      throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      StructureException, CalculationException, HELM2HandledException,
-      BuilderMoleculeException, CTKException
-
-  {
+  public void testBuildMoleculeFromSinglePolymerCHEMUnknownWithException() throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, BuilderMoleculeException,
+      HELM2HandledException {
 
     PolymerNotation node = new PolymerNotation("CHEM1");
     MonomerNotationUnit mon = new MonomerNotationUnit("[CZ]",
@@ -144,12 +103,7 @@ public class BuilderMoleculeTest {
   }
 
   @Test
-  public void testBuildMoleculeFromSinglePolymerCHEMSMILES() throws ExceptionState, MonomerException,
-      IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      StructureException, CalculationException, HELM2HandledException,
-      BuilderMoleculeException, CTKException
-
-  {
+  public void testBuildMoleculeFromSinglePolymerCHEMSMILES() throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, BuilderMoleculeException, HELM2HandledException {
 
     PolymerNotation node = new PolymerNotation("CHEM1");
     MonomerNotationUnit mon = new MonomerNotationUnit("[OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1]",

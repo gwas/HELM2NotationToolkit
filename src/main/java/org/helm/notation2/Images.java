@@ -57,24 +57,22 @@ public final class Images {
    * @return
    * @throws CTKException
    * @throws IOException
-   * @throws NumberFormatException 
+   * @throws BuilderMoleculeException
+   * @throws NumberFormatException
    */
-  protected static byte[] generateImageofMonomer(Monomer monomer) throws IOException, CTKException {
+  protected static byte[] generateImageofMonomer(Monomer monomer) throws BuilderMoleculeException, CTKException {
 
       /* First build one molecule + merge unused rgoups into it */
-      AbstractMolecule molecule = BuilderMolecule.getMoleculeForMonomer(monomer);
+    AbstractMolecule molecule = BuilderMolecule.mergeRgroups(BuilderMolecule.getMoleculeForMonomer(monomer));
 
-      molecule = BuilderMolecule.mergeRgroups(molecule);
-      String molFile;
-    
+
+    String molFile;
       molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
-  
       return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
 
   }
 
-  protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, FileNotFoundException, IOException, ClassNotFoundException,
-      NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
     /* get SMILES representation for the whole molecule */
    String smiles = SMILES.getSMILESForAll(helm2notation);
    AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, null);

@@ -23,8 +23,10 @@ import java.lang.reflect.InvocationTargetException;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
+import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.StructureException;
 import org.helm.notation.tools.ComplexNotationParser;
 import org.helm.notation2.exception.BuilderMoleculeException;
@@ -44,10 +46,7 @@ public class SMILESTest {
   ParserHELM2 parser;
 
   // @Test
-  public void testSMILES() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException,
-      org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-      InvocationTargetException, BuilderMoleculeException {
+  public void testSMILES() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
     parser = new ParserHELM2();
 
     String test =
@@ -63,9 +62,7 @@ public class SMILESTest {
   }
 
   @Test
-  public void testSMILESOLD() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException,
-      org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException {
+  public void testSMILESOLD() throws MonomerLoadingException, NotationException, IOException, MonomerException, StructureException, JDOMException {
 
     String test =
         "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
@@ -74,9 +71,7 @@ public class SMILESTest {
   }
 
   @Test
-  public void testcanonical() throws ExceptionState, IOException, JDOMException, NotationException, MonomerException,
-      org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, ClassNotFoundException {
+  public void testcanonical() throws ClassNotFoundException, NucleotideLoadingException, NotationException, MonomerException, IOException, StructureException, JDOMException {
 
     String test = "PEPTIDE1{D}|PEPTIDE3{L.R}|PEPTIDE2{E}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
     MonomerStore store = new MonomerStore();
@@ -84,9 +79,7 @@ public class SMILESTest {
 
   }
 
-  public void testcanonicalCHEM() throws ExceptionState, IOException, JDOMException, NotationException,
-      MonomerException, org.jdom2.JDOMException, StructureException, CalculationException,
-      HELM2HandledException, ClassNotFoundException {
+  public void testcanonicalCHEM() throws ClassNotFoundException, NucleotideLoadingException, NotationException, MonomerException, IOException, StructureException, JDOMException {
 
     String test =
         "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";

@@ -23,22 +23,17 @@
  */
 package org.helm.notation2;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.StructureParser;
+import org.helm.chemtoolkit.CTKSmilesException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import chemaxon.struc.Molecule;
 
 /**
  * SMILES
@@ -51,31 +46,24 @@ public final class SMILES {
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
 
-  protected static String getSMILES(List<Monomer> monomerlist) throws IOException, CTKException {
-    StringBuffer sb = new StringBuffer();
-    for (Monomer element : monomerlist) {
-      String smi = element.getCanSMILES();
-      if(sb.length()>0){
-        sb.append(".");
-      }
-      sb.append(smi);
-    }
-    String mixtureSmiles = sb.toString();
-    
-    AbstractMolecule mol = Chemistry.getInstance().getManipulator().getMolecule(mixtureSmiles, null);
-    return Chemistry.getInstance().getManipulator().convertMolecule(mol, AbstractChemistryManipulator.StType.SMILES);
-  }
 
-  protected static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+
+  /**
+   * method to generate smiles for the whole HELMNotation
+   * 
+   * @param helm2notation
+   * @return
+   * @throws BuilderMoleculeException
+   * @throws CTKException
+   */
+  protected static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* Build Molecues */
     List<AbstractMolecule> molecules =
         BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
-
     /* get for every molecule the smiles */
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
-      // molecule = BuilderMolecule.mergeRgroups(molecule);
+      molecule = BuilderMolecule.mergeRgroups(molecule);
       sb.append(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES) + ".");
     }
     sb.setLength(sb.length() - 1);
@@ -83,26 +71,31 @@ public final class SMILES {
 
   }
 
-  protected static String getCanonicalSmilesForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    /* Build Molecues */
+  /**
+   * method to generate canonical smiles for the whole HELMNotation
+   * 
+   * @param helm2notation
+   * @return canonical smiles
+   * @throws BuilderMoleculeException
+   * @throws CTKSmilesException
+   * @throws CTKException
+   */
+  protected static String getCanonicalSmilesForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKSmilesException, CTKException {
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
 
     /* get for every molecule the canonical smiles */
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
-      sb.append(".");
-      System.out.println("ToDo");
+      molecule = BuilderMolecule.mergeRgroups(molecule);
+      sb.append(Chemistry.getInstance().getManipulator().canonicalize(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES) + "."));
     }
     sb.setLength(sb.length() - 1);
     return sb.toString();
-
   }
 
   /* cannot generate SMILEs */
-  public void containsGenericStructure() {
+  protected void containsGenericStructure() {
   }
-
 
 }
 

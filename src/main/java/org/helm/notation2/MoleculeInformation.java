@@ -23,8 +23,6 @@
  */
 package org.helm.notation2;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -52,17 +50,8 @@ public final class MoleculeInformation {
    * method to build from one notation one molecule
    * 
    * @throws BuilderMoleculeException
-   * @throws CTKException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
-   * @throws InstantiationException
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws ClassNotFoundException
    */
-  private static List<AbstractMolecule> buildMolecule() throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException,
-      IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  private static List<AbstractMolecule> buildMolecule() throws BuilderMoleculeException {
 
     return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
   }
@@ -73,16 +62,8 @@ public final class MoleculeInformation {
    * @return MolecularWeight
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
-   * @throws InstantiationException
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws ClassNotFoundException
    */
-  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     MoleculeInformation.helm2notation = helm2notation;
     /* First build one big molecule; List of molecules? */
     List<AbstractMolecule> molecules = buildMolecule();
@@ -101,16 +82,8 @@ public final class MoleculeInformation {
    * @return ExactMass
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
-   * @throws InstantiationException
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws ClassNotFoundException
    */
-  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big moleucle; List of molecules */
     MoleculeInformation.helm2notation = helm2notation;
     List<AbstractMolecule> molecules = buildMolecule();
@@ -128,17 +101,8 @@ public final class MoleculeInformation {
    * @return MolecularFormular
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
-   * @throws IOException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
-   * @throws InstantiationException
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws ClassNotFoundException
    */
-  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException, ClassNotFoundException, NoSuchMethodException,
-      SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big molecule */
     MoleculeInformation.helm2notation = helm2notation;
     List<AbstractMolecule> molecules = buildMolecule();
@@ -167,24 +131,15 @@ public final class MoleculeInformation {
    * @param helm2notation
    * @return Molecule
    * @throws BuilderMoleculeException if the whole molecule can not be built
-   * @throws CTKException
-   * @throws InvocationTargetException
-   * @throws IllegalArgumentException
-   * @throws IllegalAccessException
-   * @throws InstantiationException
-   * @throws SecurityException
-   * @throws NoSuchMethodException
-   * @throws ClassNotFoundException
    */
-  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ClassNotFoundException, NoSuchMethodException, SecurityException,
-      InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
     MoleculeInformation.helm2notation = helm2notation;
     return buildMolecule();
   }
 
 
 
-  private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws CTKException, IOException {
+  private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws BuilderMoleculeException, CTKException {
     molecule = BuilderMolecule.mergeRgroups(molecule);
     String formula = Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
     System.out.println(formula);
