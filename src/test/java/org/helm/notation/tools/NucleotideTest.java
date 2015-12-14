@@ -23,13 +23,13 @@ public class NucleotideTest {
 		String smiles = SimpleNotationParser.getSimplePolymerSMILES(notation,
 				"RNA");
 		AssertJUnit.assertEquals(
-				"Nc1nc2n(cnc2c(=O)[nH]1)[C@H]1O[C@H](COP(O)(=O)O[C@@H]2[C@@H](COP(O)(=O)O[C@@H]3[C@@H](CO[*])O[C@@H]([C@@H]3O)n3cnc4c(N)ncnc34)O[C@@H]([C@@H]2O)n2ccc(=O)[nH]c2=O)[C@@H](OP(O)([*])=O)[C@H]1O |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R2;;;$|",
+"Nc1nc2n(cnc2c(=O)[nH]1)[C@@H]1O[C@H](COP(O)(=O)O[C@@H]2[C@@H](COP(O)(=O)O[C@@H]3[C@@H](CO[*])O[C@H]([C@@H]3O)n3cnc4c(N)ncnc34)O[C@H]([C@@H]2O)n2ccc(=O)[nH]c2=O)[C@@H](OP(O)([*])=O)[C@H]1O |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R2;;;$|",
 				smiles);
 
 		String complexNotation = "RNA1{" + notation + "}$$$$";
 		smiles = ComplexNotationParser.getComplexPolymerSMILES(complexNotation);
 		AssertJUnit.assertEquals(
-				"[H]OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@@H]([C@H](O)[C@@H]1OP(O)(O)=O)n1cnc2c1nc(N)[nH]c2=O)n1ccc(=O)[nH]c1=O)n1cnc2c(N)ncnc12",
+"[H]OC[C@H]1O[C@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@H]([C@H](O)[C@@H]1OP(O)(=O)OC[C@H]1O[C@H]([C@H](O)[C@@H]1OP(O)(O)=O)n1cnc2c1nc(N)[nH]c2=O)n1ccc(=O)[nH]c1=O)n1cnc2c(N)ncnc12",
 				smiles);
 
 	}

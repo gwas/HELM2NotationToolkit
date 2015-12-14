@@ -281,26 +281,24 @@ public class SimpleNotationParserTest {
 
 		String result = SimpleNotationParser.getSimplePolymerSMILES(
 				getSimpleRNANotation(), Monomer.NUCLIEC_ACID_POLYMER_TYPE);
-		assertEquals(
-				"Cc1cn([C@H]2O[C@@]3(COP(O)(=O)O[C@@H]4[C@@H](COP(O)(=O)O[C@@H]5[C@@H](COP(S)(=O)O[C@@H]6[C@@H](COP(O)([*])=O)O[C@@H]([C@@H]6O)n6cnc7c(N)ncnc67)O[C@@H]([*])[C@@H]5O)O[C@@H]([C@@H]4O)n4cnc5c4nc(N)[nH]c5=O)CO[C@@H]2[C@@H]3O[*])c(=O)nc1N |r,$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R1;;;;;;;;;;;;;;;;;;_R3;;;;;;;;;;;;;;;;;;;;;;;_R2;;;;;$|",
-				result);
+    assertEquals("Cc1cn([C@@H]2O[C@@]3(COP(O)(=O)O[C@@H]4[C@@H](COP(O)(=O)O[C@@H]5[C@@H](COP(S)(=O)O[C@@H]6[C@@H](COP(O)([*])=O)O[C@H]([C@@H]6O)n6cnc7c(N)ncnc67)O[C@@H]([*])[C@@H]5O)O[C@H]([C@@H]4O)n4cnc5c4nc(N)[nH]c5=O)CO[C@@H]2[C@@H]3O[*])c(=O)nc1N |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R1;;;;;;;;;;;;;;;;;;_R3;;;;;;;;;;;;;;;;;;;;;;;_R2;;;;;$|", result);
 
 		result = SimpleNotationParser.getSimplePolymerSMILES(
 				getInlineSmilesModAdenine(), Monomer.NUCLIEC_ACID_POLYMER_TYPE);
 		assertEquals(
-				"Cc1cn([C@H]2O[C@@]3(COP(O)(=O)O[C@@H]4[C@@H](COP(O)(=O)O[C@@H]5[C@@H](COP(S)(=O)O[C@@H]6[C@@H](COP(O)(=O)O[C@@H]7[C@@H](CO[*])O[C@@H]([C@@H]7O)n7ccc(N)nc7=O)O[C@@H]([C@@H]6O)n6cnc7c6[N](C)=CN=C7N)O[C@@H]([*])[C@@H]5O)O[C@@H]([C@@H]4O)n4cnc5c4nc(N)[nH]c5=O)CO[C@@H]2[C@@H]3OP(O)([*])=O)c(=O)nc1N |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R3;;;;;;;;;;;;;;;;;;;;;;;;;_R2;;;;;;$,c:68,70,^1:63|",
+"Cc1cn([C@@H]2O[C@@]3(COP(O)(=O)O[C@@H]4[C@@H](COP(O)(=O)O[C@@H]5[C@@H](COP(S)(=O)O[C@@H]6[C@@H](COP(O)(=O)O[C@@H]7[C@@H](CO[*])O[C@H]([C@@H]7O)n7ccc(N)nc7=O)O[C@H]([C@@H]6O)n6cnc7c6[N](C)=CN=C7N)O[C@@H]([*])[C@@H]5O)O[C@H]([C@@H]4O)n4cnc5c4nc(N)[nH]c5=O)CO[C@@H]2[C@@H]3OP(O)([*])=O)c(=O)nc1N |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R3;;;;;;;;;;;;;;;;;;;;;;;;;_R2;;;;;;$,c:68,70,^1:63|",
 				result);
 
 		result = SimpleNotationParser.getSimplePolymerSMILES(
 				getSimplePeptideNotation(), Monomer.PEPTIDE_POLYMER_TYPE);
 		assertEquals(
-				"C[C@H](NC(=O)[C@H](C)NC(=O)[C@H](CCCCN[*])NC(=O)CNC(=O)CN[*])C(=O)N[C@@H](C[SeH])C([*])=O |r,$;;;;;;;;;;;;;;;;_R3;;;;;;;;;;_R1;;;;;;;;_R2;$|",
+"C[C@H](NC(=O)[C@H](C)NC(=O)[C@H](CCCCN[*])NC(=O)CNC(=O)CN[*])C(=O)N[C@@H](C[SeH])C([*])=O |$;;;;;;;;;;;;;;;;_R3;;;;;;;;;;_R1;;;;;;;;_R2;$|",
 				result);
 
 		result = SimpleNotationParser.getSimplePolymerSMILES(
 				getInlineSmilesPeptideNotation(), Monomer.PEPTIDE_POLYMER_TYPE);
 		assertEquals(
-				"C[C@H](NC(=O)[C@H](C)NC(=O)[C@H](CCCCN[*])NC(=O)CNC(=O)CN[*])C(=O)N[C@@H](C[SeH])C([*])=O |r,$;;;;;;;;;;;;;;;;_R3;;;;;;;;;;_R1;;;;;;;;_R2;$|",
+"C[C@H](NC(=O)[C@H](C)NC(=O)[C@H](CCCCN[*])NC(=O)CNC(=O)CN[*])C(=O)N[C@@H](C[SeH])C([*])=O |$;;;;;;;;;;;;;;;;_R3;;;;;;;;;;_R1;;;;;;;;_R2;$|",
 				result);
 
 		result = SimpleNotationParser.getSimplePolymerSMILES(

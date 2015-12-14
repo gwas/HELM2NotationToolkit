@@ -9,10 +9,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.helm.chemtoolkit.AbstractChemistryManipulator;
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
+import org.helm.notation2.Chemistry;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -128,11 +131,12 @@ public class xHelmNotationParserTest {
 	@Test
 	public void testXHelmWithInlineSmiles() throws JDOMException, IOException,
 			MonomerException, NotationException, StructureException,
-			ClassNotFoundException {
+      ClassNotFoundException, CTKException {
 		Element xHELMRootElement = getXHELMRootElement("resources/simpleWithInlineSmiles.xhelm");
 
 		String helmString = xHelmNotationParser
 				.getComplexNotationString(xHELMRootElement);
+    System.out.println(helmString);
 		MonomerStore store = xHelmNotationParser
 				.getMonomerStore(xHELMRootElement);
 
@@ -142,10 +146,7 @@ public class xHelmNotationParserTest {
 		String smiles = ComplexNotationParser.getComplexPolymerSMILES(
 				helmString, store);
 
-		AssertJUnit.assertEquals(
-				"[H]NCCCC[C@H](NC(=O)CN[H])C(=O)N[C@@H](C)C(=O)CN[C@@H](C)C(O)=O",
-				smiles);
-
+    AssertJUnit.assertEquals("[H]NCCCC[C@H](NC(=O)CN[H])C(=O)NC(C)C(=O)CN[C@@H](C)C(O)=O", smiles);
 	}
 
 	@Test
