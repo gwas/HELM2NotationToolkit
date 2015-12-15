@@ -37,11 +37,11 @@ public class BuilderMoleculeTest {
     MonomerNotationUnit mon = new MonomerNotationUnit("[MCC]",
         node.getPolymerID().getType());
     node.getPolymerElements().getListOfElements().add(mon);
-    AbstractMolecule molecule =
+    RgroupStructure molecule =
         BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(),
             node.getPolymerElements(), ""));
-    System.out.println(molecule.getAttachments().size());
-    System.out.println(Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula());
+    System.out.println(molecule.getMolecule().getAttachments().size());
+    System.out.println(Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule.getMolecule()).getMolecularFormula());
   }
 
   @Test
@@ -100,6 +100,13 @@ public class BuilderMoleculeTest {
     node.getPolymerElements().getListOfElements().add(mon);
     BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(),
         ""));
+  }
+
+  public void testBuildMoleculeComplexPeptide() throws ParserException, JDOMException, BuilderMoleculeException {
+    String notation = "PEPTIDE1{D.F.D}|PEPTIDE2{C}|PEPTIDE3{E.D}$PEPTIDE3,PEPTIDE1,2:R3-1:R3|PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
+    ContainerHELM2 containerhelm2 = readNotation(notation);
+    BuilderMolecule.buildMoleculefromPolymers(containerhelm2.getHELM2Notation().getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(containerhelm2.getHELM2Notation().getListOfConnections()));
+    
   }
 
   @Test

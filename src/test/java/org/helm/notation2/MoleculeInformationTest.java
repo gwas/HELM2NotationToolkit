@@ -21,8 +21,8 @@ public class MoleculeInformationTest {
   @Test
   public void testgetMolecularFormularExamples() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
-    testMolecularFormular(notation);
-
+    String result = testMolecularFormular(notation);
+    Assert.assertEquals(result, "C16H20N4O4");
   }
 
   @Test
@@ -30,9 +30,7 @@ public class MoleculeInformationTest {
       FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
     Double resultEditor = (double) 332.15;
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
-    // Assert.assertEquals(BigDecimal.valueOf(testExactMass(notation)).setScale(2,
-    // BigDecimal.ROUND_HALF_UP), resultEditor);
-
+    Assert.assertEquals(BigDecimal.valueOf(testExactMass(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
   }
 
   @Test
@@ -40,20 +38,25 @@ public class MoleculeInformationTest {
       FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
     Double resultEditor = (double) 332.35;
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
-    // Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2,
-    // BigDecimal.ROUND_HALF_UP), resultEditor);
-
+    Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
   }
 
-  private void testMolecularFormular(String notation) throws ExceptionState, IOException, JDOMException,
+  @Test
+  public void testgetMolecularWeightWithSMILES() throws ExceptionState, IOException, JDOMException,
+      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
+    Double resultEditor = (double) 106.12;
+    String notation = "CHEM1{[[*]OCCOCCO[*] |$_R1;;;;;;;;_R2$|]}$$$$";
+    Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
+  }
+
+  private String testMolecularFormular(String notation) throws ExceptionState, IOException, JDOMException,
       BuilderMoleculeException, CTKException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
-
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    // System.out.println(MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation()));
+    return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
   }
 
   private Double testExactMass(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
@@ -72,7 +75,6 @@ public class MoleculeInformationTest {
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
-
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
     return MoleculeInformation.getMolecularWeight(containerhelm2.getHELM2Notation());
 

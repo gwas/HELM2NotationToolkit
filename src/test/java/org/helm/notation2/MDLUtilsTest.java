@@ -23,21 +23,21 @@ import org.testng.annotations.Test;
  * 
  * @author hecht
  */
-public class OutputFilesTest {
+public class MDLUtilsTest {
 
 
   @Test
   public void TestGenerationMDL() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
     String notation = "RNA1{R(U)P}|RNA2{R(U)P.R(G)}|RNA3{R(C)P.R(A)}|CHEM1{[MCC]}$RNA1,CHEM1,3:R2-1:R1|RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$$";
     ContainerHELM2 containerhelm2 = readNotation(notation);
-    System.out.println(OutputFiles.generateMDL(containerhelm2.getHELM2Notation()));
+    System.out.println(MDLUtils.generateMDL(containerhelm2.getHELM2Notation()));
   }
 
   @Test
   public void TestGenerationMDLOligo() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
     String notation = "RNA1{R(A)P.R(G)}$$$$";
     ContainerHELM2 containerhelm2 = readNotation(notation);
-    System.out.println(OutputFiles.generateMDL(containerhelm2.getHELM2Notation()));
+    System.out.println(MDLUtils.generateMDL(containerhelm2.getHELM2Notation()));
   }
 
   private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {

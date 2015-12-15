@@ -16,19 +16,15 @@ import org.slf4j.LoggerFactory;
  * 
  * @author hecht
  */
-public final class OutputFiles {
+public final class MDLUtils {
 
   /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(OutputFiles.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MDLUtils.class);
 
 
   protected static String generateMDL(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
     String smiles = SMILES.getSMILESForAll(helm2notation);
     return Chemistry.getInstance().getManipulator().convert(smiles, AbstractChemistryManipulator.StType.SMILES);
-  }
-
-  protected static void generatePDB(HELM2Notation helm2notation) {
-
   }
 
 }

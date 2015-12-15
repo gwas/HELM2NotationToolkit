@@ -62,7 +62,7 @@ public final class BuilderMolecule {
 
 
 
-  protected static AbstractMolecule buildMoleculefromSinglePolymer(PolymerNotation
+  protected static RgroupStructure buildMoleculefromSinglePolymer(PolymerNotation
  polymernotation) throws BuilderMoleculeException, HELM2HandledException {
 
  /* Case 1: BLOB -> throw exception */
@@ -74,7 +74,7 @@ public final class BuilderMolecule {
     /* Case 2: CHEM */
     else if (polymernotation.getPolymerID() instanceof ChemEntity) {
       List<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
-      return buildMoleculefromCHEM(validMonomers);
+      return buildMoleculefromCHEM(polymernotation.getPolymerID().getID(), validMonomers);
     }
 
  /* Case 3: RNA or PEPTIDE */
@@ -82,7 +82,7 @@ public final class BuilderMolecule {
         polymernotation.getPolymerID() instanceof PeptideEntity) {
       List<Monomer> validMonomers =
           MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
-      return buildMoleculefromPeptideOrRNA(validMonomers);
+      return buildMoleculefromPeptideOrRNA(polymernotation.getPolymerID().getID(), validMonomers);
     }
 
     else {
@@ -103,24 +103,29 @@ public final class BuilderMolecule {
       List<ConnectionNotation> connections) throws BuilderMoleculeException {
     Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
 
-    Map<String, AbstractMolecule> mapMolecules = new HashMap<String, AbstractMolecule>();
+    Map<String, RgroupStructure> mapMolecules = new HashMap<String, RgroupStructure>();
     Map<String, String> mapConnections = new HashMap<String, String>();
     Map<String, Map<String, IAtomBase>> mapIAtomBase = new HashMap<String, Map<String, IAtomBase>>();
     
+    List<RgroupStructure> rgroupStructures = new ArrayList<RgroupStructure>();
 
     List<AbstractMolecule> listMolecules = new ArrayList<AbstractMolecule>();
+    RgroupStructure current = new RgroupStructure();
+
     AbstractMolecule molecule = null;
     /* Build for every single polymer a single molecule */
     for (PolymerNotation polymer : polymers) {
       map.put(polymer.getPolymerID().getID(),polymer);
         try {
-        AbstractMolecule currentmolecule = buildMoleculefromSinglePolymer(polymer);
-        mapMolecules.put(polymer.getPolymerID().getID(), currentmolecule);
-        mapIAtomBase.put(polymer.getPolymerID().getID(), currentmolecule.getRgroups());
+
+        current = buildMoleculefromSinglePolymer(polymer);
+        mapMolecules.put(polymer.getPolymerID().getID(), current);
+        mapIAtomBase.put(polymer.getPolymerID().getID(), current.getMolecule().getRgroups());
       } catch (HELM2HandledException | CTKException e) {
           throw new BuilderMoleculeException(e.getMessage());
         }
     }
+
 
     /* Build interconnections between single molecules */
     for (ConnectionNotation connection : connections) {
@@ -133,18 +138,18 @@ public final class BuilderMolecule {
       /* Get the source molecule + target molecule */
       String idFirst = connection.getSourceId().getID();
       String idSecond = connection.getTargetId().getID();
-
       if (mapMolecules.get(idFirst) == null) {
         idFirst = mapConnections.get(idFirst);
       }
       if (mapMolecules.get(idSecond) == null) {
         idSecond = mapConnections.get(idSecond);
       }
-      
-      AbstractMolecule one = mapMolecules.get(idFirst);
-      AbstractMolecule two = mapMolecules.get(idSecond);
+
+      RgroupStructure one = mapMolecules.get(idFirst);
+      RgroupStructure two = mapMolecules.get(idSecond);
       mapMolecules.remove(idFirst);
       mapMolecules.remove(idSecond);
+
       /*
        * connection details: have to be an integer value + specific
        * MonomerNotationUnit
@@ -159,10 +164,14 @@ public final class BuilderMolecule {
       }
 
       /* if the */
-      if (!((MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getSourceId().getID()), source)
-          && MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getTargetId().getID()), target)))) {
-        throw new BuilderMoleculeException("Connection has to be unambiguous");
-      }
+      // if
+      // (!((MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getSourceId().getID()),
+      // source)
+      // &&
+      // MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getTargetId().getID()),
+      // target)))) {
+      // throw new BuilderMoleculeException("Connection has to be unambiguous");
+      // }
 
 
       /* R group of connection is unknown */
@@ -173,24 +182,34 @@ public final class BuilderMolecule {
 
       String RgroupOne = connection.getrGroupSource();
       String RgroupTwo = connection.getrGroupTarget();
-      System.out.println(connection.toHELM2());
       try {
         molecule =
-            Chemistry.getInstance().getManipulator().merge(one, mapIAtomBase.get(connection.getSourceId().getID()).get(RgroupOne), two, mapIAtomBase.get(connection.getTargetId().getID()).get(RgroupTwo));
+            Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
+                + RgroupOne), two.getMolecule(), two.getRgroupMap().get(connection.getTargetId().getID() + ":"
+                + target + ":"
+                + RgroupTwo));
+
+        RgroupStructure actual = new RgroupStructure();
+        actual.setMolecule(molecule);
+        Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
+        one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + RgroupOne);
+        two.getRgroupMap().remove(connection.getTargetId().getID() + ":" + target + ":" + RgroupTwo);
+        rgroupMap.putAll(one.getRgroupMap());
+        rgroupMap.putAll(two.getRgroupMap());
+        actual.setRgroupMap(rgroupMap);
+        mapMolecules.put(idFirst + idSecond, actual);
       } catch (CTKException e) {
         throw new BuilderMoleculeException(e.getMessage());
       }
-      mapMolecules.put(idFirst + idSecond, molecule);
+
       mapConnections.put(connection.getSourceId().getID(), idFirst + idSecond);
       mapConnections.put(connection.getTargetId().getID(), idFirst + idSecond);
-
     }
 
 
-    for (AbstractMolecule content : mapMolecules.values()) {
-      listMolecules.add(content);
+    for (Map.Entry<String, RgroupStructure> e : mapMolecules.entrySet()) {
+      listMolecules.add(e.getValue().getMolecule());
     }
-
 
     return listMolecules;
  }
@@ -202,7 +221,7 @@ public final class BuilderMolecule {
    * @return Built Molecule
    * @throws BuilderMoleculeException
    */
-  private static AbstractMolecule buildMoleculefromCHEM(List<Monomer> validMonomers) throws BuilderMoleculeException {
+  private static RgroupStructure buildMoleculefromCHEM(String id, List<Monomer> validMonomers) throws BuilderMoleculeException {
     /* a chemical molecule should only contain one monomer */
     if (validMonomers.size() == 1) {
       try {
@@ -219,7 +238,11 @@ public final class BuilderMolecule {
           }
           
           AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, list);
-          return molecule;
+          RgroupStructure result = new RgroupStructure();
+          result.setMolecule(molecule);
+          Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
+          result.setRgroupMap(generateRgroupMap(id + ":" + "1", molecule));
+          return result;
 
         } else {
           LOG.error("Chemical molecule should have canonical smiles");
@@ -241,6 +264,15 @@ public final class BuilderMolecule {
     }
   }
 
+  private static Map<String, IAtomBase> generateRgroupMap(String detail, AbstractMolecule molecule) throws CTKException {
+    Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
+    for(Map.Entry e: molecule.getRgroups().entrySet()){
+      rgroupMap.put(detail + ":" + e.getKey(), (IAtomBase) e.getValue());
+    }
+    
+    return rgroupMap;
+  }
+
   /**
    * method to build a molecule from a Peptide or RNA component
    * 
@@ -248,7 +280,8 @@ public final class BuilderMolecule {
    * @return Molecule
    * @throws BuilderMoleculeException
    */
-  private static AbstractMolecule buildMoleculefromPeptideOrRNA(List<Monomer> validMonomers) throws BuilderMoleculeException {
+  @SuppressWarnings("null")
+  private static RgroupStructure buildMoleculefromPeptideOrRNA(String id, List<Monomer> validMonomers) throws BuilderMoleculeException {
     try{
     Map<AbstractMolecule, IAtomBase[]> listMolecules = new LinkedHashMap<AbstractMolecule, IAtomBase[]>();
     AbstractMolecule currentMolecule = null;
@@ -257,24 +290,56 @@ public final class BuilderMolecule {
     AbstractMolecule firstMolecule = null;
     Monomer prevMonomer = null;
 
+      RgroupStructure first = new RgroupStructure();
+      RgroupStructure current = new RgroupStructure();
+
+      int prev = 1;
+
     if (validMonomers.size() == 0 || validMonomers == null) {
       throw new BuilderMoleculeException("Polymer (Peptide/RNA) has no contents");
     }
+      int i = 0;
       /* First catch all IAtomBases */
     for (Monomer currentMonomer : validMonomers) {
+        i++;
       if (prevMonomer != null) {
         currentMolecule = Chemistry.getInstance().getManipulator().getMolecule(currentMonomer.getCanSMILES(), generateAttachmentList(currentMonomer.getAttachmentList()));
+          current.setMolecule(currentMolecule);
+          current.setRgroupMap(generateRgroupMap(id + ":" + String.valueOf(i), currentMolecule));
+
         /* Backbone Connection */
         IAtomBase[] rgroups = new IAtomBase[2];
         if (currentMonomer.getMonomerType().equals(Monomer.BACKBONE_MOMONER_TYPE)) {
-          rgroups[0] = prevMolecule.getRGroupAtom(2, true);
-          rgroups[1] = currentMolecule.getRGroupAtom(1, true);
-          prevMolecule = currentMolecule;
+            prevMolecule = Chemistry.getInstance().getManipulator().merge(first.getMolecule(), first.getRgroupMap().get(id + ":" + prev
+                + ":R2"), current.getMolecule(), current.getRgroupMap().get(id
+                + ":" + i
+                + ":R1"));
+            first.getRgroupMap().remove(id + ":" + prev + ":R2");
+            current.getRgroupMap().remove(id + ":" + i + ":R1");
+
+            first.setMolecule(prevMolecule);
+            Map<String, IAtomBase> map = new HashMap<String, IAtomBase>();
+            map.putAll(first.getRgroupMap());
+            map.putAll(current.getRgroupMap());
+            first.setRgroupMap(map);
+            prev = i;
         }
         /* Backbone to Branch Connection */
         else if (currentMonomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
-          rgroups[0] = prevMolecule.getRGroupAtom(3, true);
-          rgroups[1] = currentMolecule.getRGroupAtom(1, true);
+            // rgroups[0] = prevMolecule.getRGroupAtom(3, true);
+            // rgroups[1] = currentMolecule.getRGroupAtom(1, true);
+            prevMolecule = Chemistry.getInstance().getManipulator().merge(first.getMolecule(), first.getRgroupMap().get(id + ":" + prev
+                + ":R3"), current.getMolecule(), current.getRgroupMap().get(id
+                + ":"
+                + i + ":R1"));
+            first.getRgroupMap().remove(id + ":" + prev + ":R3");
+            current.getRgroupMap().remove(id + ":" + i + ":R1");
+            first.setMolecule(prevMolecule);
+            Map<String, IAtomBase> map = new HashMap<String, IAtomBase>();
+            map.putAll(first.getRgroupMap());
+            map.putAll(current.getRgroupMap());
+            first.setRgroupMap(map);
+
         }
         /* Unknown connection */
         else {
@@ -284,22 +349,19 @@ public final class BuilderMolecule {
         listMolecules.put(currentMolecule, rgroups);
       }
 
+        /* first Monomer! */
       else {
         prevMonomer = currentMonomer;
         prevMolecule =
             Chemistry.getInstance().getManipulator().getMolecule(prevMonomer.getCanSMILES(), generateAttachmentList(prevMonomer.getAttachmentList()));
         firstMolecule = prevMolecule;
+          first.setMolecule(firstMolecule);
+          first.setRgroupMap(generateRgroupMap(id + ":" + String.valueOf(i), firstMolecule));
+
       }
     }
 
-      /* merge the molecules together */
-    prevMolecule = firstMolecule;
-
-      for (Entry<AbstractMolecule, IAtomBase[]> entry : listMolecules.entrySet()) {
-        prevMolecule = Chemistry.getInstance().getManipulator().merge(prevMolecule, entry.getValue()[0], entry.getKey(), entry.getValue()[1]);
-      }
-
-    return prevMolecule;
+      return first;
     }
  catch (IOException | CTKException e) {
       throw new BuilderMoleculeException("Polymer(Peptide/RNA) molecule can't be built " + e.getMessage());
@@ -343,11 +405,11 @@ public final class BuilderMolecule {
 
       /* merge into molecule */
     for (Map.Entry<AbstractMolecule, IAtomBase[]> addedMolecule : listMolecules.entrySet()) {
-      molecule = Chemistry.getInstance().getManipulator().merge(molecule, addedMolecule.getValue()[0], addedMolecule.getKey(), addedMolecule.getValue()[1]);
+        molecule = Chemistry.getInstance().getManipulator().merge(molecule, addedMolecule.getValue()[0], addedMolecule.getKey(), addedMolecule.getValue()[1]);
     }
       return molecule;
     } catch (NullPointerException | IOException | CTKException e) {
-      throw new BuilderMoleculeException("Unused rgroups can't be merged into the molecule");
+      throw new BuilderMoleculeException("Unused rgroups can't be merged into the molecule" + e.getMessage());
     }
   }
 

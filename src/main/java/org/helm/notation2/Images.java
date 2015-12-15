@@ -23,15 +23,11 @@
  */
 package org.helm.notation2;
 
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.apache.commons.lang.ArrayUtils;
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractChemistryManipulator.OutputType;
 import org.helm.notation.model.Monomer;
@@ -64,19 +60,22 @@ public final class Images {
 
       /* First build one molecule + merge unused rgoups into it */
     AbstractMolecule molecule = BuilderMolecule.mergeRgroups(BuilderMolecule.getMoleculeForMonomer(monomer));
-
-
+    LOG.info("Molecule was built and unused rgroups were merged into it");
     String molFile;
       molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
-      return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
+    LOG.info("Generate molfile for the built molecule");
+    return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
 
   }
 
   protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
     /* get SMILES representation for the whole molecule */
    String smiles = SMILES.getSMILESForAll(helm2notation);
+    LOG.info("Get for the whole HELMNotation the smiles representation");
    AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, null);
+    LOG.info("Molecule was created using the smiles generation");
    String molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
+    LOG.info("Generate molfile for the built molecule");
     return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
 
   }

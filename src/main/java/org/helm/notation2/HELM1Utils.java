@@ -18,7 +18,6 @@ import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
-import org.helm.notation.model.Nucleotide;
 import org.helm.notation.tools.PermutationAndExpansion;
 import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.HELM1FormatException;
@@ -163,8 +162,6 @@ public final class HELM1Utils {
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       String id = polymer.getPolymerID().getID();
       String elements_toHELM = polymer.getPolymerElements().toHELM();
-      // MethodsForContainerHELM2.getListOfHandledMonomers();
-      System.out.println(elements_toHELM);
       Map<String, String> AdHocList = findAdHocMonomers(elements_toHELM, polymer.getPolymerID().getType());
       Map<String, String> convert = convertAdHocMonomersIntoSMILES(AdHocList);
       for (Map.Entry<String, String> e : convert.entrySet()) {
@@ -315,8 +312,6 @@ public final class HELM1Utils {
     
     else{
       for(String element : listelements){
-        System.out.println(element);
-        System.out.println(type);
         Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, element.replace("[", "").replace("]", ""));
         try {
           if (monomer.isAdHocMonomer()) {

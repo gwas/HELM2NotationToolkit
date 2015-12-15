@@ -124,7 +124,6 @@ public final class xHELM {
     /* save all adhocMonomers in the set */
     for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())) {
       /* get all elements of an rna */
-      System.out.println(monomernotation.getID());
       if (monomernotation instanceof MonomerNotationUnitRNA) {
         for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomernotation).getContents()) {
           addAdHocMonomer(unit);

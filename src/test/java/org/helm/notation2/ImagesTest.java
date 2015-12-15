@@ -30,12 +30,28 @@ public class ImagesTest {
     String notation = "RNA1{R(U)P}|RNA2{R(U)P.R(G)}|RNA3{R(C)P.R(A)}|CHEM1{[MCC]}$RNA1,CHEM1,3:R2-1:R1|RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$$";
     ContainerHELM2 containerhelm2 = readNotation(notation);
     byte[] result = Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
-    System.out.println(result);
 
     try (FileOutputStream out = new FileOutputStream("test-output\\TestGenerationImageOfHELMNotationComplex.png")) {
       out.write(result);
     }
   }
+
+  // @Test
+  public void TestGenerationImageOfHELMNotationPEPTIDEComplex() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
+    // String notation =
+    // "PEPTIDE1{D.F.D}|PEPTIDE2{C}|PEPTIDE3{E.D}$PEPTIDE3,PEPTIDE1,2:R3-1:R3|PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
+    // String notation =
+    // "PEPTIDE1{D.F.D}|PEPTIDE2{C}$PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
+    String notation = "PEPTIDE1{D.E}$$$$";
+    ContainerHELM2 containerhelm2 = readNotation(notation);
+    byte[] result = Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+
+    try (FileOutputStream out = new FileOutputStream("test-output\\TestGenerationImageOfHELMNotationPEPTIDeComplex.png")) {
+      out.write(result);
+    }
+  }
+
+
 
   @Test
   public void TestGenerationImageOfHELMNotationProblemCase() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {

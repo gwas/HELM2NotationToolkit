@@ -87,7 +87,7 @@ public final class SMILES {
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
       molecule = BuilderMolecule.mergeRgroups(molecule);
-      sb.append(Chemistry.getInstance().getManipulator().canonicalize(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES) + "."));
+      sb.append(Chemistry.getInstance().getManipulator().canonicalize(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES)) + ".");
     }
     sb.setLength(sb.length() - 1);
     return sb.toString();

@@ -69,6 +69,7 @@ public final class MoleculeInformation {
     List<AbstractMolecule> molecules = buildMolecule();
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
+      molecule = BuilderMolecule.mergeRgroups(molecule);
       result += Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularWeight();
     }
     return result;
@@ -142,7 +143,6 @@ public final class MoleculeInformation {
   private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws BuilderMoleculeException, CTKException {
     molecule = BuilderMolecule.mergeRgroups(molecule);
     String formula = Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
-    System.out.println(formula);
     String atom = "";
     String number = "";
 

@@ -128,7 +128,6 @@ public class MonomerStoreConfiguration {
 			PropertiesConfiguration conf = new PropertiesConfiguration(
 					CONFIG_FILE_PATH);
 			isUseWebservice = conf.getBoolean(USE_WEBSERVICE);
-      System.out.println(isUseWebservice);
 			webserviceMonomersURL = conf.getString(WEBSERVICE_MONOMERS_URL);
 			webserviceMonomersPath = conf.getString(WEBSERVICE_MONOMERS_PATH);
 			webserviceMonomersPutPath = conf

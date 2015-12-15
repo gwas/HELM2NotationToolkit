@@ -174,8 +174,8 @@ public final class MethodsForContainerHELM2 {
    * @param position
    * @return true if the monomer is specific, false otherwise
    */
-  protected static boolean isMonomerSpecific(PolymerNotation not, int position) {
-    System.out.println(position);
+  // protected static boolean isMonomerSpecific(PolymerNotation not, int
+  // position) {
 
     // if (not.getPolymerElements().getListOfElements().get(position - 1)
     // instanceof MonomerNotationUnit) {
@@ -184,8 +184,8 @@ public final class MethodsForContainerHELM2 {
     // else {
     // return true;
     // }
-    return true;
-  }
+  // return true;
+  // }
 
   /**
    * method to get the monomer from the database!
@@ -200,13 +200,24 @@ public final class MethodsForContainerHELM2 {
       MonomerFactory monomerFactory = MonomerFactory.getInstance();
       MonomerStore monomerStore = monomerFactory.getMonomerStore();
       Monomer monomer;
+      /* Monomer was saved to the database */
       monomer = monomerStore.getMonomer(type, id);
       if (monomer == null) {
+        /*
+         * smiles check! Maybe the smiles is already included in the data base
+         */
+        if (monomerFactory.getSmilesMonomerDB().get(id) != null) {
+          monomer = monomerFactory.getSmilesMonomerDB().get(id);
+          return monomer;
+        }
+ else {
+          /* Rgroups information are not given -> only smiles information */
         AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
         manipulator.validateSMILES(id);
         monomer = new Monomer(type, "Undefined", "", "");
         monomer.setAdHocMonomer(true);
         monomer.setCanSMILES(manipulator.canonicalize(id));
+        }
       }
       return monomer;
     } catch (CTKException | IOException e) {

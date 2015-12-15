@@ -38,7 +38,7 @@ public class xHELMNotationParserTest2 {
       IOException {
 
     InputStream in = new FileInputStream(resource);
-    System.out.println(in);
+
     SAXBuilder builder = new SAXBuilder();
     Document doc = builder.build(in);
 
@@ -88,14 +88,13 @@ public class xHELMNotationParserTest2 {
       ValidationException, HELM1FormatException, JDOMException {
 
     String workingDir = System.getProperty("user.dir");
-    System.out.println("Current working directory : " + workingDir);
     Element xHELMRootElement =
         getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/PeptideLinkerNucleotide.xhelm");
     String helmString = xHelmNotationParser.getHELMNotationString((xHELMRootElement));
 
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
-    MonomerStore monomerStore = monomerFactory.getMonomerStore(); // read
-    System.out.println(monomerStore.getAllMonomersList().size()); // monomers to
+    MonomerStore monomerStore = monomerFactory.getMonomerStore(); // read //
+                                                                  // monomers to
                                                                   // store
 
     MonomerStore store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
@@ -105,12 +104,11 @@ public class xHELMNotationParserTest2 {
 
     /* Read + Validate */
     validateHELM(helmString);
-
     String canonicalNotation = new WebService().convertStandardHELMToCanonicalHELM(helmString);
 
     AssertJUnit.assertEquals("CHEM1{SMCC}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}$CHEM1,PEPTIDE1,1:R2-2:R3|CHEM1,RNA1,1:R1-1:R1$$$", canonicalNotation);
 
-    System.out.println(xHELM.getXHELM(containerhelm2));
+
 
     xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/simple.xhelm");
     helmString = xHelmNotationParser.getHELMNotationString(xHELMRootElement);

@@ -77,10 +77,8 @@ public final class FastaFormat {
    * @param fasta FastaFile in string format
    * @return HELM2Notation
    * @throws FastaFormatException
-   * @throws JDOMException
    */
-  protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException,
-      DOMException {
+  protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
     if (null == fasta) {
       LOG.error("Peptide Sequence must be specified");
       throw new FastaFormatException("Peptide Sequence must be specified");
@@ -238,12 +236,12 @@ public final class FastaFormat {
     try {
       PolymerListElements elements = new PolymerListElements(entity);
       for (Character c : fasta.toCharArray()) {
-        /* Hier fehlt noch der MonomerCheck */
         if (aminoacids.get(c.toString()) != null) {
           elements.addMonomerNotation(c.toString());
         }
         else {
-          throw new FastaFormatException("Not appropriate amino acid for HELM " + c);
+          LOG.error("Not appropriate amino acid for HELM " + c.toString());
+          throw new FastaFormatException("Not appropriate amino acid for HELM " + c.toString());
         }
       }
       return elements;
@@ -269,7 +267,6 @@ public final class FastaFormat {
     for (Character c : fasta.toCharArray()) {
       /* -> get for each single nucleotide code the contents from the nucleotidefactory */
       try {
-        System.out.println(c);
         elements.addMonomerNotation(nucleotides.get(c.toString()));
       } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException
           | NullPointerException e) {
@@ -277,7 +274,6 @@ public final class FastaFormat {
       }
     }
     /* remove the phosphat of the last group */
-
     String id = elements.getCurrentMonomerNotation().getID();
     try {
       elements.changeMonomerNotation(new MonomerNotationUnitRNA(id.substring(0, id.length() - 1), "RNA"));
@@ -285,7 +281,6 @@ public final class FastaFormat {
       throw new FastaFormatException(e.getMessage());
     }
 
-    /* fertig */
     return elements;
   }
 
@@ -341,7 +336,6 @@ public final class FastaFormat {
     for (Monomer monomer : monomers) {
       fasta.append(monomer.getNaturalAnalog());
     }
-
     return fasta.toString();
   }
 
