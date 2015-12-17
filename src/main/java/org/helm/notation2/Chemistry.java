@@ -38,6 +38,8 @@ public class Chemistry {
 
   private static Chemistry instance;
 
+  private static ManipulatorType type;
+
   private static AbstractChemistryManipulator manipulator;
 
   private Chemistry() {
@@ -48,7 +50,9 @@ public class Chemistry {
     if (Chemistry.instance == null) {
       Chemistry.instance = new Chemistry();
       try {
-        manipulator = ManipulatorFactory.buildManipulator(ManipulatorType.MARVIN);
+        type = ManipulatorType.CDK;
+        manipulator = ManipulatorFactory.buildManipulator(type);
+
       } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
         e.printStackTrace();
       }
@@ -58,5 +62,9 @@ public class Chemistry {
 
   public synchronized AbstractChemistryManipulator getManipulator() {
     return manipulator;
+  }
+
+  public ManipulatorType getManipulatorType() {
+    return type;
   }
 }

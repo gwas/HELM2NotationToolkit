@@ -309,7 +309,7 @@ public class TestCanonicalHELM {
 
   }
 
-  // @Test
+  @Test
   public void testCanonicalSMILES() throws HELM1FormatException, ExceptionState, IOException, JDOMException, NotationException {
 
     parser = new StateMachineParser();
@@ -326,7 +326,7 @@ public class TestCanonicalHELM {
 
   }
 
-  // @Test
+  @Test
   public void testCanonicalSMILES2() throws ExceptionState, IOException,
       JDOMException, ClassNotFoundException, HELM1ConverterException,
       MonomerException, org.jdom2.JDOMException, CTKSmilesException, CTKException, NotationException,

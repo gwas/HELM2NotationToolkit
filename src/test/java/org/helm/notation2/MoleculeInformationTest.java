@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import org.helm.chemtoolkit.CTKException;
+import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
@@ -38,7 +39,9 @@ public class MoleculeInformationTest {
       FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
     Double resultEditor = (double) 332.35;
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
-    Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
+    if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
+      Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
+    }
   }
 
   @Test

@@ -28,6 +28,7 @@ import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom2.JDOMException;
+import org.testng.annotations.Test;
 
 public class xHELMTest {
 
@@ -44,7 +45,7 @@ public class xHELMTest {
     testxHELM1(notation);
   }
 
-  // @Test(expectedExceptions = HELM1FormatException.class)
+  @Test(expectedExceptions = HELM1FormatException.class)
   public void testxHELMWithException() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, MonomerException, HELM1FormatException,
       org.jdom2.JDOMException, NotationException {

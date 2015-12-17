@@ -71,16 +71,16 @@ public class BuilderMoleculeTest {
 
   @Test
   public void testBuildMoleculePeptide() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
-    String notation = "PEPTIDE1{L.P.G}$$$$";
+    String notation = "PEPTIDE1{L.P}$$$$";
     ContainerHELM2 helm2container = readNotation(notation);
-    Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C13H23N3O4");
+    Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C11H20N2O3");
   }
 
   @Test
   public void testBuildMoleculeRNA() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
-    String notation = "RNA1{RP}$$$$";
+    String notation = "RNA1{R(A)P}$$$$";
     ContainerHELM2 helm2container = readNotation(notation);
-    Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C5H11O8P");
+    Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C10H14N5O7P");
   }
 
   @Test

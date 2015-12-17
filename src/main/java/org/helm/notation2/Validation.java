@@ -109,7 +109,7 @@ public class Validation {
   protected static boolean validateMonomers(List<MonomerNotation> mon) {
     List<MonomerNotation> monomerNotations = mon;
     for (MonomerNotation monomerNotation : monomerNotations) {
-
+      System.out.println(monomerNotation);
       if (!(isMonomerValid(monomerNotation.getID(), monomerNotation.getType()))) {
         return false;
       }
@@ -497,8 +497,7 @@ public class Validation {
       str = str.substring(1, str.length() - 1);
     }
     try {
-      Chemistry.getInstance().getManipulator().validateSMILES(str);
-      return true;
+      return Chemistry.getInstance().getManipulator().validateSMILES(str);
     } catch (CTKException e) {
       LOG.info("Monomer id is not valid : " + str);
       return false;

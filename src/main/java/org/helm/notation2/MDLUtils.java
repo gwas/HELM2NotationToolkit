@@ -24,6 +24,7 @@ public final class MDLUtils {
 
   protected static String generateMDL(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
     String smiles = SMILES.getSMILESForAll(helm2notation);
+    System.out.println(smiles);
     return Chemistry.getInstance().getManipulator().convert(smiles, AbstractChemistryManipulator.StType.SMILES);
   }
 

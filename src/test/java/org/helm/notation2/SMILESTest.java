@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.helm.chemtoolkit.CTKException;
+import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerLoadingException;
@@ -36,7 +37,7 @@ import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
+import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
 /**
  * SMILESTest
  * 
@@ -47,32 +48,37 @@ public class SMILESTest {
 
   @Test
   public void testSMILES() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
-    parser = new ParserHELM2();
+    if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
+      parser = new ParserHELM2();
 
-    String test =
-        "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
-    test += "V2.0";
-    parser.parse(test);
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
-        new InterConnections());
-    String smile = SMILES.getSMILESForAll(containerhelm2.getHELM2Notation());
-    System.out.println(smile);
-    String expectedResult = "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.[H]N[C@@H](CCC(=O)C(=O)[C@@H](N[H])CC(=O)C(=O)[C@H](CCCNC(N)=N)NC(=O)[C@@H](N[H])CC(C)C)C(O)=O";
-    Assert.assertEquals(smile, expectedResult);
+      String test =
+          "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
+      test += "V2.0";
+      parser.parse(test);
+      ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
+          new InterConnections());
+      String smile = SMILES.getSMILESForAll(containerhelm2.getHELM2Notation());
+      System.out.println(smile);
+      String expectedResult = "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.[H]N[C@@H](CCC(=O)C(=O)[C@@H](N[H])CC(=O)C(=O)[C@H](CCCNC(N)=N)NC(=O)[C@@H](N[H])CC(C)C)C(O)=O";
+      System.out.println(expectedResult);
+      Assert.assertEquals(smile, expectedResult);
+    }
   }
 
   @Test
   public void testSMILESCanonical() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException {
-    parser = new ParserHELM2();
+    if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
+      parser = new ParserHELM2();
 
-    String test =
-        "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
-    test += "V2.0";
-    parser.parse(test);
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
+      String test =
+          "PEPTIDE1{D}|PEPTIDE2{E}|PEPTIDE3{L.R}|CHEM1{[MCC]}$PEPTIDE1,PEPTIDE2,1:R2-1:R3|PEPTIDE3,PEPTIDE1,2:R2-1:R3$$$";
+      test += "V2.0";
+      parser.parse(test);
+      ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
         new InterConnections());
-    String canSmile = SMILES.getCanonicalSmilesForAll(containerhelm2.getHELM2Notation());
-    Assert.assertEquals(canSmile, "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.CC(C)C[C@H](N)C(=O)N[C@@H](CCCNC(N)=N)C(=O)C(=O)C[C@H](N)C(=O)C(=O)CC[C@H](N)C(O)=O");
+      String canSmile = SMILES.getCanonicalSmilesForAll(containerhelm2.getHELM2Notation());
+      Assert.assertEquals(canSmile, "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.CC(C)C[C@H](N)C(=O)N[C@@H](CCCNC(N)=N)C(=O)C(=O)C[C@H](N)C(=O)C(=O)CC[C@H](N)C(O)=O");
+    }
   }
 
 

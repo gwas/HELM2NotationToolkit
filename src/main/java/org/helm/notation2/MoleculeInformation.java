@@ -106,7 +106,10 @@ public final class MoleculeInformation {
   protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big molecule */
     MoleculeInformation.helm2notation = helm2notation;
+    System.out.println("Build Molecule");
     List<AbstractMolecule> molecules = buildMolecule();
+    System.out.println("Build Molecule finished");
+    System.out.println("Size of Moleucle: " + molecules.size());
     Map<String, Integer> atomNumberMap = new TreeMap<String, Integer>();
     for(AbstractMolecule molecule : molecules){
       atomNumberMap = generateAtomNumberMap(molecule, atomNumberMap);

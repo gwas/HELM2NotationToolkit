@@ -504,6 +504,7 @@ public class Nucleotide implements Serializable {
 
     try {
       String jsonINString = mapper.writeValueAsString(this);
+      System.out.println(jsonINString);
       jsonINString = mapper.writerWithDefaultPrettyPrinter()
           .writeValueAsString(this);
 

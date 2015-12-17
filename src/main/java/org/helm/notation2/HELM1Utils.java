@@ -86,12 +86,13 @@ public final class HELM1Utils {
     Map<String, String> convertsortedIdstoIds;
     try {
       convertsortedIdstoIds = setCanonicalHELMFirstSection();
+      System.out.println("Hallo");
       setCanonicalHELMSecondSection(convertsortedIdstoIds);
     }
 
     catch (ClassNotFoundException | MonomerException | IOException | JDOMException | CTKException | HELM1ConverterException e) {
       LOG.error("Canonical HELM 1 can not be generated due to HELM2 features");
-      throw new HELM1FormatException("Canonical HELM 1 can not be generated due to HELM2 features");
+      throw new HELM1FormatException("Canonical HELM 1 can not be generated due to HELM2 features " + e.getMessage() + e.getCause());
     }
     return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$";
   }
@@ -162,7 +163,9 @@ public final class HELM1Utils {
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       String id = polymer.getPolymerID().getID();
       String elements_toHELM = polymer.getPolymerElements().toHELM();
+      System.out.println("Get Elements");
       Map<String, String> AdHocList = findAdHocMonomers(elements_toHELM, polymer.getPolymerID().getType());
+      System.out.println("Get AdHocList");
       Map<String, String> convert = convertAdHocMonomersIntoSMILES(AdHocList);
       for (Map.Entry<String, String> e : convert.entrySet()) {
         elements_toHELM = elements_toHELM.replaceAll(e.getKey(), e.getValue());
@@ -290,6 +293,8 @@ public final class HELM1Utils {
    * @throws NotationException
    * @throws CTKException
    */
+
+  /* Methode muss umgeschrieben werden !!! */
   private static Map<String, String> findAdHocMonomers(String elements, String type) throws MonomerLoadingException, NotationException, CTKException {
     /*find adHocMonomers*/
     Map<String, String> listMatches = new HashMap<String, String>();
@@ -312,6 +317,7 @@ public final class HELM1Utils {
     
     else{
       for(String element : listelements){
+        System.out.println(element);
         Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, element.replace("[", "").replace("]", ""));
         try {
           if (monomer.isAdHocMonomer()) {
