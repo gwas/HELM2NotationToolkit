@@ -31,8 +31,7 @@ import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -43,8 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class SMILES {
 
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
 
 
 

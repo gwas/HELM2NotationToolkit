@@ -31,7 +31,6 @@ import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
-import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 

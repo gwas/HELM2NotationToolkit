@@ -86,7 +86,6 @@ public final class HELM1Utils {
     Map<String, String> convertsortedIdstoIds;
     try {
       convertsortedIdstoIds = setCanonicalHELMFirstSection();
-      System.out.println("Hallo");
       setCanonicalHELMSecondSection(convertsortedIdstoIds);
     }
 
@@ -163,9 +162,7 @@ public final class HELM1Utils {
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       String id = polymer.getPolymerID().getID();
       String elements_toHELM = polymer.getPolymerElements().toHELM();
-      System.out.println("Get Elements");
       Map<String, String> AdHocList = findAdHocMonomers(elements_toHELM, polymer.getPolymerID().getType());
-      System.out.println("Get AdHocList");
       Map<String, String> convert = convertAdHocMonomersIntoSMILES(AdHocList);
       for (Map.Entry<String, String> e : convert.entrySet()) {
         elements_toHELM = elements_toHELM.replaceAll(e.getKey(), e.getValue());
@@ -317,7 +314,6 @@ public final class HELM1Utils {
     
     else{
       for(String element : listelements){
-        System.out.println(element);
         Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, element.replace("[", "").replace("]", ""));
         try {
           if (monomer.isAdHocMonomer()) {
@@ -325,7 +321,6 @@ public final class HELM1Utils {
           }
         } catch (NullPointerException e) {
           if (!(Chemistry.getInstance().getManipulator().validateSMILES(element))) {
-            System.out.println("False");
           }
         }
       }
@@ -354,9 +349,7 @@ public final class HELM1Utils {
       String smiles = m.getCanSMILES();
       AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
       String canSmiles = manipulator.canonicalize(smiles);
-      // to Do
       convert.put(element.getKey().toString(), canSmiles);
-      /* Rgroups??? */
     }
     return convert;
   }

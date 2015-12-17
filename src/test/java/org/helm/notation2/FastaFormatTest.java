@@ -120,7 +120,7 @@ public class FastaFormatTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
     FastaFormat.convertIntoAnalogSequence(containerhelm2.getHELM2Notation());
-    System.out.println(containerhelm2.getHELM2Notation().toHELM2());
+    // System.out.println(containerhelm2.getHELM2Notation().toHELM2());
   }
 
 }

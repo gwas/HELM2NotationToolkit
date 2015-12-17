@@ -17,10 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@code PolymerUtils}
- * TODO comment me
+ * PolymerUtils
  * 
- * @author 
+ * @author hecht
  * @version $Id$
  */
 public class PolymerUtils {

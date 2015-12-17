@@ -151,8 +151,6 @@ public class NucleotideSequenceParser {
 		List<Nucleotide> nucList = getNucleotideList(cleanSequence,
 				notationSource);
 		List<Nucleotide> compList = getComplementList(nucList);
-    System.out.println(compList.get(0).getNaturalAnalog());
-    System.out.println(compList.get(0).getNotation());
 		StringBuffer sb = new StringBuffer();
 		boolean inNormalDirection = isNormalDirection(sequence);
 		if (inNormalDirection) {

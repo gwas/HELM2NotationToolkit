@@ -40,8 +40,9 @@ public class BuilderMoleculeTest {
     RgroupStructure molecule =
         BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(),
             node.getPolymerElements(), ""));
-    System.out.println(molecule.getMolecule().getAttachments().size());
-    System.out.println(Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule.getMolecule()).getMolecularFormula());
+    Assert.assertEquals(molecule.getMolecule().getAttachments().size(), 1);
+    AbstractMolecule mol = BuilderMolecule.mergeRgroups(molecule.getMolecule());
+    Assert.assertEquals(Chemistry.getInstance().getManipulator().getMoleculeInfo(mol).getMolecularFormula(), "C12H15NO4");
   }
 
   @Test
@@ -56,8 +57,7 @@ public class BuilderMoleculeTest {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}|CHEM3{[hxy]}$CHEM1,CHEM2,1:R1-1:R1$$$";
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecule = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
-    System.out.println(Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule.get(1)).getMolecularFormula());
-    System.out.println(molecule.size());
+    Assert.assertEquals(molecule.size(), 2);
   }
 
   @Test
@@ -66,7 +66,6 @@ public class BuilderMoleculeTest {
     ContainerHELM2 helm2container = readNotation(notation);
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C30H40N2O10");
-    System.out.println(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()));
   }
 
   @Test

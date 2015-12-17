@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
@@ -109,7 +108,6 @@ public class Validation {
   protected static boolean validateMonomers(List<MonomerNotation> mon) {
     List<MonomerNotation> monomerNotations = mon;
     for (MonomerNotation monomerNotation : monomerNotations) {
-      System.out.println(monomerNotation);
       if (!(isMonomerValid(monomerNotation.getID(), monomerNotation.getType()))) {
         return false;
       }
@@ -496,12 +494,9 @@ public class Validation {
     if (str.charAt(0) == '[' && str.charAt(str.length() - 1) == ']') {
       str = str.substring(1, str.length() - 1);
     }
-    try {
+
       return Chemistry.getInstance().getManipulator().validateSMILES(str);
-    } catch (CTKException e) {
-      LOG.info("Monomer id is not valid : " + str);
-      return false;
-    }
+
 
   }
 

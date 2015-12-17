@@ -84,7 +84,7 @@ public class RNAUtilsTest {
       IOException, org.jdom2.JDOMException, JDOMException {
     String notation = "CAGTT";
 
-    System.out.println(RNAUtils.getSirnaNotation(notation).getHELM2Notation().toHELM2());
+    RNAUtils.getSirnaNotation(notation).getHELM2Notation().toHELM2();
   }
 
   private ContainerHELM2 produceContainerHELM2(String notation)
