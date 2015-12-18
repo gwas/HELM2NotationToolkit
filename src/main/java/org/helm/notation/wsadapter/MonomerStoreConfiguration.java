@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -17,6 +18,7 @@ public class MonomerStoreConfiguration {
 			.getProperty("user.home") + "/.helm/MonomerStoreConfig.properties";
 
 	private static final String USE_WEBSERVICE = "use.webservice";
+  private static final String UPDATE_AUTOMATIC = "update.automatic";
 	private static final String WEBSERVICE_MONOMERS_URL = "webservice.monomers.url";
 	private static final String WEBSERVICE_MONOMERS_PATH = "webservice.monomers.path";
 	private static final String WEBSERVICE_MONOMERS_PUT_PATH = "webservice.monomers.put.path";
@@ -29,6 +31,7 @@ public class MonomerStoreConfiguration {
 	private static MonomerStoreConfiguration _instance;
 
 	private boolean isUseWebservice;
+  private boolean isUpdateAutomatic;
 	private String webserviceMonomersURL;
 	private String webserviceMonomersPath;
 	private String webserviceMonomersPutPath;
@@ -44,6 +47,7 @@ public class MonomerStoreConfiguration {
 
 	private void resetConfigToDefault() {
 		isUseWebservice = false;
+    isUpdateAutomatic = true;
 		webserviceMonomersURL = "";
 		webserviceMonomersPath = "";
 		webserviceMonomersPutPath = "";
@@ -61,6 +65,10 @@ public class MonomerStoreConfiguration {
 	public boolean isUseWebservice() {
 		return isUseWebservice;
 	}
+
+  public boolean isUpdateAutomatic() {
+    return isUpdateAutomatic;
+  }
 
 	public String getWebserviceMonomersURL() {
 		return webserviceMonomersURL;
@@ -107,6 +115,10 @@ public class MonomerStoreConfiguration {
 				+ webserviceEditorCategorizationPath;
 	}
 
+  public void setUpdateAutomatic(boolean isUpdateAutomatic) {
+    this.isUpdateAutomatic = isUpdateAutomatic;
+  }
+
 	public void refresh() {
 		File configFile = new File(CONFIG_FILE_PATH);
 		if (!configFile.exists()) {
@@ -128,6 +140,8 @@ public class MonomerStoreConfiguration {
 			PropertiesConfiguration conf = new PropertiesConfiguration(
 					CONFIG_FILE_PATH);
 			isUseWebservice = conf.getBoolean(USE_WEBSERVICE);
+      System.out.println("jh");
+      isUpdateAutomatic = conf.getBoolean(UPDATE_AUTOMATIC);
 			webserviceMonomersURL = conf.getString(WEBSERVICE_MONOMERS_URL);
 			webserviceMonomersPath = conf.getString(WEBSERVICE_MONOMERS_PATH);
 			webserviceMonomersPutPath = conf
@@ -143,7 +157,7 @@ public class MonomerStoreConfiguration {
 			webserviceEditorCategorizationPath = conf
 					.getString(WEBSERVICE_EDITOR_CATEGORIZATION_PATH);
 
-		} catch (ConfigurationException e) {
+    } catch (ConfigurationException | NoSuchElementException e) {
 			resetConfigToDefault();
 			e.printStackTrace();
 		}
@@ -152,8 +166,9 @@ public class MonomerStoreConfiguration {
 	public String toString() {
 		String lineSep = System.getProperty("line.separator");
 		String res = String
-				.format("Webservice configuration:%sUse Webservice: %s%sGetMonomers: %s%sPutMonomers: %s%sGetNucleotides: %s%sPutNucleotides: %s%sCategorization config: %s",
+.format("Webservice configuration:%sUse Webservice: %s%sUpdate Automatic: %s%sGetMonomers: %s%sPutMonomers: %s%sGetNucleotides: %s%sPutNucleotides: %s%sCategorization config: %s",
 						lineSep, isUseWebservice(), lineSep,
+ isUpdateAutomatic(), lineSep,
 						getWebserviceMonomersFullURL(), lineSep,
 						getWebserviceMonomersPutFullURL(), lineSep,
 						getWebserviceNucleotidesFullURL(), lineSep,

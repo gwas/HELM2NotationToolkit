@@ -25,6 +25,7 @@ import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
+import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
@@ -37,6 +38,7 @@ import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +66,7 @@ public class WebService {
     if (!(notation.contains("V2.0"))) {
       LOG.info("Convert HELM1 into HELM2");
       notation = new ConverterHELM1ToHELM2().doConvert(notation);
-      LOG.info("Conversion was successful");
+      LOG.info("Conversion was successful: " + notation);
     }
     /* parses the HELM notation and generates the necessary notation objects */
     ParserHELM2 parser = new ParserHELM2();
@@ -73,7 +75,7 @@ public class WebService {
       parser.parse(notation);
       LOG.info("Parsing was successful");
     } catch (ExceptionState | IOException | JDOMException e) {
-      throw new ParserException(e.getMessage());
+      throw new ParserException("HELMNotation is not valid");
     }
     containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
   }
@@ -218,11 +220,18 @@ public class WebService {
     return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
   }
 
-  public void getNaturalAnalogSequence(String notation) throws ParserException, ValidationException {
+  public String getNaturalAnalogSequence(String notation) throws ParserException, ValidationException {
     /* input-sequence -> HELM1 or HELM2 */
     validateHELM(notation);
     /* is only possible for peptides + nucleotides */
     /* replace each polymer into the analogsequence and generate HELM2 format */
+    HELM2Notation helm2notation;
+    try {
+      helm2notation = FastaFormat.convertIntoAnalogSequence(containerhelm2.getHELM2Notation());
+      return helm2notation.toHELM2();
+    } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | FastaFormatException | AnalogSequenceException e) {
+      return e.getMessage();
+    }
 
   }
 

@@ -210,12 +210,16 @@ public final class MethodsForContainerHELM2 {
           return monomer;
         }
  else {
-          /* Rgroups information are not given -> only smiles information */
-        AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
-        manipulator.validateSMILES(id);
-        monomer = new Monomer(type, "Undefined", "", "");
-        monomer.setAdHocMonomer(true);
-        monomer.setCanSMILES(manipulator.canonicalize(id));
+
+          monomer = monomerFactory.getSmilesMonomerDB().get(id);
+          if (monomer == null) {
+            /* Rgroups information are not given -> only smiles information */
+            AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
+            manipulator.validateSMILES(id);
+            monomer = new Monomer(type, "Undefined", "", "");
+            monomer.setAdHocMonomer(true);
+            monomer.setCanSMILES(manipulator.canonicalize(id));
+          }
         }
       }
       return monomer;

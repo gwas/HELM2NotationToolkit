@@ -425,7 +425,7 @@ public final class FastaFormat {
    * @throws FastaFormatException
    * @throws AnalogSequenceException
    */
-  protected static void convertIntoAnalogSequence(HELM2Notation helm2Notation)
+  protected static HELM2Notation convertIntoAnalogSequence(HELM2Notation helm2Notation)
       throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
       FastaFormatException,
       AnalogSequenceException {
@@ -443,19 +443,19 @@ public final class FastaFormat {
         helm2Notation.getListOfPolymers().set(i, convertPeptideIntoAnalogSequence(polymers.get(i)));
       }
     }
+
+    return helm2Notation;
   }
 
   private static PolymerNotation convertPeptideIntoAnalogSequence(PolymerNotation polymer)
       throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
       AnalogSequenceException {
-    /* ändere dies nur wenn es möglich ist sonst lasse die alte Notation */
-    for (int i = 0; i < polymer.getPolymerElements().getListOfElements().size(); i++) {
-      /* list, group */
 
+    for (int i = 0; i < polymer.getPolymerElements().getListOfElements().size(); i++) {
       /* Change current MonomerNotation */
       polymer.getPolymerElements().getListOfElements().set(i, generateMonomerNotationPeptide(polymer.getPolymerElements().getListOfElements().get(i)));
     }
-    /* müssen Connections geändert werden ?? */
+
 
     return polymer;
   }

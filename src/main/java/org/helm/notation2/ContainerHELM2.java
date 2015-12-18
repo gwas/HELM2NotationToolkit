@@ -45,6 +45,7 @@ import org.helm.notation2.parser.notation.polymer.BlobEntity;
 import org.helm.notation2.parser.notation.polymer.ChemEntity;
 import org.helm.notation2.parser.notation.polymer.GroupEntity;
 import org.helm.notation2.parser.notation.polymer.HELMEntity;
+import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
@@ -364,6 +365,12 @@ public class ContainerHELM2 {
 
 
   public void getNotationByReplacingSMILES() {
+    /* Go for every MonomerNotation */
+    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
+      for (MonomerNotation monomerNotation : polymer.getPolymerElements().getListOfElements()) {
+        System.out.println(monomerNotation);
+      }
+    }
 
   }
 }

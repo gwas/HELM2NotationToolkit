@@ -249,12 +249,21 @@ public class MonomerFactory {
 	 * @throws org.jdom.JDOMException
 	 */
 	public static MonomerFactory getInstance() throws MonomerLoadingException {
+    System.out.println("Get Instance: " + instance);
 		if (null == instance) {
-			initializeMonomerCache();
-			instance = new MonomerFactory();
+      refreshMonomerCache();
 		}
+
+    else if (MonomerStoreConfiguration.getInstance().isUseWebservice() && MonomerStoreConfiguration.getInstance().isUpdateAutomatic()) {
+      refreshMonomerCache();
+    }
 		return instance;
 	}
+
+  public static void refreshMonomerCache() throws MonomerLoadingException {
+    initializeMonomerCache();
+    instance = new MonomerFactory();
+  }
 
 	public static void setDBChanged(boolean isChanged) {
 		dbChanged = isChanged;
@@ -682,7 +691,8 @@ public class MonomerFactory {
 		if (MonomerStoreConfiguration.getInstance().isUseWebservice()) {
 			try {
 				cache = buildMonomerCacheFromWS();
-				validate(cache.getMonomerDB());
+        // validate(cache.getMonomerDB());
+        System.out.println("Validation");
 			} catch (MonomerException | IOException | JDOMException e) {
 				throw new MonomerLoadingException(
 						"Initializing MonomerStore failed because of "

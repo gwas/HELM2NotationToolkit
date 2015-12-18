@@ -44,6 +44,17 @@ public class MoleculeInformationTest {
     }
   }
 
+    @Test
+  public void testgetMolecularWeightPair() throws ExceptionState, IOException, JDOMException,
+        FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
+    Double resultEditor = (double) 2462.60;
+      String notation = "RNA1{R(G)P.R(A)P.R(G)P.R(G)}|RNA2{R(C)P.R(C)P.R(U)P.R(C)}$$RNA1,RNA2,5:pair-8:pair|RNA1,RNA2,11:pair-2:pair|RNA1,RNA2,8:pair-5:pair|RNA1,RNA2,2:pair-11:pair$$";
+      if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
+      Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(1, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
+      }
+    }
+
+
   @Test
   public void testgetMolecularWeightWithSMILES() throws ExceptionState, IOException, JDOMException,
       FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException {
