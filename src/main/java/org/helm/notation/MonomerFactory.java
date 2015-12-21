@@ -249,7 +249,6 @@ public class MonomerFactory {
 	 * @throws org.jdom.JDOMException
 	 */
 	public static MonomerFactory getInstance() throws MonomerLoadingException {
-    System.out.println("Get Instance: " + instance);
 		if (null == instance) {
       refreshMonomerCache();
 		}

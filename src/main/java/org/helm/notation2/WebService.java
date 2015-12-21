@@ -39,6 +39,7 @@ import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -234,6 +235,36 @@ public class WebService {
     }
 
   }
+
+  public String readPeptide(String peptide) throws FastaFormatException {
+    HELM2Notation helm2notation = new HELM2Notation();
+    PolymerNotation polymer;
+    try {
+      polymer = new PolymerNotation("PEPTIDE" + "1");
+      System.out.println("jk");
+    helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
+          FastaFormat.generateElementsOfPeptide(peptide, polymer.getPolymerID()), ""));
+      System.out.println("Geschaft");
+      return helm2notation.toHELM2();
+    } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
+      return e.getMessage();
+    }
+  }
+
+  public String readRNA(String rna) throws FastaFormatException {
+    HELM2Notation helm2notation = new HELM2Notation();
+    PolymerNotation polymer;
+    try {
+      polymer = new PolymerNotation("RNA" + "1");
+
+      helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
+          FastaFormat.generateElementsforRNA(rna, polymer.getPolymerID()), ""));
+      return helm2notation.toHELM2();
+    } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
+      return e.getMessage();
+    }
+  }
+
 
   public byte[] generateImageForHELMMolecule(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, IOException {
     validateHELM(notation);

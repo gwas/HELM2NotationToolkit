@@ -180,19 +180,20 @@ public final class FastaFormat {
    * @throws FastaFormatException
    */
   private static void initMapNucleotides() throws FastaFormatException {
-    try {
-      nucleotides = NucleotideFactory.getInstance().getNucleotideTemplates().get("HELM Notation");
-    } catch (IOException e) {
-      LOG.error("NucleotideFactory can not be initialized");
-      throw new FastaFormatException(e.getMessage());
-    }
+      try {
+        nucleotides = NucleotideFactory.getInstance().getNucleotideTemplates().get("HELM Notation");
+      } catch (IOException e) {
+        LOG.error("NucleotideFactory can not be initialized");
+        throw new FastaFormatException(e.getMessage());
+      }
   }
 
   private static void InitMapTransformNucleotides() {
-    transformNucleotides = new HashMap<String, String>();
-    for (Map.Entry e : nucleotides.entrySet()) {
-      transformNucleotides.put(e.getValue().toString(), e.getKey().toString());
-    }
+      transformNucleotides = new HashMap<String, String>();
+      for (Map.Entry e : nucleotides.entrySet()) {
+        transformNucleotides.put(e.getValue().toString(), e.getKey().toString());
+      }
+
   }
 
   /**
@@ -233,8 +234,10 @@ public final class FastaFormat {
    */
   protected static PolymerListElements generateElementsOfPeptide(String fasta, HELMEntity entity)
       throws FastaFormatException {
+    initMapAminoAcid();
     try {
       PolymerListElements elements = new PolymerListElements(entity);
+      System.out.println(fasta);
       for (Character c : fasta.toCharArray()) {
         if (aminoacids.get(c.toString()) != null) {
           elements.addMonomerNotation(c.toString());
@@ -634,4 +637,5 @@ public final class FastaFormat {
       return id;
     }
   }
+
 }

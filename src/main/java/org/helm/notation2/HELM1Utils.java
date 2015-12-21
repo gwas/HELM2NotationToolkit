@@ -70,7 +70,7 @@ public final class HELM1Utils {
     } // -> this methods also sets the
       // thirdSection
 
-    return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$";
+    return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$V2.0";
   }
   
   /**
@@ -93,7 +93,7 @@ public final class HELM1Utils {
       LOG.error("Canonical HELM 1 can not be generated due to HELM2 features");
       throw new HELM1FormatException("Canonical HELM 1 can not be generated due to HELM2 features " + e.getMessage() + e.getCause());
     }
-    return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$";
+    return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$V2.0";
   }
 
   /* polymer section */
