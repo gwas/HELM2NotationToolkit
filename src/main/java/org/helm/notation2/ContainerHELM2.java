@@ -52,6 +52,8 @@ import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * ContainerHELM2
  * 
@@ -84,7 +86,24 @@ public class ContainerHELM2 {
     return interconnection;
   }
 
+  /**
+   * method to generate a JSON-Object from the NotationContainer
+   * 
+   * @return NotationContainer in JSON-Format
+   */
+  protected String toJSON() {
+    ObjectMapper mapper = new ObjectMapper();
 
+    try {
+      String jsonINString = mapper.writeValueAsString(helm2notation);
+      jsonINString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(helm2notation);
+
+      return jsonINString;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
   
 
 

@@ -275,6 +275,11 @@ public class WebService {
     return Images.generateImageofMonomer(monomer);
   }
 
+  public String generateJSON(String helm) throws ParserException, ValidationException {
+    validateHELM(helm);
+    return containerhelm2.toJSON();
+  }
+
   public void store() {
 
   }

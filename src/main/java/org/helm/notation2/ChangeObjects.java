@@ -23,9 +23,12 @@
  */
 package org.helm.notation2;
 
+import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
+import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.grouping.GroupingNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 
 /**
@@ -35,41 +38,58 @@ import org.helm.notation2.parser.notation.polymer.PolymerNotation;
  */
 public final class ChangeObjects {
 
-  public void addAnnotation(String str, ContainerHELM2 containerhelm2) {
-    containerhelm2.getHELM2Notation().addAnnotation(new AnnotationNotation(
-        str));
+
+  protected void addAnnotation(AnnotationNotation notation, int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfAnnotations().add(position, notation);
   }
 
-  public void removeAnnotation(String str, ContainerHELM2 containerhelm2) {
-    containerhelm2.getHELM2Notation().addAnnotation(null);
+  protected void changeAnnotation(AnnotationNotation notation, int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfAnnotations().set(position, notation);
   }
 
-  /* method to change monomer */
-
-  public void changeMonomerNotationUnit() {
-
+  protected void deleteAnnotation(int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfAnnotations().remove(position);
   }
 
-  /* method to remove monomer */
+  protected void deleteAllAnnotations(ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfAnnotations().clear();
+  }
 
-  /* method to add monomer */
+  protected void addConnection(ConnectionNotation notation, int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfConnections().add(position, notation);
+  }
 
-  /* method to add annotation to monomer */
+  protected void changeConnection(int position, ConnectionNotation notation, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfConnections().set(position, notation);
+  }
 
-  /* method to remove annotion from monomer */
+  protected void deleteConnection(int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfConnections().remove(position);
+  }
 
-  /* method to set count to monomer */
+  protected void addAnnotationToConnection(int position, String annotation, ContainerHELM2 containerhelm2){
+    containerhelm2.getHELM2Notation().getListOfConnections().get(position).setAnnotation(annotation);
+  }
+  protected void deleteAllConnections(ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfConnections().clear();
+  }
 
+  protected void addGroup(GroupingNotation notation, int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfGroupings().add(position, notation);
+  }
 
+  protected void changeGroup(GroupingNotation notation, int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfGroupings().set(position, notation);
+  }
 
-  /* method to remove connection */
-  /* method to remove all connections */
-  /* method to add connection */
+  protected void deleteGroup(int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfGroupings().remove(position);
+  }
 
-  /* method to change connection */
+  protected void deleteAllGroups(ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfGroupings().clear();
+  }
 
-  /* method to add polymer */
-  /* method to remove polymer */
 
 
   /**
@@ -87,16 +107,6 @@ public final class ChangeObjects {
   }
 
 
-  /**
-   * method to change a current annotation to the new annotation
-   * 
-   * @param not
-   * @param annotation
-   * @return
-   */
-  public static PolymerNotation changeAnnotationToPolmyer(PolymerNotation not, String annotation){
-    return new PolymerNotation(not.getPolymerID(), not.getPolymerElements(), annotation);
-  }
 
   /**
    * method to remove a current annotation of a polymernotation
@@ -109,23 +119,56 @@ public final class ChangeObjects {
     return new PolymerNotation(not.getPolymerID(), not.getPolymerElements(), null);
   }
 
-  /**
-   * method to add a Group Notation to the ContainerHELM2
-   * 
-   * @param helm2container
-   * @param not
-   */
-  public static void addGroupNotation(ContainerHELM2 helm2container, GroupingNotation not) {
-    helm2container.getHELM2Notation().getListOfGroupings().add(not);
+
+
+
+
+  protected static PolymerNotation addMonomerNotation(int position, PolymerNotation polymer, MonomerNotation not) {
+    polymer.getPolymerElements().getListOfElements().add(position, not);
+    return polymer;
   }
 
-  /* method to change a group */
-  /* method to remove a group */
-  /* method to remove all groups */
+  protected static void changeMonomerNotation(int position, PolymerNotation polymer, MonomerNotation not) {
+    polymer.getPolymerElements().getListOfElements().set(position, not);
+  }
 
-  public static void removeAllGroups(ContainerHELM2 helm2container) {
+  protected static void deleteMonomerNotation(int position, PolymerNotation polymer) throws NotationException {
+    MonomerNotation monomerNotation = polymer.getPolymerElements().getListOfElements().get(position);
+    if (polymer.getPolymerElements().getListOfElements().size() == 1) {
+      throw new NotationException(monomerNotation.toString() + " can't be removed. Polymer has to have at least one Monomer Notation");
+    }
+    polymer.getPolymerElements().getListOfElements().remove(monomerNotation);
+    if (polymer.getPolymerElements().getListOfElements().size() == 0) {
 
-    HELM2Notation notation = new HELM2Notation();
+    }
+  }
+
+  protected void addAnnotationToMonomerNotation(PolymerNotation polymer, int position, String annotation) {
+    polymer.getPolymerElements().getListOfElements().get(position).setAnnotation(annotation);
+  }
+
+  protected void addCountToMonomerNotation(PolymerNotation polymer, int position, String count) {
+    polymer.getPolymerElements().getListOfElements().get(position).setCount(count);
+  }
+
+  protected void deleteAnnotationFromMonomerNotation(PolymerNotation polymer, int position) {
+    polymer.getPolymerElements().getListOfElements().get(position).setAnnotation(null);
+  }
+
+  protected void setCountToDefault(PolymerNotation polymer, int position) {
+    polymer.getPolymerElements().getListOfElements().get(position).setCount("1");
+  }
+
+  protected static void changePolymerNotation(int position, PolymerNotation polymer, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfPolymers().set(position, polymer);
+  }
+
+  protected static void deletePolymerNotation(int position, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfPolymers().remove(position);
+  }
+
+  protected static void addPolymerNotation(int position, PolymerNotation polymer, ContainerHELM2 containerhelm2) {
+    containerhelm2.getHELM2Notation().getListOfPolymers().add(position, polymer);
   }
 
 
