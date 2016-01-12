@@ -64,10 +64,15 @@ public class WebService {
    */
   private void readNotation(String notation) throws ParserException {
     /* HELM1-Format -> */
-    if (!(notation.contains("V2.0"))) {
-      LOG.info("Convert HELM1 into HELM2");
-      notation = new ConverterHELM1ToHELM2().doConvert(notation);
-      LOG.info("Conversion was successful: " + notation);
+    if (!(notation.contains("V2.0") || notation.contains("v2.0"))) {
+      if (notation.endsWith("$")) {
+        LOG.info("Convert HELM1 into HELM2");
+        notation = new ConverterHELM1ToHELM2().doConvert(notation);
+        LOG.info("Conversion was successful: " + notation);
+      } else {
+        LOG.info("Wrong HELM Input");
+        throw new ParserException("HELMnotation is not valid");
+      }
     }
     /* parses the HELM notation and generates the necessary notation objects */
     ParserHELM2 parser = new ParserHELM2();
