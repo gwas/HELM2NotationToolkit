@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 public class Validation {
 
   private static final Logger LOG =
-      LoggerFactory.getLogger(BetweenGroupingParser.class);
+      LoggerFactory.getLogger(Validation.class);
 
   /**
    * method to check if the generated notation objects by the parser are correct the polymer ids have to be unique; all
@@ -481,11 +481,16 @@ public class Validation {
     else if (type.equals("RNA")) {
       /* change */
       try {
-        SimpleNotationParser.getMonomerIDList(str, type, monomerStore);
+        List<String> elements = SimpleNotationParser.getMonomerIDList(str, type, monomerStore);
+        for(String element: elements){
+          if (!(monomerStore.hasMonomer(type, element))) {
+            return false;
+          }
+        }
         LOG.info("Nucleotide type for RNA: " + str);
         return true;
       } catch (NotationException e) {
-        LOG.info("");
+        return false;
       }
 
     }
@@ -582,11 +587,14 @@ public class Validation {
    */
   protected static List<Monomer> getAllMonomersOnlyBase(MonomerNotation not) throws HELM2HandledException, MonomerException,
       IOException, JDOMException {
+    LOG.debug("Get base for " + not);
     List<Monomer> monomers = new ArrayList<Monomer>();
 
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
     MonomerStore monomerStore = monomerFactory.getMonomerStore();
+    LOG.debug("Which MonomerNotationType " + not.getClass());
     if (not instanceof MonomerNotationUnitRNA) {
+      LOG.debug("MonomerNotationUnitRNA");
       monomers.addAll(getMonomersRNAOnlyBase((MonomerNotationUnitRNA) not, monomerStore));
 
     } else if (not instanceof MonomerNotationUnit) {
@@ -596,6 +604,7 @@ public class Validation {
       }
       monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
     } else if (not instanceof MonomerNotationGroup) {
+      LOG.debug("MonomerNotationGroup");
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
         String id = groupElement.getMonomerNotation().getID();
         if (id.startsWith("[") && id.endsWith("]")) {
@@ -604,6 +613,7 @@ public class Validation {
         monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
       }
     } else if (not instanceof MonomerNotationList) {
+      LOG.debug("MonomerNotationList");
       for (MonomerNotation listElement : ((MonomerNotationList) not).getListofMonomerUnits()) {
         if (listElement instanceof MonomerNotationUnitRNA) {
           monomers.addAll(getMonomersRNAOnlyBase(((MonomerNotationUnitRNA) listElement), monomerStore));
@@ -806,6 +816,7 @@ public class Validation {
       }
       return monomers;
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       throw new HELM2HandledException(e.getMessage());
     }
 

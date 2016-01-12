@@ -48,7 +48,6 @@ import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.DOMException;
 
 /**
  * FastaFormat
@@ -57,7 +56,7 @@ import org.w3c.dom.DOMException;
  */
 public final class FastaFormat {
 
-  private static HELM2Notation helm2notation = new HELM2Notation();
+  private static HELM2Notation helm2notation = null;
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(FastaFormat.class);
@@ -79,6 +78,7 @@ public final class FastaFormat {
    * @throws FastaFormatException
    */
   protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
+    helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Peptide Sequence must be specified");
       throw new FastaFormatException("Peptide Sequence must be specified");
@@ -101,6 +101,7 @@ public final class FastaFormat {
         if (counter > 1) {
           helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
               generateElementsOfPeptide(elements.toString(), polymer.getPolymerID()), annotation));
+          elements = new StringBuilder();
           try {
             polymer = new PolymerNotation("PEPTIDE" + counter);
           } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
@@ -116,6 +117,7 @@ public final class FastaFormat {
     }
     helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
         generateElementsOfPeptide(elements.toString(), polymer.getPolymerID()), annotation));
+    System.out.println(helm2notation);
     return helm2notation;
   }
 
@@ -128,6 +130,7 @@ public final class FastaFormat {
    * @throws FastaFormatException
    */
   protected static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException {
+    helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Nucleotide Sequence must be specified");
       throw new FastaFormatException("Nucleotide Sequence must be specified");
@@ -153,6 +156,7 @@ public final class FastaFormat {
 
           helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
               generateElementsforRNA(elements.toString(), polymer.getPolymerID()), annotation));
+          elements = new StringBuilder();
           try {
             polymer = new PolymerNotation("RNA" + counter);
           } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
@@ -237,7 +241,6 @@ public final class FastaFormat {
     initMapAminoAcid();
     try {
       PolymerListElements elements = new PolymerListElements(entity);
-      System.out.println(fasta);
       for (Character c : fasta.toCharArray()) {
         if (aminoacids.get(c.toString()) != null) {
           elements.addMonomerNotation(c.toString());
@@ -549,7 +552,6 @@ public final class FastaFormat {
     else if (current instanceof MonomerNotationGroup) {
       if (current instanceof MonomerNotationGroupOr) {
         StringBuilder sb = new StringBuilder();
-        String id = current.getID();
         for (MonomerNotationGroupElement element : ((MonomerNotationGroup) current).getListOfElements()) {
 
           sb.append(changeIdForRNA(element.getMonomerNotation()) + ",");
@@ -559,7 +561,6 @@ public final class FastaFormat {
 
       } else if (current instanceof MonomerNotationGroupMixture) {
         StringBuilder sb = new StringBuilder();
-        String id = current.getID();
         for (MonomerNotationGroupElement element : ((MonomerNotationGroup) current).getListOfElements()) {
           sb.append(changeIdForRNA(element.getMonomerNotation()) + "+");
         }
@@ -577,8 +578,6 @@ public final class FastaFormat {
 
     else if (current instanceof MonomerNotationList) {
       StringBuilder sb = new StringBuilder();
-      String id = current.getID();
-      String[] elements = id.split(".");
       for (MonomerNotation element : ((MonomerNotationList) current).getListofMonomerUnits()) {
         sb.append(changeIdForRNA(element) + ".");
       }

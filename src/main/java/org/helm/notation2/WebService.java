@@ -186,9 +186,8 @@ public class WebService {
    * @throws FastaFormatException
    */
   public String generateHELMFromFastaPeptide(String notation) throws FastaFormatException {
-    containerhelm2 =
-        new ContainerHELM2(FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation), new InterConnections());
-    return containerhelm2.getHELM2Notation().toHELM2();
+    System.out.println("Notation " + notation);
+    return new ContainerHELM2(FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation), new InterConnections()).getHELM2Notation().toHELM2();
   }
 
   /**
@@ -241,10 +240,8 @@ public class WebService {
     PolymerNotation polymer;
     try {
       polymer = new PolymerNotation("PEPTIDE" + "1");
-      System.out.println("jk");
     helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
-          FastaFormat.generateElementsOfPeptide(peptide, polymer.getPolymerID()), ""));
-      System.out.println("Geschaft");
+          FastaFormat.generateElementsOfPeptide(peptide, polymer.getPolymerID()), null));
       return helm2notation.toHELM2();
     } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
       return e.getMessage();
@@ -258,7 +255,7 @@ public class WebService {
       polymer = new PolymerNotation("RNA" + "1");
 
       helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
-          FastaFormat.generateElementsforRNA(rna, polymer.getPolymerID()), ""));
+          FastaFormat.generateElementsforRNA(rna, polymer.getPolymerID()), null));
       return helm2notation.toHELM2();
     } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
       return e.getMessage();
@@ -280,26 +277,7 @@ public class WebService {
     return containerhelm2.toJSON();
   }
 
-  public void store() {
 
-  }
-
-  public void retrieve() {
-
-  }
-
-  public void submit(){
-  }
-
-
-    
-  public void editMonomer() {
-    
-  }
-  
-  public void reconcileMonomers(){
-    
-  }
 
 
 }

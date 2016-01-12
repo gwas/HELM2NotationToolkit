@@ -31,6 +31,8 @@ import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -42,7 +44,8 @@ import org.helm.notation2.parser.notation.HELM2Notation;
  */
 public final class SMILES {
 
-
+  /** The Logger for this class */
+  private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
 
 
   /**
@@ -55,9 +58,11 @@ public final class SMILES {
    */
   protected static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* Build Molecues */
+    LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules =
         BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
     /* get for every molecule the smiles */
+    LOG.debug("Built single molecule(s) ");
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
       molecule = BuilderMolecule.mergeRgroups(molecule);

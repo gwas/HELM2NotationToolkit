@@ -27,12 +27,15 @@ import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.model.Monomer;
+import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MethodsForContainerHELM2
@@ -41,6 +44,8 @@ import org.jdom2.JDOMException;
  */
 public final class MethodsForContainerHELM2 {
 
+  private static final Logger LOG =
+      LoggerFactory.getLogger(MethodsForContainerHELM2.class);
   /**
    * method to get all HELM1 valid MonomerNotations Only on these monomers required HELM1 functions are performed
    * 
@@ -86,7 +91,9 @@ public final class MethodsForContainerHELM2 {
    */
   public static List<Monomer> getListOfHandledMonomersOnlyBase(List<MonomerNotation> monomerNotations)
       throws HELM2HandledException {
+    LOG.debug("Get all bases of the rna");
     List<Monomer> items = new ArrayList<Monomer>();
+
     for (MonomerNotation monomerNotation : monomerNotations) {
       /* group element */
       if (monomerNotation instanceof MonomerNotationGroup) {
@@ -101,9 +108,11 @@ public final class MethodsForContainerHELM2 {
           }
 
           for (int j = 0; j < count; j++) {
+            System.out.println(monomerNotation);
             items.addAll(Validation.getAllMonomersOnlyBase(monomerNotation));
           }
         } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
+          System.out.println(e.getMessage() + monomerNotation);
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
         }
 

@@ -42,8 +42,11 @@ import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.parser.groupingsection.BetweenGroupingParser;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -54,6 +57,8 @@ import org.jdom2.JDOMException;
  */
 public class ExtinctionCoefficient {
 
+  private static final Logger LOG =
+      LoggerFactory.getLogger(ExtinctionCoefficient.class);
   private static final int RNA_UNIT_TYPE = 1;
 
   private static final int PEPTIDE_UNIT_TYPE = 2;
@@ -148,6 +153,7 @@ public class ExtinctionCoefficient {
   }
 
   public float calculate(ContainerHELM2 helm2container) throws ExtinctionCoefficientException {
+    LOG.debug("ExtinctionCalculation is starting");
     int unitType = 1;
     float result = 0.0f;
     List<PolymerNotation> polymerNodes = helm2container.getHELM2Notation().getListOfPolymers();
@@ -187,6 +193,7 @@ public class ExtinctionCoefficient {
    * @throws IOException
    */
   private static float calculateExtinctionFromRNA(List<Monomer> monomers) throws CalculationException, IOException {
+    LOG.debug("ExtinctionCalculation of RNA");
     float resultSingle = 0.0f;
     float result = 0.0f;
     float resultDi = 0.0f;
