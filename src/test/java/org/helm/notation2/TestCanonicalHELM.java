@@ -98,7 +98,7 @@ public class TestCanonicalHELM {
     Assert.assertEquals(HELM1Utils.getCanonical(containerhelm2.getHELM2Notation()), ComplexNotationParser.getCanonicalNotation(test, false) + "V2.0");
   }
 
-  @Test
+  @Test(expectedExceptions = HELM1FormatException.class)
   public void testCanonicalHELMExtendedWithCounts() throws HELM1FormatException, ExceptionState, IOException,
       JDOMException, NotationException
   {
@@ -137,7 +137,7 @@ public class TestCanonicalHELM {
 
   }
 
-  @Test
+  @Test(expectedExceptions = HELM1FormatException.class)
   public void testCanonicalHELMExtendedWithMonomerNotationList() throws HELM1FormatException, ExceptionState,
       IOException, JDOMException, NotationException
 

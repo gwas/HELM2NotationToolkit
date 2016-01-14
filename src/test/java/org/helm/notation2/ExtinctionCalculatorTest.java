@@ -100,7 +100,7 @@ public class ExtinctionCalculatorTest {
 
   }
 
-  @Test
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationRepeatingMonomer() throws ExceptionState, IOException, JDOMException,
       ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();
@@ -120,7 +120,7 @@ public class ExtinctionCalculatorTest {
 
   }
 
-  @Test
+  @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationRepeatingList() throws ExceptionState, IOException, JDOMException,
       ExtinctionCoefficientException, CalculationException {
     parser = new StateMachineParser();

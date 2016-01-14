@@ -17,13 +17,19 @@
  */
 package org.helm.notation2;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
+import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
+import org.helm.notation.tools.xHelmNotationParser;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
@@ -40,9 +46,13 @@ import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * WebService class containing all required methods for the web-service
@@ -51,18 +61,49 @@ import org.slf4j.LoggerFactory;
  */
 public class WebService {
 
-  private ContainerHELM2 containerhelm2;
-
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(WebService.class);
+
+  private Element getXHELMRootElement(String resource) throws JDOMException,
+      IOException {
+
+    ByteArrayInputStream stream = new ByteArrayInputStream(resource.getBytes());
+    SAXBuilder builder = new SAXBuilder();
+    Document doc = builder.build(stream);
+
+    return doc.getRootElement();
+  }
+
+  private void updateMonomerStore(MonomerStore monomerStore) throws MonomerLoadingException, IOException, MonomerException {
+    for (Monomer monomer : monomerStore.getAllMonomersList()) {
+      MonomerFactory.getInstance().getMonomerStore().addNewMonomer(monomer);
+      // save monomer db to local file after successful update //
+      MonomerFactory.getInstance().saveMonomerCache();
+    }
+  }
 
   /**
    * method to read the HELM string, the HELM can be in version 1 or 2
    * 
    * @param notation
+   * @return
    * @throws ParserException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws MonomerException
    */
-  private void readNotation(String notation) throws ParserException {
+  private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException, IOException, MonomerException {
+    /* xhelm notation */
+    if (notation.contains("<Xhelm>")) {
+      LOG.info("xhelm is used as input");
+      String xhelm = notation;
+      Element xHELMRootElement = getXHELMRootElement(xhelm);
+
+      notation = xHelmNotationParser.getHELMNotationString(xHELMRootElement);
+      MonomerStore store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
+      updateMonomerStore(store);
+
+    }
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0") || notation.contains("v2.0"))) {
       if (notation.endsWith("$")) {
@@ -71,7 +112,7 @@ public class WebService {
         LOG.info("Conversion was successful: " + notation);
       } else {
         LOG.info("Wrong HELM Input");
-        throw new ParserException("HELMnotation is not valid");
+        throw new ParserException("HELMNotation is not valid");
       }
     }
     /* parses the HELM notation and generates the necessary notation objects */
@@ -83,7 +124,7 @@ public class WebService {
     } catch (ExceptionState | IOException | JDOMException e) {
       throw new ParserException("HELMNotation is not valid");
     }
-    containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
+    return new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
   }
 
   /**
@@ -92,21 +133,32 @@ public class WebService {
    * @param helm
    * @throws ParserException
    * @throws ValidationException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    */
-  public void validateHELM(String helm) throws ParserException, ValidationException {
+  private ContainerHELM2 validate(String helm) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
     /* Read */
-    readNotation(helm);
+    ContainerHELM2 containerhelm2 = readNotation(helm);
 
     /* Validate */
     try {
       LOG.info("Validation of HELM is starting");
       Validation.validateNotationObjects(containerhelm2);
       LOG.info("Validation was successful");
+      
+      return containerhelm2;
+
     } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException e) {
       LOG.info("Validation was not successful");
       LOG.error(e.getMessage());
       throw new ValidationException(e.getMessage());
     }
+  }
+
+  public void validateHELM(String helm) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
+    validate(helm);
+    setMonomerFactoryToDefault(helm);
   }
 
   /**
@@ -118,11 +170,15 @@ public class WebService {
    * @throws ParserException
    * @throws ValidationException
    * @throws NotationException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    */
   public String convertStandardHELMToCanonicalHELM(String notation) throws HELM1FormatException, ParserException,
-      ValidationException, NotationException {
-    validateHELM(notation);
-    return HELM1Utils.getCanonical(containerhelm2.getHELM2Notation());
+      ValidationException, NotationException, JDOMException, IOException, MonomerException {
+    String result = HELM1Utils.getCanonical(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   /**
@@ -134,11 +190,15 @@ public class WebService {
    * @throws ParserException
    * @throws ValidationException
    * @throws NotationException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    */
   public String convertIntoStandardHELM(String notation) throws HELM1FormatException, ParserException,
-      ValidationException, NotationException {
-    validateHELM(notation);
-    return HELM1Utils.getStandard(containerhelm2.getHELM2Notation());
+      ValidationException, NotationException, JDOMException, IOException, MonomerException {
+    String result = HELM1Utils.getStandard(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   /**
@@ -149,11 +209,15 @@ public class WebService {
    * @throws ParserException
    * @throws ValidationException
    * @throws ExtinctionCoefficientException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    */
   public Float calculateExtinctionCoefficient(String notation) throws ParserException, ValidationException,
-      ExtinctionCoefficientException, CalculationException {
-    validateHELM(notation);
-    return ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+      ExtinctionCoefficientException, CalculationException, JDOMException, IOException, MonomerException {
+    Float result = ExtinctionCoefficient.getInstance().calculate(validate(notation));
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   /**
@@ -164,10 +228,14 @@ public class WebService {
    * @throws ParserException
    * @throws ValidationException
    * @throws FastaFormatException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    */
-  public String generateFasta(String notation) throws ParserException, ValidationException, FastaFormatException {
-    validateHELM(notation);
-    return FastaFormat.generateFasta(containerhelm2.getHELM2Notation());
+  public String generateFasta(String notation) throws ParserException, ValidationException, FastaFormatException, JDOMException, IOException, MonomerException {
+    String result = FastaFormat.generateFasta(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   /**
@@ -176,11 +244,12 @@ public class WebService {
    * @param notation
    * @return
    * @throws FastaFormatException
+   * @throws MonomerLoadingException
    */
-  public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException {
-    containerhelm2 =
-        new ContainerHELM2(FastaFormat.generateRNAPolymersFromFastaFormatHELM1(notation), new InterConnections());
-    return containerhelm2.getHELM2Notation().toHELM2();
+  public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException, MonomerLoadingException {
+    String result = new ContainerHELM2(FastaFormat.generateRNAPolymersFromFastaFormatHELM1(notation), new InterConnections()).getHELM2Notation().toHELM2();
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   /**
@@ -189,10 +258,12 @@ public class WebService {
    * @param notation
    * @return
    * @throws FastaFormatException
+   * @throws MonomerLoadingException
    */
-  public String generateHELMFromFastaPeptide(String notation) throws FastaFormatException {
-    System.out.println("Notation " + notation);
-    return new ContainerHELM2(FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation), new InterConnections()).getHELM2Notation().toHELM2();
+  public String generateHELMFromFastaPeptide(String notation) throws FastaFormatException, MonomerLoadingException {
+    String result = new ContainerHELM2(FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation), new InterConnections()).getHELM2Notation().toHELM2();
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   /**
@@ -204,10 +275,14 @@ public class WebService {
    * @throws ValidationException
    * @throws BuilderMoleculeException
    * @throws CTKException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    */
-  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException {
-    validateHELM(notation);
-    return MoleculeInformation.getMolecularWeight(containerhelm2.getHELM2Notation());
+  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, JDOMException, IOException, MonomerException {
+    Double result = MoleculeInformation.getMolecularWeight(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   /**
@@ -219,20 +294,23 @@ public class WebService {
    * @throws ParserException
    * @throws BuilderMoleculeException
    * @throws CTKException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
    */
-  public String getMolecularFormula(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException {
-    validateHELM(notation);
-    return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
+  public String getMolecularFormula(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, JDOMException, IOException, MonomerException {
+    String result = MoleculeInformation.getMolecularFormular(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
-  public String getNaturalAnalogSequence(String notation) throws ParserException, ValidationException {
-    /* input-sequence -> HELM1 or HELM2 */
-    validateHELM(notation);
+  public String getNaturalAnalogSequence(String notation) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
     /* is only possible for peptides + nucleotides */
     /* replace each polymer into the analogsequence and generate HELM2 format */
     HELM2Notation helm2notation;
     try {
-      helm2notation = FastaFormat.convertIntoAnalogSequence(containerhelm2.getHELM2Notation());
+      helm2notation = FastaFormat.convertIntoAnalogSequence(validate(notation).getHELM2Notation());
+      setMonomerFactoryToDefault(notation);
       return helm2notation.toHELM2();
     } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | FastaFormatException | AnalogSequenceException e) {
       return e.getMessage();
@@ -245,7 +323,7 @@ public class WebService {
     PolymerNotation polymer;
     try {
       polymer = new PolymerNotation("PEPTIDE" + "1");
-    helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
+      helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
           FastaFormat.generateElementsOfPeptide(peptide, polymer.getPolymerID()), null));
       return helm2notation.toHELM2();
     } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
@@ -268,21 +346,28 @@ public class WebService {
   }
 
 
-  public byte[] generateImageForHELMMolecule(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, IOException {
-    validateHELM(notation);
-    return Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+  public byte[] generateImageForHELMMolecule(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, IOException, JDOMException, MonomerException {
+    byte[] result = Images.generateImageHELMMolecule(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
   public byte[] generateImageForMonomer(Monomer monomer) throws BuilderMoleculeException, CTKException {
     return Images.generateImageofMonomer(monomer);
   }
 
-  public String generateJSON(String helm) throws ParserException, ValidationException {
-    validateHELM(helm);
-    return containerhelm2.toJSON();
+  public String generateJSON(String helm) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
+    String result = validate(helm).toJSON();
+    setMonomerFactoryToDefault(helm);
+    return result;
   }
 
 
-
+  private void setMonomerFactoryToDefault(String helm) throws MonomerLoadingException {
+    if (helm.contains("<Xhelm>")) {
+      LOG.info("Refresh local Monomer Store in case of Xhelm");
+      MonomerFactory.refreshMonomerCache();
+    }
+  }
 
 }

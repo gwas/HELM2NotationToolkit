@@ -27,11 +27,11 @@ import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.model.Monomer;
-import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
@@ -58,20 +58,20 @@ public final class MethodsForContainerHELM2 {
     List<Monomer> items = new ArrayList<Monomer>();
     for (MonomerNotation monomerNotation : monomerNotations) {
       /* group element */
-      if (monomerNotation instanceof MonomerNotationGroup) {
+      if (monomerNotation instanceof MonomerNotationGroup || monomerNotation instanceof MonomerNotationList) {
         throw new HELM2HandledException("Functions can't be called for HELM2 objects");
       }
 
       else {
         try {
           int count = Integer.parseInt(monomerNotation.getCount());
-          if (count == 0) {
+          if (count == 0 || count > 1) {
             throw new HELM2HandledException("Functions can't be called for HELM2 objects");
           }
 
-          for (int j = 0; j < count; j++) {
+          // for (int j = 0; j < count; j++) {
             items.addAll(Validation.getAllMonomers(monomerNotation));
-          }
+          // }
         } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
         }
