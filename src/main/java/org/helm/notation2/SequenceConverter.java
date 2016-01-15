@@ -122,7 +122,7 @@ public class SequenceConverter {
    * @throws RNAUtilsException
    * @throws HELM2HandledException
    */
-  public static String getPeptideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws NotationException, HELM2HandledException, RNAUtilsException {
+  public static String getPeptideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws NotationException, HELM2HandledException {
     List<PolymerNotation> polymers = helm2Notation.getListOfPolymers();
     StringBuffer sb = new StringBuffer();
     for (PolymerNotation polymer : polymers) {

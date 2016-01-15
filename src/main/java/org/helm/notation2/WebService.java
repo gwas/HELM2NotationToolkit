@@ -372,8 +372,8 @@ public class WebService {
     }
   }
 
-  public String generateNaturalAnalogSequencePeptide(String notation) throws ParserException, ValidationException, JDOMException, IOException, MonomerException, HELM2HandledException,
-      org.helm.notation2.parser.exceptionparser.NotationException, RNAUtilsException {
+  public String generateNaturalAnalogSequencePeptide(String notation) throws org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ParserException, ValidationException,
+      JDOMException, IOException, MonomerException {
     ContainerHELM2 containerhelm2 = validate(notation);
     return SequenceConverter.getPeptideNaturalAnalogSequenceFromNotation(containerhelm2.getHELM2Notation());
 
