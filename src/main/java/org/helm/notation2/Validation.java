@@ -35,7 +35,6 @@ import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.PolymerIDsException;
-import org.helm.notation2.parser.groupingsection.BetweenGroupingParser;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.ValidationMethod;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
@@ -788,9 +787,6 @@ public class Validation {
       for (MonomerNotationUnit unit : rna.getContents()) {
         String id = unit.getID().replace("[", "");
         id = id.replace("]", "");
-        Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id);
-
-        String detail = mon.getMonomerType();
         monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id));
       }
       return monomers;

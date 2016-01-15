@@ -1,22 +1,16 @@
 
 package org.helm.notation2;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
-import org.helm.notation.MonomerFactory;
-import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 /**

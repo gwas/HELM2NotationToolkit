@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * PolymerUtils
  * 
  * @author hecht
- * @version $Id$
  */
 public class PolymerUtils {
 
@@ -55,7 +54,7 @@ public class PolymerUtils {
 
 
   protected static int getTotalMonomerCount(PolymerNotation polymer) throws HELM2HandledException {
-    return MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()).size();
+    return polymer.getPolymerElements().getListOfElements().size();
   }
 
   protected void getNotationByReplacingSMILES() {

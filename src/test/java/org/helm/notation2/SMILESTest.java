@@ -18,26 +18,15 @@
 package org.helm.notation2;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
-import org.helm.notation.CalculationException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.MonomerStore;
-import org.helm.notation.NotationException;
-import org.helm.notation.NucleotideLoadingException;
-import org.helm.notation.StructureException;
-import org.helm.notation.tools.ComplexNotationParser;
 import org.helm.notation2.exception.BuilderMoleculeException;
-import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
 /**
  * SMILESTest
  * 

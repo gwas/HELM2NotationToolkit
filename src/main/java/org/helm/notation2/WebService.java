@@ -38,8 +38,10 @@ import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.PolymerIDsException;
+import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
@@ -368,6 +370,19 @@ public class WebService {
       LOG.info("Refresh local Monomer Store in case of Xhelm");
       MonomerFactory.refreshMonomerCache();
     }
+  }
+
+  public String generateNaturalAnalogSequencePeptide(String notation) throws ParserException, ValidationException, JDOMException, IOException, MonomerException, HELM2HandledException,
+      org.helm.notation2.parser.exceptionparser.NotationException, RNAUtilsException {
+    ContainerHELM2 containerhelm2 = validate(notation);
+    return SequenceConverter.getPeptideNaturalAnalogSequenceFromNotation(containerhelm2.getHELM2Notation());
+
+  }
+
+  public String generateNaturalAnalogSequenceRNA(String notation) throws org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, RNAUtilsException, ParserException,
+      ValidationException, JDOMException, IOException, MonomerException {
+    ContainerHELM2 containerhelm2 = validate(notation);
+    return SequenceConverter.getNucleotideNaturalAnalogSequenceFromNotation(containerhelm2.getHELM2Notation());
   }
 
 }

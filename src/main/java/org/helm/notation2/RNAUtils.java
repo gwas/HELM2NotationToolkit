@@ -23,15 +23,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.helm.notation.MonomerException;
+import org.helm.notation.NucleotideFactory;
+import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
+import org.helm.notation.model.Nucleotide;
+import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RNAUtils
@@ -39,6 +48,9 @@ import org.jdom2.JDOMException;
  * @author hecht
  */
 public class RNAUtils {
+
+  /** The Logger for this class */
+  private static final Logger LOG = LoggerFactory.getLogger(RNAUtils.class);
 
   private static Map<String, String> complementMap = null;
 
@@ -173,7 +185,6 @@ public class RNAUtils {
       FastaFormatException, HELM2HandledException, IOException, JDOMException,
       org.helm.notation.NotationException, RNAUtilsException {
     checkRNA(polymer);
-    String sequence = generateAntiparallel(polymer);
     PolymerNotation reversePolymer =
         SequenceConverter.readRNA(generateAntiparallel(polymer)).getHELM2Notation().getCurrentPolymer();
     reversePolymer =
@@ -326,6 +337,57 @@ public class RNAUtils {
     if (!(polymer.getPolymerID() instanceof RNAEntity)) {
       throw new RNAUtilsException("Functions can only be called for RNA/DNA");
     }
+  }
+
+  protected static String getNucleotideSequence(PolymerNotation polymer) throws NotationException, HELM2HandledException, org.helm.notation.NotationException, MonomerException, IOException,
+      JDOMException, StructureException, RNAUtilsException {
+    List<Nucleotide> nucleotides = getNucleotideList(polymer);
+    StringBuffer sb = new StringBuffer();
+    int count = 0;
+    Map<String, String> reverseNucMap = NucleotideFactory.getInstance().getReverseNucleotideTemplateMap();
+    for (Nucleotide nuc : nucleotides) {
+      String nucleotide = nuc.getNotation();
+      String nucleoside = nuc.getNucleosideNotation();
+      String linker = nuc.getLinkerNotation();
+
+      // it is ok for the first nucleotide not to have a nucleoside
+      if (count == 0 && nucleoside.length() == 0) {
+        sb.append(nuc.getPhosphateMonomer().getAlternateId());
+        count++;
+        continue;
+      }
+
+      // it is ok for the last nucleotide not to have a linker
+      if (count == nucleotides.size() - 1 && linker.length() == 0) {
+        nucleotide = nucleotide + Monomer.ID_P;
+      }
+
+      if (reverseNucMap.containsKey(nucleotide)) {
+        sb.append(reverseNucMap.get(nucleotide));
+      } else {
+        throw new NotationException("Unknown nucleotide found for "
+            + nucleotide + " : missing nucleotide template");
+      }
+
+      count++;
+    }
+    return sb.toString();
+  }
+
+  private static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws HELM2HandledException, org.helm.notation.NotationException, MonomerException, IOException, JDOMException,
+      StructureException, RNAUtilsException {
+    checkRNA(polymer);
+    List<Nucleotide> nucleotides = new ArrayList<Nucleotide>();
+    /* check for HELM2Elements */
+    List<MonomerNotation> monomerNotations = polymer.getPolymerElements().getListOfElements();
+    for (MonomerNotation monomerNotation : monomerNotations) {
+      if ((!(monomerNotation instanceof MonomerNotationUnitRNA)) || Integer.parseInt(monomerNotation.getCount()) != 1) {
+        LOG.info("MonomerNotation contains HELM2 Elements " + monomerNotation);
+        throw new HELM2HandledException("HELM2 Elements are involved");
+      }
+      nucleotides.add(SimpleNotationParser.getNucleotideList(monomerNotation.getID()).get(0));
+    }
+    return nucleotides;
   }
 
 }

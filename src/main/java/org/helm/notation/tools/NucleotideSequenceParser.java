@@ -550,7 +550,7 @@ public class NucleotideSequenceParser {
 			tokens[1] = tokens[1] + "RNA" + count + "{as}";
 		}
 
-		String basePair = basePair = hybridization(senseSeq, antiSenseSeq,
+    String basePair = hybridization(senseSeq, antiSenseSeq,
 				rnaDesignType);
 
 		if (tokens[0].length() > 0) {

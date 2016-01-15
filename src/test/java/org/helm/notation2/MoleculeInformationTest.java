@@ -1,12 +1,10 @@
 package org.helm.notation2;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
-import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.FastaFormatException;

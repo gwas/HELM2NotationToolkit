@@ -19,7 +19,7 @@ package org.helm.notation2;
 
 import java.io.IOException;
 
-import org.helm.notation.wsadapter.MonomerStoreConfiguration;
+
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;

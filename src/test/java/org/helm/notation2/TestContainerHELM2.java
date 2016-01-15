@@ -2,19 +2,11 @@ package org.helm.notation2;
 
 import java.io.IOException;
 
-import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.CalculationException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
-import org.helm.notation2.exception.BuilderMoleculeException;
-import org.helm.notation2.exception.HELM2HandledException;
+
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
-import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;

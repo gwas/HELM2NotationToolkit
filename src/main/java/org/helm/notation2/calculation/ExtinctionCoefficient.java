@@ -32,19 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.CalculationException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
-import org.helm.notation2.parser.groupingsection.BetweenGroupingParser;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -49,7 +49,7 @@ public class BuilderMoleculeTest {
   public void testBuildMoleculeTwoChems() throws ParserException, JDOMException, BuilderMoleculeException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     ContainerHELM2 helm2container = readNotation(notation);
-    List<AbstractMolecule> molecule = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
+    BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
   }
 
   @Test
@@ -64,7 +64,7 @@ public class BuilderMoleculeTest {
   public void testBuildMoleculeFourChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException {
     String notation = "CHEM1{[MCC]}|CHEM2{[PEG2]}|CHEM3{[EG]}|CHEM4{[MCC]}$CHEM3,CHEM4,1:R1-1:R1|CHEM2,CHEM1,1:R1-1:R1|CHEM2,CHEM3,1:R2-1:R2$$$";
     ContainerHELM2 helm2container = readNotation(notation);
-    List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
+    BuilderMolecule.buildMoleculefromPolymers(helm2container.getHELM2Notation().getListOfPolymers(), helm2container.getHELM2Notation().getListOfConnections());
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2container.getHELM2Notation()), "C30H40N2O10");
   }
 

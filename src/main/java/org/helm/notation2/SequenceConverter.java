@@ -23,10 +23,19 @@
  */
 package org.helm.notation2;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.helm.notation.MonomerException;
+import org.helm.notation.StructureException;
 import org.helm.notation2.exception.FastaFormatException;
+import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.jdom2.JDOMException;
 
 
@@ -72,6 +81,59 @@ public class SequenceConverter {
     return containerhelm2;
   }
 
+  protected static String getNucleotideSequenceFromNotation(HELM2Notation helm2notation) throws NotationException, HELM2HandledException, org.helm.notation.NotationException, MonomerException,
+      IOException, JDOMException, StructureException, RNAUtilsException {
+    List<PolymerNotation> polymers = helm2notation.getListOfPolymers();
+    StringBuffer sb = new StringBuffer();
+    for (PolymerNotation polymer : polymers) {
+      if (!(polymer.getPolymerID() instanceof RNAEntity)) {
+        throw new NotationException("Input complex notation contains non-nucleic acid polymer");
+      }
+      sb.append(RNAUtils.getNucleotideSequence(polymer) + " ");
+    }
+    sb.setLength(sb.length() - 1);
+    return sb.toString();
+  }
+
+  /**
+   * @param helm2Notation
+   * @return
+   * @throws NotationException
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
+  public static String getNucleotideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws NotationException, HELM2HandledException, RNAUtilsException {
+    List<PolymerNotation> polymers = helm2Notation.getListOfPolymers();
+    StringBuffer sb = new StringBuffer();
+    for (PolymerNotation polymer : polymers) {
+      if (!(polymer.getPolymerID() instanceof RNAEntity)) {
+        throw new NotationException("Input complex notation contains non-nucleic acid polymer");
+      }
+      sb.append(RNAUtils.getNaturalAnalogSequence(polymer) + " ");
+    }
+    sb.setLength(sb.length() - 1);
+    return sb.toString();
+  }
+
+  /**
+   * @param helm2Notation
+   * @return
+   * @throws NotationException
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
+  public static String getPeptideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws NotationException, HELM2HandledException, RNAUtilsException {
+    List<PolymerNotation> polymers = helm2Notation.getListOfPolymers();
+    StringBuffer sb = new StringBuffer();
+    for (PolymerNotation polymer : polymers) {
+      if (!(polymer.getPolymerID() instanceof PeptideEntity)) {
+        throw new NotationException("Input complex notation contains non-nucleic acid polymer");
+      }
+      sb.append(PeptideUtils.getNaturalAnalogSequence(polymer) + " ");
+    }
+    sb.setLength(sb.length() - 1);
+    return sb.toString();
+  }
 
 
 }
