@@ -127,7 +127,7 @@ public class SequenceConverter {
     StringBuffer sb = new StringBuffer();
     for (PolymerNotation polymer : polymers) {
       if (!(polymer.getPolymerID() instanceof PeptideEntity)) {
-        throw new NotationException("Input complex notation contains non-nucleic acid polymer");
+        throw new NotationException("Input complex notation contains non-peptide polymer");
       }
       sb.append(PeptideUtils.getNaturalAnalogSequence(polymer) + " ");
     }
