@@ -31,7 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * HELM1
+ * HELM1 class to transform a HELM2 into HELM1; this is only possible in the
+ * case of no HELM2 features
  * 
  * @author hecht
  */
@@ -54,9 +55,9 @@ public final class HELM1Utils {
   /**
    * method to reproduce a standard HELM1
    * 
-   * @param helm2notation
-   * @return
-   * @throws HELM1FormatException
+   * @param helm2notation HELM2Notation
+   * @return standard HELM
+   * @throws HELM1FormatException if HELM2 features are there
    * @throws NotationException
    */
   public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException, NotationException {
@@ -76,9 +77,9 @@ public final class HELM1Utils {
   /**
    * method to generate from a helm2notation a valid canonical HELM1
    * 
-   * @param helm2notation
-   * @return
-   * @throws HELM1FormatException
+   * @param helm2notation input HELM2Notation
+   * @return canonical HELM
+   * @throws HELM1FormatException if HELM2 features are there
    * @throws NotationException
    */
   public static String getCanonical(HELM2Notation helm2notation) throws HELM1FormatException, NotationException {
@@ -96,7 +97,17 @@ public final class HELM1Utils {
     return firstSection + "$" + secondSection + "$" + thirdSection + "$" + fourthSection + "$V2.0";
   }
 
-  /* polymer section */
+  /**
+   * method to transform the first section (polymer section) to HELM1 - Format
+   * 
+   * @throws HELM1ConverterException
+   * @throws CTKSmilesException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws CTKException
+   * @throws NotationException
+   */
   private static void setStandardHELMFirstSection() throws HELM1ConverterException, CTKSmilesException, MonomerException, IOException, JDOMException, CTKException, NotationException {
     StringBuilder notation = new StringBuilder();
 

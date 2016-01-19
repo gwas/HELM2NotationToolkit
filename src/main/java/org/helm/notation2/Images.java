@@ -37,8 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Images class to generate image generation of monomers and of the helm
- * molecule
+ * Image class to generate image generation of monomers and of the helm molecule
  * 
  * @author hecht
  */
@@ -49,15 +48,15 @@ public final class Images {
 
 
   /**
-   * @param monomer
-   * @return
+   * generates an image of the atom/bond representation of monomer
+   * 
+   * @param monomer Input Monomer
+   * @return an image of the monomer in byte[]
    * @throws CTKException
-   * @throws IOException
-   * @throws BuilderMoleculeException
-   * @throws NumberFormatException
+   * @throws BuilderMoleculeException if the molecule can't be built
    */
   protected static byte[] generateImageofMonomer(Monomer monomer) throws BuilderMoleculeException, CTKException {
-
+    LOG.info("Image generation process of monomer starts");
       /* First build one molecule + merge unused rgoups into it */
     AbstractMolecule molecule = BuilderMolecule.mergeRgroups(BuilderMolecule.getMoleculeForMonomer(monomer));
     LOG.info("Molecule was built and unused rgroups were merged into it");
@@ -65,18 +64,26 @@ public final class Images {
       molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
     LOG.info("Generate molfile for the built molecule");
     return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
-
   }
 
+  /**
+   * method to generate an image of the HELM molecule
+   * 
+   * @param helm2notation input HELMNotation
+   * @return the generated image in byte[]
+   * @throws BuilderMoleculeException if the HELM molecule can't be built
+   * @throws CTKException
+   * @throws IOException
+   */
   protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
+    LOG.info("Image generation process of HELM molecule starts");
     /* get SMILES representation for the whole molecule */
    String smiles = SMILES.getSMILESForAll(helm2notation);
     LOG.info("Get for the whole HELMNotation the smiles representation");
    AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, null);
     LOG.info("Molecule was created using the smiles generation");
    String molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
-    LOG.info("Generate molfile for the built molecule");
+    LOG.info("Generate molfile for the built molecule(s)");
     return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
-
   }
 }

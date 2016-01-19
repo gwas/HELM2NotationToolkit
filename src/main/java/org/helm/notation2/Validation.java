@@ -64,21 +64,23 @@ public class Validation {
       LoggerFactory.getLogger(Validation.class);
 
   /**
-   * method to check if the generated notation objects by the parser are correct the polymer ids have to be unique; all
-   * monomers have to be valid; all used polymer ids in the grouping section have to be there; all connections have to
-   * be valid
+   * method to check if the generated notation objects by the parser are correct
+   * the polymer ids have to be unique; all monomers have to be valid; all used
+   * polymer ids in the grouping section have to be there; all connections have
+   * to be valid
    * 
-   * @param containerhelm2
-   * @throws PolymerIDsException
-   * @throws MonomerException
-   * @throws GroupingNotationException
-   * @throws ConnectionNotationException
+   * @param containerhelm2 input ContainerHELM2
+   * @throws PolymerIDsException if the polymer section is not valid
+   * @throws MonomerException if a monomer is not valid
+   * @throws GroupingNotationException if the grouping section is not valid
+   * @throws ConnectionNotationException if the connection section is not valid
    */
   protected static void validateNotationObjects(ContainerHELM2 containerhelm2) throws PolymerIDsException,
       MonomerException, GroupingNotationException, ConnectionNotationException {
-
+    LOG.info("Validation process is starting");
     /* all polymer ids have to be unique */
     if (!validateUniquePolymerIDs(containerhelm2)) {
+      LOG.info("Polymer IDS have to be unique");
       throw new PolymerIDsException("Polymer IDs have to be unique");
     }
     /* Validation of Monomers */
@@ -117,11 +119,12 @@ public class Validation {
   /**
    * method to valid all existent connections in the Notation objects
    * 
-   * @param containerhelm2
+   * @param containerhelm2 input ContainerHELM2
    * @return true if all connections are valid, false otherwise
    */
   protected static boolean validateConnections(ContainerHELM2 containerhelm2) {
     try {
+      LOG.info("Validation of Connection section starts");
       List<ConnectionNotation> listConnections = containerhelm2.getHELM2Notation().getListOfConnections();
       List<String> listPolymerIDs = containerhelm2.getHELM2Notation().getPolymerAndGroupingIDs();
 
@@ -230,9 +233,9 @@ public class Validation {
    * method to get all occurences of the MonomerNotation
    * 
    * @param sourceUnit
-   * @param e
-   * @param containerhelm2
-   * @return
+   * @param e HELMEntity of the sourceUnit
+   * @param containerhelm2 input ContainerHELM2
+   * @return occurences of the spe
    * @throws org.helm.notation2.parser.exceptionparser.NotationException
    * @throws IOException
    * @throws AttachmentException

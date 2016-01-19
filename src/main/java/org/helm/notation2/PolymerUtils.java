@@ -1,8 +1,25 @@
-/*--
+/**
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
  *
- * @(#) PolymerUtils.java
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *****************************************************************************
  */
 package org.helm.notation2;
 
@@ -13,24 +30,20 @@ import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 /**
- * PolymerUtils
+ * PolymerUtils, class to provide methods for polymer
  * 
  * @author hecht
  */
 public class PolymerUtils {
 
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(PolymerUtils.class);
-
 
   /**
-   * decompose the HELM2 into smaller HELM2 notations
+   * decompose the HELM2 into smaller HELM2 objects
    * 
-   * @param polymers
+   * @param polymers list of PolymerNotations
    * @param connection: list contains only selfcycle connections
    * @return list of ContainerHELM2 objects
    */
@@ -53,7 +66,13 @@ public class PolymerUtils {
   
 
 
-  protected static int getTotalMonomerCount(PolymerNotation polymer) throws HELM2HandledException {
+  /**
+   * method to get the total monomer count of one PolymerNotation
+   * 
+   * @param polymer PolymerNotation
+   * @return monomer count
+   */
+  protected static int getTotalMonomerCount(PolymerNotation polymer) {
     return polymer.getPolymerElements().getListOfElements().size();
   }
 
@@ -61,6 +80,12 @@ public class PolymerUtils {
 
   }
 
+  /**
+   * method to get all self-cycle Connections
+   * 
+   * @param connections list of ConnectionNotation
+   * @return list of all self-cycle Connections
+   */
   private static  List<ConnectionNotation> getAllSelfCycleConnections(List<ConnectionNotation> connections) {
     List<ConnectionNotation> listSelfCycle = new ArrayList<ConnectionNotation>();
     for (ConnectionNotation connection : connections) {
@@ -71,6 +96,13 @@ public class PolymerUtils {
     return listSelfCycle;
   }
 
+  /**
+   * method to get for one polymer all self-cycle ConnectionNotations
+   * 
+   * @param id polymer id
+   * @param connections list of ConnectionNotation
+   * @return list of all self-cycle connections
+   */
   private static List<ConnectionNotation> getSelfCycleConnections(String id, List<ConnectionNotation> connections) {
     List<ConnectionNotation> list = new ArrayList<ConnectionNotation>();
     for (ConnectionNotation connection : connections) {

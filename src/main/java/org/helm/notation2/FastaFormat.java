@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * FastaFormat
+ * FastaFormat, class to convert FastaFiles to HELMNotation and vice versa
  * 
  * @author hecht
  */
@@ -70,12 +70,13 @@ public final class FastaFormat {
   private static Map<String, Monomer> aminoacids = null;
 
   /**
-   * method to read the information from a FastaFile-Format + generate Peptide Polymers be careful -> it produces only
-   * polymers in the HELM1 standard, no ambiguity
+   * method to read the information from a FastaFile-Format + generate peptide
+   * polymers- be careful -> it produces only polymers in the HELM1 standard, no
+   * ambiguity
    * 
    * @param fasta FastaFile in string format
-   * @return HELM2Notation
-   * @throws FastaFormatException
+   * @return HELM2Notation generated HELMNotation
+   * @throws FastaFormatException if the input is not correct
    */
   protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
     helm2notation = new HELM2Notation();
@@ -122,12 +123,13 @@ public final class FastaFormat {
   }
 
   /**
-   * method to read the information from a FastaFile-Format + generate RNA Polymers be careful -> it produces only
-   * polymers in the HELM1 standard, no ambiguity
+   * method to read the information from a FastaFile-Format + generate RNA
+   * Polymers be careful -> it produces only polymers in the HELM1 standard, no
+   * ambiguity
    * 
    * @param fasta FastaFile in string format
-   * @return HELM2Notation
-   * @throws FastaFormatException
+   * @return HELM2Notation generated HELM2Notation
+   * @throws FastaFormatException if the input is not correct
    */
   protected static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException {
     helm2notation = new HELM2Notation();
@@ -181,7 +183,8 @@ public final class FastaFormat {
   /**
    * method to initialize map of existing nucleotides in the database
    * 
-   * @throws FastaFormatException
+   * @throws FastaFormatException if the NucleotideFactory can not be
+   *           initalialized
    */
   private static void initMapNucleotides() throws FastaFormatException {
       try {
@@ -192,18 +195,22 @@ public final class FastaFormat {
       }
   }
 
+  /**
+   * method to initialize map of transform nucleotides
+   */
   private static void InitMapTransformNucleotides() {
       transformNucleotides = new HashMap<String, String>();
       for (Map.Entry e : nucleotides.entrySet()) {
         transformNucleotides.put(e.getValue().toString(), e.getKey().toString());
       }
-
   }
 
   /**
-   * method to initialize map of existing nucleotides in the database
+   * method to initialize map of existing nucleotides with the natural analog
+   * sequence in the database
    * 
-   * @throws FastaFormatException
+   * @throws FastaFormatException if the NucleotideFactory can not be
+   *           initialized
    */
   private static void initMapNucleotidesNaturalAnalog() throws FastaFormatException {
     try {
@@ -217,7 +224,7 @@ public final class FastaFormat {
   /**
    * method to initialize map of existing amino acids in the database
    * 
-   * @throws FastaFormatException
+   * @throws FastaFormatException AminoAcids can not be initialized
    */
   private static void initMapAminoAcid() throws FastaFormatException {
     try {
@@ -231,17 +238,17 @@ public final class FastaFormat {
   /**
    * method to fill a peptide polymer with its elements (MonomerNotationUnits)
    * 
-   * @param fasta
-   * @param entity
+   * @param sequence peptide sequence
+   * @param entity HELMEntity
    * @return PolymerListElements
-   * @throws FastaFormatException
+   * @throws FastaFormatException if the input sequence is not correct
    */
-  protected static PolymerListElements generateElementsOfPeptide(String fasta, HELMEntity entity)
+  protected static PolymerListElements generateElementsOfPeptide(String sequence, HELMEntity entity)
       throws FastaFormatException {
     initMapAminoAcid();
     try {
       PolymerListElements elements = new PolymerListElements(entity);
-      for (Character c : fasta.toCharArray()) {
+      for (Character c : sequence.toCharArray()) {
         if (aminoacids.get(c.toString()) != null) {
           elements.addMonomerNotation(c.toString());
         }
@@ -260,17 +267,17 @@ public final class FastaFormat {
   /**
    * method to fill a rna polymer with its elements (MonomerNotationUnits)
    * 
-   * @param fasta
-   * @param entity
+   * @param sequence rna sequence
+   * @param entity HELMEntity
    * @return PolymerListElements
-   * @throws FastaFormatException
+   * @throws FastaFormatException if the input sequence is not correct
    */
-  protected static PolymerListElements generateElementsforRNA(String fasta, HELMEntity entity)
+  protected static PolymerListElements generateElementsforRNA(String sequence, HELMEntity entity)
       throws FastaFormatException {
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();
     PolymerListElements elements = new PolymerListElements(entity);
-    for (Character c : fasta.toCharArray()) {
+    for (Character c : sequence.toCharArray()) {
       /* -> get for each single nucleotide code the contents from the nucleotidefactory */
       try {
         elements.addMonomerNotation(nucleotides.get(c.toString()));
@@ -308,9 +315,10 @@ public final class FastaFormat {
   /**
    * method to generate Fasta for peptide polymers
    * 
-   * @param polymers
-   * @return
-   * @throws FastaFormatException
+   * @param polymers List of peptide PolymerNotation
+   * @return generated FASTA
+   * @throws FastaFormatException if the peptides can not be transformed to
+   *           FASTA
    */
   protected static String generateFastaFromPeptidePolymer(List<PolymerNotation> polymers) throws FastaFormatException {
     initMapAminoAcid();
@@ -334,8 +342,8 @@ public final class FastaFormat {
   /**
    * method to generate Fasta for a list of peptide monomers
    * 
-   * @param monomers
-   * @return
+   * @param monomers peptide monomers
+   * @return Fasta sequence
    */
   protected static String generateFastaFromPeptide(List<Monomer> monomers) {
     StringBuilder fasta = new StringBuilder();
@@ -348,9 +356,10 @@ public final class FastaFormat {
   /**
    * method to generate Fasta for rna polymers
    * 
-   * @param polymers
-   * @return
-   * @throws FastaFormatException
+   * @param polymers list of rna PolymerNotation
+   * @return Fasta
+   * @throws FastaFormatException if the polymers can not be transformed into
+   *           FASTA
    */
   protected static String generateFastaFromRNAPolymer(List<PolymerNotation> polymers) throws FastaFormatException {
     StringBuilder fasta = new StringBuilder();
@@ -375,7 +384,7 @@ public final class FastaFormat {
    * method to generate Fasta for a list of rna monomers
    * 
    * @param listMonomers
-   * @return
+   * @return sequence
    */
   protected static String generateFastaFromRNA(List<Monomer> monomers) {
     StringBuilder fasta = new StringBuilder();
@@ -390,16 +399,13 @@ public final class FastaFormat {
   }
 
   /**
-   * method to generate for the whole HELM2Notation fasta-files -> it contains fasta for all rna and peptides
+   * method to generate for the whole HELM2Notation fasta-files -> it contains
+   * fasta for all rna and peptides
    * 
-   * @param helm2Notation2
-   * @return
-   * @throws FastaFormatException
-   * @throws CTKException
-   * @throws HELM2HandledException
-   * @throws JDOMException
-   * @throws IOException
-   * @throws MonomerException
+   * @param helm2Notation2 HELM2Notation
+   * @return FASTA-File-Format
+   * @throws FastaFormatException if the HELM2Notation can not be transformed to
+   *           FASTA
    */
   protected static String generateFasta(HELM2Notation helm2Notation2) throws FastaFormatException {
     List<PolymerNotation> peptides = new ArrayList<PolymerNotation>();
@@ -422,7 +428,8 @@ public final class FastaFormat {
   }
 
   /**
-   * method to convert all Peptides and RNAs into the analogSequence
+   * method to convert all Peptides and RNAs into the natural analogSequence and
+   * generates
    * 
    * @param helm2Notation
    * @throws org.helm.notation2.parser.exceptionparser.NotationException

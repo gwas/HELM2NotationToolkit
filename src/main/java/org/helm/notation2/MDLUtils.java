@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * OutputFiles
+ * MDLUtils, class to generate MDL for a HELM molecule
  * 
  * @author hecht
  */
@@ -21,6 +21,15 @@ public final class MDLUtils {
   private static final Logger LOG = LoggerFactory.getLogger(MDLUtils.class);
 
 
+  /**
+   * method to generate MDL for a HELM molecule
+   * 
+   * @param helm2notation input HELM2Notation
+   * @return MDL
+   * @throws BuilderMoleculeException if the helm molecule can not be built
+   * @throws CTKException
+   * @throws IOException
+   */
   protected static String generateMDL(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
     String smiles = SMILES.getSMILESForAll(helm2notation);
     return Chemistry.getInstance().getManipulator().convert(smiles, AbstractChemistryManipulator.StType.SMILES);

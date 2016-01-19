@@ -348,6 +348,19 @@ public class WebService {
   }
 
 
+  /**
+   * method to generate for the whole HELMNotation the molecule
+   * 
+   * @param notation HELM string
+   * @return generated molecule image in byte[]
+   * @throws ParserException if the HELM string is not parsable
+   * @throws ValidationException if the HELM string is not valid
+   * @throws BuilderMoleculeException if the molecule can't be built
+   * @throws CTKException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws MonomerException if
+   */
   public byte[] generateImageForHELMMolecule(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, IOException, JDOMException, MonomerException {
     byte[] result = Images.generateImageHELMMolecule(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);

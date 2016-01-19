@@ -31,7 +31,7 @@ import java.util.Map;
 
 
 /**
- * InterConnections
+ * InterConnections, class to save the interconnections of a HELM
  * 
  * @author hecht
  */

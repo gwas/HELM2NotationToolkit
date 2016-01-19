@@ -36,7 +36,7 @@ import org.helm.chemtoolkit.ManipulatorFactory;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
 
 /**
- * Chemistry
+ * Chemistry, singleton class to define which Chemistry-Plugin is used
  * 
  * @author hecht
  */
@@ -53,6 +53,9 @@ public class Chemistry {
 
   private static AbstractChemistryManipulator manipulator;
 
+  /**
+   * 
+   */
   private Chemistry() {
     readConfigFile();
     setManipulatorType();
@@ -64,10 +67,9 @@ public class Chemistry {
   }
 
   /**
-   * 
+   * method to define the ManipulatorType
    */
   private void setManipulatorType() {
-    System.out.println(chemistry);
     if (chemistry.equals("MARVIN")) {
       type = ManipulatorFactory.ManipulatorType.MARVIN;
     }
@@ -80,7 +82,7 @@ public class Chemistry {
   }
 
   /**
-   * 
+   * method to read the configuration file
    */
   private void readConfigFile() {
     File configFile = new File(CONFIG_FILE_PATH);
@@ -99,6 +101,9 @@ public class Chemistry {
     }
   }
 
+  /**
+   * method to set the chemistry-plugin to the default one (MARVIN)
+   */
   private void resetConfigToDefault(){
     chemistry = "MARVIN";
     try {
@@ -106,14 +111,17 @@ public class Chemistry {
       writer.println(CHEMISTRY_PLUGIN + "=" + chemistry);
       writer.close();
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
+  /**
+   * method to get the singleton instance
+   * 
+   * @return Chemistry
+   */
   public static Chemistry getInstance() {
     if (Chemistry._instance == null) {
       Chemistry._instance = new Chemistry();
@@ -121,10 +129,20 @@ public class Chemistry {
     return Chemistry._instance;
   }
 
+  /**
+   * method to get the Manipulator
+   * 
+   * @return AbstractChemistryManipulator
+   */
   public synchronized AbstractChemistryManipulator getManipulator() {
     return manipulator;
   }
 
+  /**
+   * method to get the ManipulatorType
+   * 
+   * @return ManipulatorType
+   */
   public ManipulatorType getManipulatorType() {
     return type;
   }

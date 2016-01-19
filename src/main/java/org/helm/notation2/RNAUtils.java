@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * RNAUtils
+ * RNAUtils, class to provide methods for rna polymer
  * 
  * @author hecht
  */
@@ -67,6 +67,17 @@ public class RNAUtils {
     complementMap.put("X", "X");
   }
 
+  /**
+   * @param sequence
+   * @return
+   * @throws NotationException
+   * @throws FastaFormatException
+   * @throws HELM2HandledException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws org.helm.notation.NotationException
+   * @throws RNAUtilsException
+   */
   protected static ContainerHELM2 getSirnaNotation(String sequence) throws NotationException, FastaFormatException,
       HELM2HandledException, IOException, JDOMException,
       org.helm.notation.NotationException,
@@ -99,6 +110,12 @@ public class RNAUtils {
    * @return sequence
    * @throws RNAUtilsException if the polymer is not a RNA/DNA
    * @throws HELM2HandledException if the polymer can not be downcasted
+   */
+  /**
+   * @param polymer
+   * @return
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
    */
   protected static String getReverseSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
     StringBuilder sb = new StringBuilder(getNaturalAnalogSequence(polymer));

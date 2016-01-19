@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * builds for the HELMNotation Molecules
+ * class to build molecules for the HELMNotation
  * 
  * @author hecht
  */
@@ -61,9 +61,17 @@ public final class BuilderMolecule {
 
 
 
+  /**
+   * method to build a molecule for a single polymer
+   * 
+   * @param polymernotation a single polymer
+   * @return molecule for the given single polymer
+   * @throws BuilderMoleculeException if the polymer type is BLOB or unknown
+   * @throws HELM2HandledException if the polymer contains HELM2 features
+   */
   protected static RgroupStructure buildMoleculefromSinglePolymer(PolymerNotation
  polymernotation) throws BuilderMoleculeException, HELM2HandledException {
-
+    LOG.info("Build molecule for single Polymer " + polymernotation.getPolymerID().getID());
  /* Case 1: BLOB -> throw exception */
     if (polymernotation.getPolymerID() instanceof BlobEntity) {
       LOG.error("Molecule can't be build for BLOB");
@@ -91,15 +99,17 @@ public final class BuilderMolecule {
  }
 
   /**
-   * method to build molecules for the HELMNotation
+   * method to build molecules for the whole HELMNotation
    * 
-   * @param polymers
-   * @param connections
+   * @param polymers all polymers of the HELMNotation
+   * @param connections all connections of the HELMNotation
    * @return list of built molecules
-   * @throws BuilderMoleculeException
+   * @throws BuilderMoleculeException if HELM2 features were contained
    */
   public static List<AbstractMolecule> buildMoleculefromPolymers(List<PolymerNotation> polymers,
       List<ConnectionNotation> connections) throws BuilderMoleculeException {
+
+    LOG.info("Building process for the all polymers is starting");
     Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
 
     Map<String, RgroupStructure> mapMolecules = new HashMap<String, RgroupStructure>();
@@ -112,6 +122,7 @@ public final class BuilderMolecule {
 
     AbstractMolecule molecule = null;
     /* Build for every single polymer a single molecule */
+    LOG.info("Build for each polymer a single molecule");
     for (PolymerNotation polymer : polymers) {
       map.put(polymer.getPolymerID().getID(),polymer);
         try {
@@ -126,6 +137,7 @@ public final class BuilderMolecule {
 
 
     /* Build interconnections between single molecules */
+    LOG.info("Connect the single molecules together");
     for (ConnectionNotation connection : connections) {
       /*Group Id -> throw exception*/
       if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
@@ -215,11 +227,13 @@ public final class BuilderMolecule {
   /**
    * method to build a molecule from a chemical component
    * 
-   * @param validMonomers all valid Monomers of the chemical component
+   * @param validMonomers all valid monomers of the chemical component
    * @return Built Molecule
-   * @throws BuilderMoleculeException
+   * @throws BuilderMoleculeException if the polymer contains more than one
+   *           monomer or if the molecule can't be built
    */
   private static RgroupStructure buildMoleculefromCHEM(String id, List<Monomer> validMonomers) throws BuilderMoleculeException {
+    LOG.info("Build molecule for chemical component");
     /* a chemical molecule should only contain one monomer */
     if (validMonomers.size() == 1) {
       try {
@@ -261,6 +275,14 @@ public final class BuilderMolecule {
     }
   }
 
+  /**
+   * method to generate for a molecule the RgroupMap: Map of unused Rgroups
+   * 
+   * @param detail name of the molecule
+   * @param molecule input Molecule
+   * @return generated RgroupMap
+   * @throws CTKException
+   */
   private static Map<String, IAtomBase> generateRgroupMap(String detail, AbstractMolecule molecule) throws CTKException {
     Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
     for (Map.Entry<String, IAtomBase> e : molecule.getRgroups().entrySet()) {
@@ -273,9 +295,10 @@ public final class BuilderMolecule {
   /**
    * method to build a molecule from a Peptide or RNA component
    * 
-   * @param validMonomers
-   * @return Molecule
-   * @throws BuilderMoleculeException
+   * @param id
+   * @param validMonomers all valid monomers of the component
+   * @return generated molecule
+   * @throws BuilderMoleculeException if the molecule can't be built
    */
   private static RgroupStructure buildMoleculefromPeptideOrRNA(String id, List<Monomer> validMonomers) throws BuilderMoleculeException {
     try{
@@ -291,6 +314,7 @@ public final class BuilderMolecule {
       int prev = 1;
 
     if (validMonomers.size() == 0 || validMonomers == null) {
+        LOG.error("Polymer (Peptide/RNA) has no contents");
       throw new BuilderMoleculeException("Polymer (Peptide/RNA) has no contents");
     }
       int i = 0;
@@ -357,6 +381,7 @@ public final class BuilderMolecule {
       return first;
     }
  catch (IOException | CTKException e) {
+      LOG.error("Polymer(Peptide/RNA) molecule can't be built " + e.getMessage());
       throw new BuilderMoleculeException("Polymer(Peptide/RNA) molecule can't be built " + e.getMessage());
     }
   }
@@ -364,8 +389,8 @@ public final class BuilderMolecule {
   /**
    * method to generate the AttachmentList given a list of attachments
    * 
-   * @param listAttachments
-   * @return AttachmentList
+   * @param listAttachments input list of Attachments
+   * @return AttachmentList generated AttachmentList
    */
   private static AttachmentList generateAttachmentList(List<Attachment> listAttachments) {
     AttachmentList list = new AttachmentList();
@@ -377,11 +402,11 @@ public final class BuilderMolecule {
   }
 
   /**
-   * method to merge all unused rgroups into the molecule
+   * method to merge all unused rgroups into a molecule
    * 
-   * @param molecule
-   * @return Molecule
-   * @throws BuilderMoleculeException
+   * @param molecule input molecule
+   * @return molecule with all merged unused rgroups
+   * @throws BuilderMoleculeException if the molecule can't be built
    */
   protected static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws BuilderMoleculeException {
     try{
@@ -407,9 +432,9 @@ public final class BuilderMolecule {
   /**
    * method to build a molecule for a given monomer
    * 
-   * @param monomer
-   * @return Molecule
-   * @throws BuilderMoleculeException
+   * @param monomer input monomer
+   * @return generated molecule for the given monomer
+   * @throws BuilderMoleculeException if the monomer can't be built
    */
   protected static AbstractMolecule getMoleculeForMonomer(Monomer monomer) throws BuilderMoleculeException {
     String smiles = monomer.getCanSMILES();

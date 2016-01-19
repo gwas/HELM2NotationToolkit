@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * ExtinctionCoefficient
+ * ExtinctionCoefficient class to calculate the extinction coefficient
  * 
  * @author hecht
  */
@@ -53,6 +53,7 @@ public class ExtinctionCoefficient {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(ExtinctionCoefficient.class);
+
   private static final int RNA_UNIT_TYPE = 1;
 
   private static final int PEPTIDE_UNIT_TYPE = 2;

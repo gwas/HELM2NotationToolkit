@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.notation.MonomerException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
@@ -38,8 +37,6 @@ import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
-import org.helm.notation2.parser.notation.grouping.GroupingAmbiguity;
-import org.helm.notation2.parser.notation.grouping.GroupingElement;
 import org.helm.notation2.parser.notation.grouping.GroupingNotation;
 import org.helm.notation2.parser.notation.polymer.BlobEntity;
 import org.helm.notation2.parser.notation.polymer.ChemEntity;
@@ -106,16 +103,6 @@ public class ContainerHELM2 {
   }
   
 
-
-
-
-
-
-  /* BuilderMolecule */
-  public List<AbstractMolecule> getStructure() {
-    return new ArrayList<AbstractMolecule>();
-  }
-
   /**
    * method to validate all notations objects
    * 
@@ -149,7 +136,7 @@ public class ContainerHELM2 {
   /**
    * method to get all edge connections of this object
    * 
-   * @return
+   * @return all edge connections of this object
    */
   public List<ConnectionNotation> getAllEdgeConnections() {
     List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
@@ -164,7 +151,7 @@ public class ContainerHELM2 {
   /**
    * method to get all base pair connections of this object
    * 
-   * @return
+   * @return all base pair connections of this object
    */
   public List<ConnectionNotation> getAllBasePairConnections() {
     List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
@@ -180,7 +167,7 @@ public class ContainerHELM2 {
   /**
    * method to get all annotations of this object
    * 
-   * @return
+   * @return all annotation of this object
    */
   public List<AnnotationNotation> getAllAnnotations() {
     return helm2notation.getListOfAnnotations();
@@ -246,10 +233,12 @@ public class ContainerHELM2 {
     return blobPolymers;
   }
 
-
-
-
-
+  /**
+   * method to add a new HELMNotation to the existing one
+   * 
+   * @param newHELM2Notation new HELMNotation
+   * @throws NotationException if the HELMNotation is not valid
+   */
   public void addHELM2notation(HELM2Notation newHELM2Notation) throws NotationException {
     Map<String, String> mapIds = generateMapChangeIds(newHELM2Notation.getPolymerAndGroupingIDs());
     /* method to merge the new HELM2Notation into the existing one */
@@ -263,10 +252,15 @@ public class ContainerHELM2 {
     section3(newHELM2Notation.getListOfGroupings(), mapIds);
     /* section 4 */
     section4(newHELM2Notation.getListOfAnnotations(), mapIds);
-
-
   }
 
+
+  /**
+   * method to generate a Map of old ids with the new ids
+   * 
+   * @param newIDs
+   * @return
+   */
   private Map<String, String> generateMapChangeIds(List<String> newIDs) {
     Map<String, String> mapIds = new HashMap<String, String>();
     List<String> oldIds = helm2notation.getPolymerAndGroupingIDs();
@@ -291,6 +285,13 @@ public class ContainerHELM2 {
 
   }
 
+  /**
+   * method to add PolymerNotations to the existent
+   * 
+   * @param polymers PolymerNotation
+   * @param mapIds Map of old and new Ids
+   * @throws NotationException
+   */
   private void section1(List<PolymerNotation> polymers, Map<String, String> mapIds) throws NotationException {
     for (PolymerNotation polymer : polymers) {
       if (mapIds.containsKey(polymer.getPolymerID().getID())) {
@@ -307,6 +308,13 @@ public class ContainerHELM2 {
     
   }
 
+  /**
+   * method to add ConnectionNotation to the existent
+   * 
+   * @param connections ConnectionNotatoin
+   * @param mapIds Map of old and new Ids
+   * @throws NotationException
+   */
   private void section2(List<ConnectionNotation> connections, Map<String, String> mapIds) throws NotationException {
 
     for (ConnectionNotation connection : connections) {
@@ -332,6 +340,13 @@ public class ContainerHELM2 {
 
   }
 
+  /**
+   * method to add groupings to the existent grouping section
+   * 
+   * @param groupings new GroupingNotations
+   * @param mapIds map of old and new Ids
+   * @throws NotationException
+   */
   private void section3(List<GroupingNotation> groupings, Map<String, String> mapIds) throws NotationException {
 
     for (GroupingNotation grouping : groupings) {
@@ -347,6 +362,12 @@ public class ContainerHELM2 {
     }
   }
 
+  /**
+   * method to add annotations to the existent annotation section
+   * 
+   * @param annotations new AnnotationNotations
+   * @param mapIds Map of old and new Ids
+   */
   private void section4(List<AnnotationNotation> annotations, Map<String, String> mapIds) {
     for (AnnotationNotation annotation : annotations) {
       String notation = annotation.getAnnotation();
@@ -356,10 +377,11 @@ public class ContainerHELM2 {
   }
 
   /**
+   * method to change the ids in a text according to map
    * 
-   * @param text
-   * @param mapIds
-   * @return
+   * @param text input text
+   * @param mapIds Map of old Id's value and new Id's
+   * @return text with changed ids
    */
   private String changeIDs(String text, Map<String, String> mapIds) {
     String result = text;
@@ -368,20 +390,6 @@ public class ContainerHELM2 {
     }
     return result;
   }
-
-
-
-
-  public void replaceMonomer() {
-    
-  }
-
-
-
-
-
-
-
 
   public void getNotationByReplacingSMILES() {
     /* Go for every MonomerNotation */

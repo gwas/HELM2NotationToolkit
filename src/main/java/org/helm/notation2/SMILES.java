@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * SMILES
+ * SMILES class to generate SMILES
  * 
  * 
  * @author hecht
@@ -51,9 +51,9 @@ public final class SMILES {
   /**
    * method to generate smiles for the whole HELMNotation
    * 
-   * @param helm2notation
-   * @return
-   * @throws BuilderMoleculeException
+   * @param helm2notation input HELMNotation
+   * @return smiles for the whole HELMNotation
+   * @throws BuilderMoleculeException if the molecule can't be built
    * @throws CTKException
    */
   protected static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
@@ -62,7 +62,7 @@ public final class SMILES {
     List<AbstractMolecule> molecules =
         BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
     /* get for every molecule the smiles */
-    LOG.debug("Built single molecule(s) ");
+    LOG.debug("Built single molecule(s)");
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
       molecule = BuilderMolecule.mergeRgroups(molecule);
@@ -70,21 +70,21 @@ public final class SMILES {
     }
     sb.setLength(sb.length() - 1);
     return sb.toString();
-
   }
 
   /**
    * method to generate canonical smiles for the whole HELMNotation
    * 
-   * @param helm2notation
-   * @return canonical smiles
-   * @throws BuilderMoleculeException
+   * @param helm2notation input HELMNotation
+   * @return canonical smiles for the whole HELMNotation
+   * @throws BuilderMoleculeException if the molecule can't be built
    * @throws CTKSmilesException
    * @throws CTKException
    */
   protected static String getCanonicalSmilesForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKSmilesException, CTKException {
+    LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
-
+    LOG.debug("Built single molecule(s)");
     /* get for every molecule the canonical smiles */
     StringBuffer sb = new StringBuffer();
     for (AbstractMolecule molecule : molecules) {
