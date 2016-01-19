@@ -150,9 +150,9 @@ public final class xHELM {
   }
 
   /**
-   * method to add the monomer if it is an adhoc monomer
+   * method to add the monomer to the database if it is an adhoc monomer
    * 
-   * @param monomerNotation
+   * @param monomerNotation MonomerNotation
    * @throws JDOMException
    * @throws IOException
    */

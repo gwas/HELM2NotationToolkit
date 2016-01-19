@@ -37,12 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * MoleculeInformation
+ * MoleculeInformation, class to
  * 
  * @author hecht
  */
 public final class MoleculeInformation {
   private static HELM2Notation helm2notation;
+
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(MoleculeInformation.class);
 
@@ -52,14 +53,14 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException
    */
   private static List<AbstractMolecule> buildMolecule() throws BuilderMoleculeException {
-
     return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
   }
 
   /**
    * method to get the molecular weight for the whole HELM
    * 
-   * @return MolecularWeight
+   * @param helm2notation input HELM2Notation
+   * @return MolecularWeight of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
    */
@@ -79,8 +80,8 @@ public final class MoleculeInformation {
   /**
    * method to get the ExactMass for the whole HELM
    * 
-   * @param helm2notation
-   * @return ExactMass
+   * @param helm2notation input HELM2Notation
+   * @return ExactMass of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
    */
@@ -98,8 +99,8 @@ public final class MoleculeInformation {
   /**
    * method to get the MolecularFormular for the whole HELM
    * 
-   * @param helm2notation
-   * @return MolecularFormular
+   * @param helm2notation input HELM2Notation
+   * @return MolecularFormular of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
    */
@@ -129,8 +130,8 @@ public final class MoleculeInformation {
   /**
    * method to get a Molecule for the whole HELM
    * 
-   * @param helm2notation
-   * @return Molecule
+   * @param helm2notation input HELM2Notation;
+   * @return Molecule molecule of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    */
   protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
@@ -138,8 +139,16 @@ public final class MoleculeInformation {
     return buildMolecule();
   }
 
-
-
+  /**
+   * method to get for every atom the number of occurences
+   * 
+   * @param molecule input Moleucle
+   * @param mapAtoms Map of atoms with the number its occurences
+   * @return Map of atoms with the number of its occurences
+   * @throws BuilderMoleculeException if the Rgroups of the molecule can not be
+   *           merged into it
+   * @throws CTKException
+   */
   private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws BuilderMoleculeException, CTKException {
     molecule = BuilderMolecule.mergeRgroups(molecule);
     String formula = Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula();

@@ -46,12 +46,14 @@ public final class MethodsForContainerHELM2 {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(MethodsForContainerHELM2.class);
+  
   /**
-   * method to get all HELM1 valid MonomerNotations Only on these monomers required HELM1 functions are performed
+   * method to get all HELM1 valid MonomerNotations Only on these monomers
+   * required HELM1 functions are performed
    * 
-   * @param monomerNotations
-   * @return
-   * @throws HELM2HandledException
+   * @param monomerNotations List of MonomerNotation
+   * @return List of Monomer
+   * @throws HELM2HandledException if the HELM2 features were there
    */
   public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations)
       throws HELM2HandledException {
@@ -85,9 +87,9 @@ public final class MethodsForContainerHELM2 {
    * method to get all HELM1 valid MonomerNotations Only on these monomers
    * required HELM1 functions are performed
    * 
-   * @param monomerNotations
-   * @return
-   * @throws HELM2HandledException
+   * @param monomerNotations List of MonomerNotation
+   * @return List of Monomer
+   * @throws HELM2HandledException if HELM2 features are there
    */
   public static List<Monomer> getListOfHandledMonomersOnlyBase(List<MonomerNotation> monomerNotations)
       throws HELM2HandledException {
@@ -124,8 +126,8 @@ public final class MethodsForContainerHELM2 {
   /**
    * method to get all MonomerNotations for all given polymers
    * 
-   * @param polymers
-   * @return
+   * @param polymers List of PolymerNotation
+   * @return List of MonomerNotation
    */
   protected static List<MonomerNotation> getListOfMonomerNotation(List<PolymerNotation> polymers) {
     List<MonomerNotation> items = new ArrayList<MonomerNotation>();
@@ -140,12 +142,12 @@ public final class MethodsForContainerHELM2 {
   /**
    * method to get all monomers for all MonomerNotations
    * 
-   * @param monomerNotations
-   * @return
-   * @throws MonomerException
+   * @param monomerNotations List of MonomerNotation
+   * @return List of Monomer
+   * @throws MonomerException if the Monomer is not valid
    * @throws IOException
    * @throws JDOMException
-   * @throws HELM2HandledException
+   * @throws HELM2HandledException if HELM2 features are there
    * @throws CTKException
    */
   protected static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException,
@@ -161,9 +163,9 @@ public final class MethodsForContainerHELM2 {
   /**
    * method to get all polymers for one specific polymer type
    * 
-   * @param str
-   * @param polymers
-   * @return
+   * @param str specific polymer type
+   * @param polymers List of PolymerNotation
+   * @return List of PolymerNotation with the specific type
    */
   protected static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
     List<PolymerNotation> list = new ArrayList<PolymerNotation>();
@@ -176,32 +178,12 @@ public final class MethodsForContainerHELM2 {
   }
 
   /**
-   * method to check if the monomer is specific
-   * 
-   * @param not
-   * @param position
-   * @return true if the monomer is specific, false otherwise
-   */
-  // protected static boolean isMonomerSpecific(PolymerNotation not, int
-  // position) {
-
-    // if (not.getPolymerElements().getListOfElements().get(position - 1)
-    // instanceof MonomerNotationUnit) {
-    // return true;
-    // }
-    // else {
-    // return true;
-    // }
-  // return true;
-  // }
-
-  /**
    * method to get the monomer from the database!
    * 
-   * @param type
-   * @param id
-   * @return
-   * @throws MonomerException
+   * @param type Type of the Monomer
+   * @param id Id of the Monomer
+   * @return Monomer
+   * @throws MonomerException if the desired monomer is not in the database
    */
   protected static Monomer getMonomer(String type, String id) throws MonomerException {
     try {
@@ -241,9 +223,10 @@ public final class MethodsForContainerHELM2 {
   }
 
   /**
-   * method to get all edge connections of this object
+   * method to get all edge connections
    * 
-   * @return
+   * @param connections
+   * @return List of all edge ConnectionNotation
    */
   protected static List<ConnectionNotation> getAllEdgeConnections(List<ConnectionNotation> connections) {
     List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
@@ -256,9 +239,10 @@ public final class MethodsForContainerHELM2 {
   }
 
   /**
-   * method to get all base pair connections of this object
+   * * method to get all base pair connections
    * 
-   * @return
+   * @param connections List of ConnectionNotation
+   * @return List of all base pair ConnectionNotation
    */
   protected static List<ConnectionNotation> getAllBasePairConnections(List<ConnectionNotation> connections) {
     List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();

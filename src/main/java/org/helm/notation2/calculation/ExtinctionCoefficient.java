@@ -147,6 +147,13 @@ public class ExtinctionCoefficient {
     return RNA_UNIT_TYPE;
   }
 
+  /**
+   * method to calculate the extinction coefficient for the whole HELM molecule
+   * 
+   * @param helm2container input ContainerHELM2
+   * @return extinction coefficient
+   * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
+   */
   public float calculate(ContainerHELM2 helm2container) throws ExtinctionCoefficientException {
     LOG.debug("ExtinctionCalculation is starting");
     int unitType = 1;
@@ -182,9 +189,11 @@ public class ExtinctionCoefficient {
   }
 
   /**
-   * @param notation
-   * @return
-   * @throws CalculationException
+   * method to calculate the extinction coefficient for rna
+   * 
+   * @param monomers all Monomers of the RNA/DNA
+   * @return extinction coefficient
+   * @throws CalculationException if the rna contains not valid nucleotides
    * @throws IOException
    */
   private static float calculateExtinctionFromRNA(List<Monomer> monomers) throws CalculationException, IOException {
@@ -229,10 +238,12 @@ public class ExtinctionCoefficient {
 
 
   /**
-   * @param notation
-   * @return
+   * method to calculate the extinction coefficient for peptide
+   * 
+   * @param monomers all monomers of the peptide
+   * @return extinction coefficient
    * @throws IOException
-   * @throws HELM2HandledException
+   * @throws HELM2HandledException if HELM2 features were there
    */
   private static float calculateExtinctionFromPeptide(List<Monomer> monomers) throws IOException, HELM2HandledException {
     if (monomers.isEmpty()) {

@@ -126,7 +126,12 @@ public final class HELM1Utils {
     firstSection = notation.toString();
   }
 
-  /* connection section */
+  /**
+   * method to transform the second and third section (connection + group
+   * section) to HELM1-Format
+   * 
+   * @throws HELM1ConverterException if it can not be downcasted to HELM1
+   */
   private static void setStandardHELMSecondSectionAndThirdSection() throws HELM1ConverterException {
     StringBuilder notationSecond = new StringBuilder();
     StringBuilder notationThird = new StringBuilder();
@@ -151,8 +156,9 @@ public final class HELM1Utils {
     thirdSection = notationThird.toString();
   }
 
-
-  /* annotation section : will be the same of the HELM2 section */
+  /**
+   * method to transform the fourth section into HELM1-Format
+   */
   private static void setStandardHELMFourthSection() {
     StringBuilder sb = new StringBuilder();
 
@@ -165,6 +171,19 @@ public final class HELM1Utils {
     fourthSection = sb.toString();
   }
 
+  /**
+   * method to convert the first section into canonical first section
+   * 
+   * @return
+   * @throws CTKSmilesException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws CTKException
+   * @throws HELM1ConverterException
+   * @throws ClassNotFoundException
+   * @throws NotationException
+   */
   private static Map<String, String> setCanonicalHELMFirstSection() throws CTKSmilesException, MonomerException, IOException, JDOMException, CTKException,
       HELM1ConverterException, ClassNotFoundException, NotationException {
     Map<String, String> idLabelMap = new HashMap<String, String>();
@@ -302,7 +321,7 @@ public final class HELM1Utils {
    * @throws CTKException
    */
 
-  /* Methode muss umgeschrieben werden !!! */
+  /* method has to be changed !!! */
   private static Map<String, String> findAdHocMonomers(String elements, String type) throws MonomerLoadingException, NotationException, CTKException {
     /*find adHocMonomers*/
     Map<String, String> listMatches = new HashMap<String, String>();

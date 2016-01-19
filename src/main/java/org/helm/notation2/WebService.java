@@ -66,6 +66,7 @@ public class WebService {
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(WebService.class);
 
+
   private Element getXHELMRootElement(String resource) throws JDOMException,
       IOException {
 
@@ -76,6 +77,14 @@ public class WebService {
     return doc.getRootElement();
   }
 
+  /**
+   * method to combine the new MonomerStore to the existing one
+   * 
+   * @param monomerStore MonomerStore
+   * @throws MonomerLoadingException
+   * @throws IOException
+   * @throws MonomerException
+   */
   private void updateMonomerStore(MonomerStore monomerStore) throws MonomerLoadingException, IOException, MonomerException {
     for (Monomer monomer : monomerStore.getAllMonomersList()) {
       MonomerFactory.getInstance().getMonomerStore().addNewMonomer(monomer);
@@ -85,10 +94,11 @@ public class WebService {
   }
 
   /**
-   * method to read the HELM string, the HELM can be in version 1 or 2
+   * method to read the HELM string, the HELM can be in version 1 or 2, or in
+   * Xhelm format
    * 
-   * @param notation
-   * @return
+   * @param notation HELM input
+   * @return ContainerHELM2
    * @throws ParserException
    * @throws IOException
    * @throws JDOMException
@@ -132,7 +142,7 @@ public class WebService {
   /**
    * method to validate the input HELM-String
    * 
-   * @param helm
+   * @param helm HELM input
    * @throws ParserException
    * @throws ValidationException
    * @throws MonomerException
@@ -158,6 +168,16 @@ public class WebService {
     }
   }
 
+  /**
+   * method to validate the input HELM-String
+   * 
+   * @param helm input HELM-string
+   * @throws ParserException
+   * @throws ValidationException
+   * @throws JDOMException
+   * @throws IOException
+   * @throws MonomerException
+   */
   public void validateHELM(String helm) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
     validate(helm);
     setMonomerFactoryToDefault(helm);
@@ -166,8 +186,8 @@ public class WebService {
   /**
    * method to convert the input-HELM into a canonical HELM
    * 
-   * @param notation
-   * @return
+   * @param notation input HELM
+   * @return canonical HELM
    * @throws HELM1FormatException
    * @throws ParserException
    * @throws ValidationException
@@ -186,8 +206,8 @@ public class WebService {
   /**
    * method to convert the input-HELM into a standardHELM
    * 
-   * @param notation
-   * @return
+   * @param notation input HELM
+   * @return standard HELM
    * @throws HELM1FormatException
    * @throws ParserException
    * @throws ValidationException
@@ -206,8 +226,8 @@ public class WebService {
   /**
    * method to calculate the ExtinctionCoefficient from an input-HELM
    * 
-   * @param notation
-   * @return
+   * @param notation input HELM
+   * @return extinction coefficient of the input HELM
    * @throws ParserException
    * @throws ValidationException
    * @throws ExtinctionCoefficientException

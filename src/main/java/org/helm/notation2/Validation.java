@@ -213,9 +213,9 @@ public class Validation {
   }
 
   /**
-   * method to check if the described connection is specific
+   * method to check if the given connection is specific
    * 
-   * @param connectionNotation
+   * @param connectionNotation input ConnectionNotation
    * @return true if the described connection is specific, false otherwise
    */
   private static boolean isConnectionSpecific(ConnectionNotation connectionNotation) {
@@ -235,7 +235,7 @@ public class Validation {
    * @param sourceUnit
    * @param e HELMEntity of the sourceUnit
    * @param containerhelm2 input ContainerHELM2
-   * @return occurences of the spe
+   * @return occurences of the MonomerNotation
    * @throws org.helm.notation2.parser.exceptionparser.NotationException
    * @throws IOException
    * @throws AttachmentException
@@ -300,9 +300,9 @@ public class Validation {
   }
 
   /**
-   * method to validate every GroupNotation from the Notation objects
+   * method to validate every GroupNotation of the Notation objects
    * 
-   * @param containerhelm2
+   * @param containerhelm2 ContainerHELM2
    * @return true if the grouping is valid, false otherwise
    */
   protected static boolean validateGrouping(ContainerHELM2 containerhelm2) {
@@ -329,7 +329,8 @@ public class Validation {
   /**
    * method to check if all existent polymer ids are unique
    * 
-   * 
+   * @param containerhelm2 ContainerHELM2
+   * @return true if all polymers are unique, false otherwise
    */
   protected static boolean validateUniquePolymerIDs(ContainerHELM2 containerhelm2) {
     List<String> listPolymerIDs =
@@ -349,8 +350,8 @@ public class Validation {
   /**
    * method to get the number of all existing monomers
    * 
-   * @param helm2notation
-   * @return
+   * @param helm2notation HELM2Notation
+   * @return count of monomers
    */
   protected static int getMonomerCountAll(HELM2Notation helm2notation) {
     List<PolymerNotation> listPolymers = helm2notation.getListOfPolymers();
@@ -364,27 +365,27 @@ public class Validation {
   /**
    * method to get the number of all existing monomers from one polmyer
    * 
-   * @param notation
-   * @return
+   * @param polymer PolymerNotation
+   * @return monomer count for one given polymer
    */
-  private static int getMonomerCount(PolymerNotation notation) {
+  private static int getMonomerCount(PolymerNotation polymer) {
     int count = 0;
-    for (MonomerNotation element : notation.getPolymerElements().getListOfElements()) {
+    for (MonomerNotation element : polymer.getPolymerElements().getListOfElements()) {
       count += getMonomerCountFromMonomerNotation(element);
     }
     return count;
   }
 
   /**
-   * method to get the number of all existing monomers from one monomernotation
+   * method to get the number of all existing monomers from one MonomerNotation
    * 
-   * @param notation
-   * @return
+   * @param monomerNotation MonomerNotation
+   * @return number of monomers in the given MonomerNotation
    */
-  private static int getMonomerCountFromMonomerNotation(MonomerNotation notation) {
+  private static int getMonomerCountFromMonomerNotation(MonomerNotation monomerNotation) {
     int multiply;
     try {
-      multiply = Integer.parseInt(notation.getCount());
+      multiply = Integer.parseInt(monomerNotation.getCount());
       if (multiply < 1) {
         multiply = 1;
       }
@@ -392,20 +393,20 @@ public class Validation {
       multiply = 1;
     }
 
-    if (notation instanceof MonomerNotationGroup) {
+    if (monomerNotation instanceof MonomerNotationGroup) {
       return 1 * multiply;
     }
-    if (notation instanceof MonomerNotationList) {
+    if (monomerNotation instanceof MonomerNotationList) {
       int count = 0;
-      for (MonomerNotation unit : ((MonomerNotationList) notation).getListofMonomerUnits()) {
+      for (MonomerNotation unit : ((MonomerNotationList) monomerNotation).getListofMonomerUnits()) {
         count += getMonomerCountFromMonomerNotation(unit);
       }
       return count * multiply;
     }
 
-    if (notation instanceof MonomerNotationUnitRNA) {
+    if (monomerNotation instanceof MonomerNotationUnitRNA) {
       int count = 0;
-      for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) notation).getContents()) {
+      for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomerNotation).getContents()) {
         count += getMonomerCountFromMonomerNotation(unit);
       }
       return count * multiply;
@@ -414,12 +415,13 @@ public class Validation {
   }
 
   /**
-   * method to check if the given polymer id exists in the given list of polymer ids
+   * method to check if the given polymer id exists in the given list of polymer
+   * ids
    * 
-   * @param str
-   * @param listPolymerIDs
-   * @return
-   * @throws PolymerIDsException
+   * @param str polymer id
+   * @param listPolymerIDs List of polymer ids
+   * @return true if the polymer id exists, false otherwise
+   * @throws PolymerIDsException if the polymer id does not exist
    */
   protected static void checkExistenceOfPolymerID(String str, List<String> listPolymerIDs) throws PolymerIDsException {
     if (!(listPolymerIDs.contains(str))) {
@@ -431,8 +433,8 @@ public class Validation {
   /**
    * method to check the monomer's validation
    * 
-   * @param str
-   * @param type
+   * @param str monomer id
+   * @param type type of monomer
    * @return true if the monomer is valid, false otherwise
    */
   private static boolean isMonomerValid(String str, String type) {
@@ -510,9 +512,9 @@ public class Validation {
   /**
    * method to check for one connection if the two polymer ids exist
    * 
-   * @param not
-   * @param listPolymerIDs
-   * @throws PolymerIDsException
+   * @param not ConnectionNotation
+   * @param listPolymerIDs List of polymer ids
+   * @throws PolymerIDsException if the polymer ids do not exist
    */
   private static void checkPolymerIDSConnection(ConnectionNotation not, List<String> listPolymerIDs)
       throws PolymerIDsException {
@@ -525,9 +527,9 @@ public class Validation {
    * method to get for one MonomerNotation all valid contained monomers
    * 
    * 
-   * @param not
-   * @return
-   * @throws HELM2HandledException
+   * @param not MonomerNotation
+   * @return List of Monomer
+   * @throws HELM2HandledException if HELM2 features were there
    * @throws MonomerException
    * @throws IOException
    * @throws JDOMException
@@ -577,12 +579,13 @@ public class Validation {
   }
 
   /**
-   * method to get for one MonomerNotation all valid contained monomers
+   * method to get for one MonomerNotation all valid contained monomers. But
+   * only the Base
    * 
    * 
-   * @param not
-   * @return
-   * @throws HELM2HandledException
+   * @param not MonomerNotation
+   * @return List of all base monomers
+   * @throws HELM2HandledException if HELM2 features were there
    * @throws MonomerException
    * @throws IOException
    * @throws JDOMException
@@ -636,9 +639,9 @@ public class Validation {
   /**
    * method to check the attachment point's existence
    * 
-   * @param mon
-   * @param str
-   * @throws AttachmentException
+   * @param mon Monomer
+   * @param str Attachment point
+   * @throws AttachmentException if the Attachment point is not there
    */
   private static void checkAttachmentPoint(Monomer mon, String str) throws AttachmentException {
     if (!(mon.getAttachmentListString().contains(str))) {
@@ -654,13 +657,13 @@ public class Validation {
   /**
    * method to check the validation of the attachment
    * 
-   * @param listMonomersOne
-   * @param listMonomersTwo
-   * @param not
-   * @param containerhelm2
-   * @param interconnection
-   * @param spec
-   * @return
+   * @param listMonomersOne List of Monomers of the source
+   * @param listMonomersTwo List of Monomers of the target
+   * @param not ConnectionNotation
+   * @param containerhelm2 ContainerHELM2
+   * @param interconnection InterConnections
+   * @param spec specificity of the connection
+   * @return true if it valid, false otherwise
    * @throws AttachmentException
    */
   private static void checkAttachment(List<Monomer> listMonomersOne, List<Monomer> listMonomersTwo,
@@ -741,13 +744,13 @@ public class Validation {
   /**
    * method to check for one attachment point the validation
    * 
-   * @param monomers
-   * @param rGroup
-   * @param containerhelm2
-   * @param not
-   * @param interconnection
+   * @param monomers List of monomers
+   * @param rGroup rGroup of the connection
+   * @param containerhelm2 ContainerHELM2
+   * @param not ConnectionNotation
+   * @param interconnection InterConnections
    * @param id
-   * @return
+   * @return true if it is valid, false otherwise
    * @throws AttachmentException
    */
   private static boolean checkSingleAttachment(List<Monomer> monomers, String rGroup, ContainerHELM2 containerhelm2,
@@ -783,6 +786,14 @@ public class Validation {
     return true;
   }
 
+  /**
+   * method to get all monomers for MonomerNotationUnitRNA
+   * 
+   * @param rna MonomerNotationUnitRNA
+   * @param monomerStore MonomerStore
+   * @return List of monomers of the MonomerNotationUnitRNA
+   * @throws HELM2HandledException if HELM2 features were there
+   */
   private static List<Monomer> getMonomersRNA(MonomerNotationUnitRNA rna, MonomerStore monomerStore)
       throws HELM2HandledException {
     try {
@@ -800,6 +811,14 @@ public class Validation {
   }
 
   
+  /**
+   * method to get only the nucleotide base for one MonomerNotationUnitRNA
+   * 
+   * @param rna MonomerNotationUnitRNA
+   * @param monomerStore MonomerStore
+   * @return List of Monomers
+   * @throws HELM2HandledException if HELM2 features were there
+   */
   private static List<Monomer> getMonomersRNAOnlyBase(MonomerNotationUnitRNA rna, MonomerStore monomerStore)
       throws HELM2HandledException {
     try {

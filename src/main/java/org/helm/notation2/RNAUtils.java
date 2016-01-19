@@ -111,23 +111,18 @@ public class RNAUtils {
    * @throws RNAUtilsException if the polymer is not a RNA/DNA
    * @throws HELM2HandledException if the polymer can not be downcasted
    */
-  /**
-   * @param polymer
-   * @return
-   * @throws RNAUtilsException
-   * @throws HELM2HandledException
-   */
   protected static String getReverseSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
     StringBuilder sb = new StringBuilder(getNaturalAnalogSequence(polymer));
     return sb.reverse().toString();
   }
 
   /**
-   * method to generate the natural analog sequence of a rna/dna of a given polymer
+   * method to generate the natural analog sequence of a rna/dna of a given
+   * polymer
    * 
    * @param polymer
    * @return sequence
-   * @throws HELM2HandledException if the polymer can be downcasted to HELM1
+   * @throws HELM2HandledException if the polymer can not be downcasted to HELM1
    * @throws RNAUtilsException if the polymer is not RNA or DNA
    */
   protected static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException,
@@ -172,8 +167,8 @@ public class RNAUtils {
    * method to remove the phosphat of the last nucleotide, if it is there
    * 
    * @param polymer
-   * @throws RNAUtilsException
-   * @throws HELM2HandledException
+   * @throws RNAUtilsException if the polymer is not a rna/dna
+   * @throws HELM2HandledException if the polymer contains HELM2 features
    */
   protected PolymerNotation removeLastP(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
     checkRNA(polymer);
@@ -356,8 +351,8 @@ public class RNAUtils {
     }
   }
 
-  protected static String getNucleotideSequence(PolymerNotation polymer) throws NotationException, HELM2HandledException, org.helm.notation.NotationException, MonomerException, IOException,
-      JDOMException, StructureException, RNAUtilsException {
+  protected static String getNucleotideSequence(PolymerNotation polymer) throws HELM2HandledException, org.helm.notation.NotationException, MonomerException, IOException, JDOMException,
+      StructureException, RNAUtilsException, NotationException {
     List<Nucleotide> nucleotides = getNucleotideList(polymer);
     StringBuffer sb = new StringBuffer();
     int count = 0;

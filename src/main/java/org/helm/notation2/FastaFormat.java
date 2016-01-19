@@ -75,7 +75,7 @@ public final class FastaFormat {
    * ambiguity
    * 
    * @param fasta FastaFile in string format
-   * @return HELM2Notation generated HELMNotation
+   * @return HELM2Notation generated HELM2Notation
    * @throws FastaFormatException if the input is not correct
    */
   protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
