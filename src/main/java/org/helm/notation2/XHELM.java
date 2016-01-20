@@ -35,6 +35,7 @@ import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.MonomerParser;
 import org.helm.notation.tools.xHelmNotationExporter;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
@@ -120,9 +121,10 @@ public final class XHELM {
    * @throws IOException
    * @throws NotationException
    * @throws CTKException
+   * @throws ValidationException
    */
   protected static String getXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException,
-      IOException, JDOMException, NotationException, CTKException {
+      IOException, JDOMException, NotationException, CTKException, ValidationException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 

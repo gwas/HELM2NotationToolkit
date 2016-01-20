@@ -43,6 +43,7 @@ import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.PermutationAndExpansion;
 import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.exceptionparser.HELM1ConverterException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
@@ -71,7 +72,7 @@ public final class HELM1Utils {
   }
 
   /**
-   * method to reproduce a standard HELM1
+   * method to reproduce a standard HELM in HELM1 - Format
    *
    * @param helm2notation HELM2Notation
    * @return standard HELM1
@@ -79,8 +80,9 @@ public final class HELM1Utils {
    * @throws NotationException if the notation objects can not be built
    * @throws CTKException
    * @throws MonomerLoadingException
+   * @throws ValidationException if a smiles in the HELMNotation is not valid
    */
-  public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException, NotationException, MonomerLoadingException, CTKException {
+  public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException, NotationException, MonomerLoadingException, CTKException, ValidationException {
     try {
       String firstSection = setStandardHELMFirstSection(helm2notation);
       List<String> ListOfSecondAndThirdSection = setStandardHELMSecondSectionAndThirdSection(helm2notation.getListOfConnections());
@@ -96,12 +98,15 @@ public final class HELM1Utils {
    *
    * @param helm2notation HELM2Notation
    * @return first section of standard HELM
-   * @throws HELM1ConverterException
+   * @throws HELM1ConverterException if HELM2 features were there
    * @throws MonomerLoadingException
    * @throws NotationException
    * @throws CTKException
+   * @throws ValidationException
+   * @throws HELM1FormatException
    */
-  private static String setStandardHELMFirstSection(HELM2Notation helm2notation) throws HELM1ConverterException, MonomerLoadingException, NotationException, CTKException {
+  private static String setStandardHELMFirstSection(HELM2Notation helm2notation) throws HELM1ConverterException, MonomerLoadingException, NotationException, CTKException, HELM1FormatException,
+      ValidationException {
     StringBuilder notation = new StringBuilder();
 
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
@@ -125,7 +130,8 @@ public final class HELM1Utils {
    *
    * @param connections List of ConnectionNotation
    * @return second and third section in String format
-   * @throws HELM1ConverterException if it can not be downcasted to HELM1
+   * @throws HELM1ConverterException if it can not be downcasted to HELM1, HELM2
+   *           features were there
    */
   private static List<String> setStandardHELMSecondSectionAndThirdSection(List<ConnectionNotation> connections) throws HELM1ConverterException {
     List<String> result = new ArrayList<String>();
@@ -185,7 +191,7 @@ public final class HELM1Utils {
       String firstSection = (String) temp[1];
       String secondSection = setCanonicalHELMSecondSection(convertsortedIdstoIds, helm2notation.getListOfConnections());
       return firstSection + "$" + secondSection + "$" + "" + "$" + "" + "$V2.0";
-    } catch (ClassNotFoundException | MonomerException | IOException | JDOMException | CTKException | HELM1ConverterException e) {
+    } catch (ClassNotFoundException | IOException | HELM1ConverterException | ValidationException e) {
       LOG.error("Canonical HELM 1 can not be generated due to HELM2 features");
       throw new HELM1FormatException("Canonical HELM 1 can not be generated due to HELM2 features " + e.getMessage() + e.getCause());
     }
@@ -194,18 +200,17 @@ public final class HELM1Utils {
   /**
    * method to convert the first section into canonical first section
    *
-   * @return
-   * @throws CTKSmilesException
-   * @throws MonomerException
+   * @param helm2notation HELM2Notation
+   * @return an Object containing in the first place a Map of converted ids and
+   *         in the second place the firstSection
    * @throws IOException
-   * @throws JDOMException
-   * @throws CTKException
-   * @throws HELM1ConverterException
+   * @throws HELM1ConverterException if there were HELM2 features in the
+   *           HELMNotation
+   * @throws HELM1FormatException if the adHocMonomers can not be found
    * @throws ClassNotFoundException
-   * @throws NotationException
+   * @throws ValidationException if a smiles as monomer is not valid
    */
-  private static Object[] setCanonicalHELMFirstSection(HELM2Notation helm2notation) throws CTKSmilesException, MonomerException, IOException, JDOMException, CTKException,
-      HELM1ConverterException, ClassNotFoundException, NotationException {
+  private static Object[] setCanonicalHELMFirstSection(HELM2Notation helm2notation) throws HELM1ConverterException, HELM1FormatException, ClassNotFoundException, IOException, ValidationException {
     Map<String, String> idLabelMap = new HashMap<String, String>();
     Map<String, List<String>> labelIdMap = new TreeMap<String, List<String>>();
 
@@ -279,8 +284,8 @@ public final class HELM1Utils {
   /**
    * method to generate a canonical HELM 1 connection section
    *
-   * @param convertsortedIdstoIds
-   * @return
+   * @param convertsortedIdstoIds Map of old ids with the equivalent new ids
+   * @return second section of HELM
    * @throws HELM1ConverterException
    */
   private static String setCanonicalHELMSecondSection(Map<String, String> convertsortedIdstoIds, List<ConnectionNotation> connectionNotations) throws HELM1ConverterException {
@@ -310,11 +315,12 @@ public final class HELM1Utils {
   /**
    * method to convert the polymers ids of the connection
    *
-   * @param notation
-   * @param source
-   * @param target
-   * @param convertIds
-   * @return
+   * @param notation connection description in HELM
+   * @param source polymer id of source
+   * @param target polymer id of target
+   * @param convertIds Map of old polymer ids with the new polymer ids
+   * @return connection description in HELM with the changed polymer ids
+   *         according to the map
    * @throws HELM1ConverterException
    */
   private static String convertConnection(String notation, String source, String target, Map<String, String> convertIds) throws HELM1ConverterException {
@@ -333,71 +339,85 @@ public final class HELM1Utils {
   /**
    * method to find all adhocMonomers in one Polymer
    *
-   * @param elements
-   * @return
-   * @throws MonomerLoadingException
-   * @throws NotationException
-   * @throws CTKException
+   * @param elements HELM representation of polymer elements
+   * @return HELM representation of polymer elements with the smiles
+   *         representation for adhoc monomers
+   * @throws HELM1FormatException if the monomers can not be converted to the ad
+   *           hoc monomer representation
+   * @throws ValidationException if the smiles representation of a monomer is
+   *           not valid
    */
-  /* method has to be changed !!! */
-  private static Map<String, String> findAdHocMonomers(String elements, String type) throws MonomerLoadingException, NotationException, CTKException {
+  /*
+   * method has to be changed !!! including smiles -> to generate canonical
+   * representation; this method has to be tested in further detail
+   */
+  private static Map<String, String> findAdHocMonomers(String elements, String type) throws HELM1FormatException, ValidationException {
     /* find adHocMonomers */
-    Map<String, String> listMatches = new HashMap<String, String>();
-    String[] listelements = elements.split("\\.");
-    if (type == "RNA") {
-      for (String element : listelements) {
-        List<String> monomerIds = SimpleNotationParser.getMonomerIDList(element, type, MonomerFactory.getInstance().getMonomerStore());
-        for (String id : monomerIds) {
+    try {
+      Map<String, String> listMatches = new HashMap<String, String>();
+      String[] listelements = elements.split("\\.");
+      if (type == "RNA") {
+        for (String element : listelements) {
+          List<String> monomerIds;
+          monomerIds = SimpleNotationParser.getMonomerIDList(element, type, MonomerFactory.getInstance().getMonomerStore());
 
-          Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, id);
-          if (monomer.isAdHocMonomer()) {
-            listMatches.put(element, "[" + monomer.getCanSMILES() + "]");
+          for (String id : monomerIds) {
 
+            Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, id);
+            if (monomer.isAdHocMonomer()) {
+              listMatches.put(element, "[" + monomer.getCanSMILES() + "]");
+
+            }
+          }
+        }
+
+      } else {
+        for (String element : listelements) {
+          Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, element.replace("[", "").replace("]", ""));
+          try {
+            if (monomer.isAdHocMonomer()) {
+              listMatches.put(element, "[" + monomer.getCanSMILES() + "]");
+            }
+          } catch (NullPointerException e) {
+            if (!(Chemistry.getInstance().getManipulator().validateSMILES(element.substring(1, element.length() - 1)))) {
+              throw new ValidationException("SMILES as Monomer is not valid");
+            }
           }
         }
       }
 
-    } else {
-      for (String element : listelements) {
-        Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(type, element.replace("[", "").replace("]", ""));
-        try {
-          if (monomer.isAdHocMonomer()) {
-            listMatches.put(element, "[" + monomer.getCanSMILES() + "]");
-          }
-        } catch (NullPointerException e) {
-          // if
-          // (!(Chemistry.getInstance().getManipulator().validateSMILES(element)))
-          // {
-          // }
-        }
-      }
+      return listMatches;
+    } catch (MonomerLoadingException | NotationException e) {
+      throw new HELM1FormatException(e.getMessage());
     }
-
-    return listMatches;
   }
 
   /**
    * method to translate/convert the adhocMonomers into valid SMILES
    *
-   * @param monomersList Map of adhocMonomers with the id and the appropriate
-   *          SMILES
-   * @return Map of adhocMonomers with the id and the appropriate SMILES
-   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
-   * @throws CTKSmilesException
-   * @throws CTKException
+   * @param monomersList Map of adhocMonomers with the type and the alternate
+   *          monomer id SMILES
+   * @return Map of adhocMonomers with the monomer alternate id and the
+   *         appropriate SMILES
+   * @throws HELM1FormatException if the SMILES for the Monomer can not be found
    */
-  private static Map<String, String> convertAdHocMonomersIntoSMILES(Map<String, String> monomersList) throws MonomerLoadingException, CTKSmilesException, CTKException {
+  private static Map<String, String> convertAdHocMonomersIntoSMILES(Map<String, String> monomersList) throws HELM1FormatException {
     Map<String, String> convert = new HashMap<String, String>();
+    try {
+      for (Map.Entry<String, String> element : monomersList.entrySet()) {
 
-    for (Map.Entry<String, String> element : monomersList.entrySet()) {
+        Monomer m;
+        m = MonomerFactory.getInstance().getMonomerStore().getMonomer(element.getValue().toString(), element.getKey().toString());
 
-      Monomer m = MonomerFactory.getInstance().getMonomerStore().getMonomer(element.getValue().toString(), element.getKey().toString());
-      String smiles = m.getCanSMILES();
-      AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
-      String canSmiles = manipulator.canonicalize(smiles);
-      convert.put(element.getKey().toString(), canSmiles);
+        String smiles = m.getCanSMILES();
+        AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
+        String canSmiles = manipulator.canonicalize(smiles);
+        convert.put(element.getKey().toString(), canSmiles);
+      }
+      return convert;
+    } catch (MonomerLoadingException | CTKException e) {
+      throw new HELM1FormatException("SMILES for Monomer can not be found");
     }
-    return convert;
   }
 
 }

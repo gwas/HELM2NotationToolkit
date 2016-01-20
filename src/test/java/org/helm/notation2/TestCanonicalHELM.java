@@ -32,6 +32,7 @@ import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.tools.ComplexNotationParser;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.StateMachineParser;
@@ -106,8 +107,7 @@ public class TestCanonicalHELM {
 
   @Test(expectedExceptions = HELM1FormatException.class)
   public void testCanonicalHELMExtendedWithCounts() throws HELM1FormatException, ExceptionState, IOException,
-      JDOMException, NotationException
-  {
+      JDOMException, NotationException {
     parser = new StateMachineParser();
 
     String test =
@@ -339,7 +339,7 @@ public class TestCanonicalHELM {
       MonomerException, org.jdom2.JDOMException, CTKSmilesException, CTKException, NotationException,
       StructureException, HELM1FormatException {
 
-    /* Füge Monomer bei der Datenbank hinzu -> */
+    /* add monomer to the database -> */
     parser = new StateMachineParser();
 
     String test = "CHEM1{[CC([*])C(=O)NCCC(=O)NCCOCCOCCC([*])=O |$;;_R1;;;;;;;;;;;;;;;;;;_R2;$|]}$$$$";
@@ -357,7 +357,7 @@ public class TestCanonicalHELM {
   @Test
   public void testStandardHELM() throws ExceptionState, IOException, JDOMException, HELM1FormatException,
       CTKSmilesException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException,
-      CTKException, NotationException {
+      CTKException, NotationException, ValidationException {
 
     parser = new StateMachineParser();
 
@@ -378,7 +378,7 @@ public class TestCanonicalHELM {
   public void testStandardHELMWithException() throws ExceptionState, IOException, JDOMException, HELM1FormatException,
       CTKSmilesException, HELM1ConverterException, MonomerException,
       org.jdom2.JDOMException,
-      CTKException, NotationException {
+      CTKException, NotationException, ValidationException {
 
     parser = new StateMachineParser();
 
@@ -398,7 +398,7 @@ public class TestCanonicalHELM {
   @Test
   public void testOldExamples() throws CTKSmilesException, ExceptionState, IOException, JDOMException,
       HELM1ConverterException, org.jdom2.JDOMException, CTKException,
-      HELM1FormatException, NotationException, MonomerException {
+      HELM1FormatException, NotationException, MonomerException, ValidationException {
     String notation =
         "PEPTIDE1{H.H.E.E.E}|CHEM1{SS3}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetCanonicalNotation(notation);
@@ -455,10 +455,11 @@ public class TestCanonicalHELM {
    * @throws CTKSmilesException
    * @throws HELM1FormatException
    * @throws NotationException
+   * @throws ValidationException
    */
   private void testGetCanonicalNotation(String notation) throws ExceptionState, IOException, JDOMException,
       CTKSmilesException, HELM1ConverterException, MonomerException, org.jdom2.JDOMException,
-      CTKException, HELM1FormatException, NotationException {
+      CTKException, HELM1FormatException, NotationException, ValidationException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
