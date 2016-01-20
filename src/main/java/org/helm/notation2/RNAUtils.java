@@ -1,18 +1,24 @@
 /**
- * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- * Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation2;
@@ -68,8 +74,10 @@ public class RNAUtils {
   }
 
   /**
-   * @param sequence
-   * @return
+   * method to read a nucleotide sequence and build a double strand of it
+   * 
+   * @param sequence nucleotide sequence
+   * @return ContainerHELM2
    * @throws NotationException
    * @throws FastaFormatException
    * @throws HELM2HandledException
@@ -134,8 +142,8 @@ public class RNAUtils {
   /**
    * method to check if two given polymers are complement to each other
    * 
-   * @param polymerOne
-   * @param polymerTwo
+   * @param polymerOne PolymerNotation of the first polymer
+   * @param polymerTwo PolymerNotation of the second polymer
    * @return true, if they are opposite to each other, false otherwise
    * @throws RNAUtilsException if the polymers are not RNA/DNA
    * @throws HELM2HandledException if the polymers can not be downcasted
@@ -164,7 +172,7 @@ public class RNAUtils {
   }
 
   /**
-   * method to remove the phosphat of the last nucleotide, if it is there
+   * method to remove the phosphat of the last nucleotide, if it is there ToDo
    * 
    * @param polymer
    * @throws RNAUtilsException if the polymer is not a rna/dna
@@ -181,9 +189,9 @@ public class RNAUtils {
   }
 
   /**
-   * method to get the antiparallel polymer from a rna/dna polymer
+   * method to get the antiparallel polymer for a rna/dna polymer
    * 
-   * @param polymer
+   * @param polymer PolymerNotation
    * @return anitparallel polymer
    * @throws NotationException
    * @throws FastaFormatException
@@ -206,10 +214,10 @@ public class RNAUtils {
   }
 
   /**
-   * method to generate the antiparallel sequence from a rna/dna polymer
+   * method to generate the antiparallel sequence for a rna/dna polymer
    * 
-   * @param polymer
-   * @return antiparallel
+   * @param polymer PolymerNotation
+   * @return antiparallel sequence
    * @throws HELM2HandledException
    * @throws IOException
    * @throws JDOMException
@@ -224,7 +232,7 @@ public class RNAUtils {
   /**
    * method to get the polymer with the inverse sequence of the current polymer
    * 
-   * @param polymer
+   * @param polymer PolymerNotation
    * @return reverse complement sequence
    * @throws RNAUtilsException
    * @throws NotationException
@@ -250,7 +258,7 @@ public class RNAUtils {
   /**
    * method to generate the inverse sequence of the given polymer
    * 
-   * @param polymer
+   * @param polymer PolymerNotation
    * @return inverse sequence
    * @throws HELM2HandledException
    * @throws RNAUtilsException
@@ -263,9 +271,9 @@ public class RNAUtils {
   }
 
   /**
-   * method to generate the complement sequence from a rna/dna polymer
+   * method to generate the complement sequence for a rna/dna polymer
    * 
-   * @param polymer
+   * @param polymer PolymerNotation
    * @return complement sequence saved in StringBuilder
    * @throws HELM2HandledException
    * @throws IOException
@@ -285,9 +293,9 @@ public class RNAUtils {
   }
 
   /**
-   * method to get the normal complement polymer from a given polymer
+   * method to get the normal complement polymer for a given polymer
    * 
-   * @param polymer
+   * @param polymer PolymerNotation
    * @return normal complement polymer
    * @throws NotationException
    * @throws FastaFormatException
@@ -313,6 +321,20 @@ public class RNAUtils {
 
   }
 
+  /**
+   * method to hybridize two PolymerNotations together if they are antiparallel
+   * 
+   * @param one PolymerNotation first
+   * @param two PolymerNotation second
+   * @return
+   * @throws NotationException
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   * @throws FastaFormatException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws org.helm.notation.NotationException
+   */
   protected static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two)
       throws NotationException, RNAUtilsException, HELM2HandledException, FastaFormatException, IOException,
       JDOMException, org.helm.notation.NotationException {
@@ -342,7 +364,7 @@ public class RNAUtils {
   /**
    * methods of this class are only allowed for RNA/DNA polymers
    * 
-   * @param polymer
+   * @param polymer PolymerNotation
    * @throws RNAUtilsException if the polymer is not a RNA/DNA type
    */
   private static void checkRNA(PolymerNotation polymer) throws RNAUtilsException {
@@ -351,6 +373,20 @@ public class RNAUtils {
     }
   }
 
+  /**
+   * method to get the nucleotide sequence for the polymer
+   * 
+   * @param polymer PolymerNotation
+   * @return nucleotide sequence
+   * @throws HELM2HandledException
+   * @throws org.helm.notation.NotationException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws StructureException
+   * @throws RNAUtilsException
+   * @throws NotationException
+   */
   protected static String getNucleotideSequence(PolymerNotation polymer) throws HELM2HandledException, org.helm.notation.NotationException, MonomerException, IOException, JDOMException,
       StructureException, RNAUtilsException, NotationException {
     List<Nucleotide> nucleotides = getNucleotideList(polymer);
@@ -386,6 +422,19 @@ public class RNAUtils {
     return sb.toString();
   }
 
+  /**
+   * method to get all nucleotides for one polymer
+   * 
+   * @param polymer PolymerNotation
+   * @return List of nucleotides
+   * @throws HELM2HandledException
+   * @throws org.helm.notation.NotationException
+   * @throws MonomerException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws StructureException
+   * @throws RNAUtilsException
+   */
   private static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws HELM2HandledException, org.helm.notation.NotationException, MonomerException, IOException, JDOMException,
       StructureException, RNAUtilsException {
     checkRNA(polymer);

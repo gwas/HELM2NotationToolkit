@@ -1,18 +1,24 @@
 /**
- * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- * Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation2;
@@ -118,7 +124,7 @@ public final class FastaFormat {
     }
     helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
         generateElementsOfPeptide(elements.toString(), polymer.getPolymerID()), annotation));
-    System.out.println(helm2notation);
+    ;
     return helm2notation;
   }
 
@@ -259,8 +265,8 @@ public final class FastaFormat {
       }
       return elements;
     } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException e) {
-      LOG.error("");
-      throw new FastaFormatException("");
+      LOG.error("PolymerListElements can not be initialized");
+      throw new FastaFormatException("PolymerListElements can not be initialized " + e.getMessage());
     }
   }
 
@@ -291,7 +297,7 @@ public final class FastaFormat {
     try {
       elements.changeMonomerNotation(new MonomerNotationUnitRNA(id.substring(0, id.length() - 1), "RNA"));
     } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException e) {
-      throw new FastaFormatException(e.getMessage());
+      throw new FastaFormatException("PolymerListElements can not be initialized " + e.getMessage());
     }
 
     return elements;
@@ -429,7 +435,7 @@ public final class FastaFormat {
 
   /**
    * method to convert all Peptides and RNAs into the natural analogSequence and
-   * generates
+   * generates HELM2Notation
    * 
    * @param helm2Notation
    * @throws org.helm.notation2.parser.exceptionparser.NotationException
@@ -460,6 +466,17 @@ public final class FastaFormat {
     return helm2Notation;
   }
 
+  /**
+   * method to convert the sequence of a PolymerNotation into the natural
+   * analogue sequence
+   * 
+   * @param polymer PolymerNotation
+   * @return PolymerNotation with the natural analogue sequence
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws AnalogSequenceException
+   */
   private static PolymerNotation convertPeptideIntoAnalogSequence(PolymerNotation polymer)
       throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
       AnalogSequenceException {
@@ -473,6 +490,16 @@ public final class FastaFormat {
     return polymer;
   }
 
+  /**
+   * method to generate
+   * 
+   * @param current
+   * @return
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws AnalogSequenceException
+   */
   private static MonomerNotation generateMonomerNotationPeptide(MonomerNotation current)
       throws org.helm.notation2.parser.exceptionparser.NotationException, IOException,
       JDOMException,
@@ -607,19 +634,35 @@ public final class FastaFormat {
 
   }
 
+  /**
+   * method to generate the sequence of a rna PolymerNotation into its natural
+   * analogue sequence
+   * 
+   * @param polymer PolymerNotation
+   * @return PolymerNotation with its natural analogue sequence
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws AnalogSequenceException
+   */
   private static PolymerNotation convertRNAIntoAnalogSequence(PolymerNotation polymer)
       throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException,
       AnalogSequenceException {
 
-    /* ändere dies nur wenn es möglich ist sonst lasse die alte Notation */
+    /* change only if it is possible */
     for (int i = 0; i < polymer.getListMonomers().size(); i++) {
       polymer.getPolymerElements().getListOfElements().set(i, generateMonomerNotationRNA(polymer.getPolymerElements().getListOfElements().get(i)));
     }
-    /* müssen Connections geändert werden */
 
     return polymer;
   }
 
+  /**
+   * method to change
+   * 
+   * @param monomerNotation
+   * @return
+   */
   private static String changeIdForRNA(MonomerNotation monomerNotation) {
     if (monomerNotation instanceof MonomerNotationUnitRNA) {
       StringBuilder changeid = new StringBuilder();
