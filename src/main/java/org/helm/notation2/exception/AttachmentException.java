@@ -23,19 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * AttachmentException
- * 
+ *
  * @author hecht
  */
 public class AttachmentException extends Exception {
 
-  /** The Logger for this class */
-  private static final Logger LOG =
-      LoggerFactory.getLogger(AttachmentException.class);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public AttachmentException(String message) {
     super(message);

@@ -23,7 +23,6 @@
  */
 package org.helm.notation2;
 
-
 import java.io.IOException;
 
 import org.helm.chemtoolkit.AbstractMolecule;
@@ -38,18 +37,34 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Image class to generate image generation of monomers and of the helm molecule
- * 
+ *
  * @author hecht
  */
 public final class Images {
 
+  /**
+   *
+   */
+  private static final int PICTURE_HEIGHT = 1000;
+
+  /**
+   *
+   */
+  private static final int PICTURE_WIDTH = 1000;
+
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(Images.class);
 
+  /**
+   * Default constructor.
+   */
+  private Images() {
+
+  }
 
   /**
    * generates an image of the atom/bond representation of monomer
-   * 
+   *
    * @param monomer Input Monomer
    * @return an image of the monomer in byte[]
    * @throws CTKException
@@ -57,18 +72,18 @@ public final class Images {
    */
   protected static byte[] generateImageofMonomer(Monomer monomer) throws BuilderMoleculeException, CTKException {
     LOG.info("Image generation process of monomer starts");
-      /* First build one molecule + merge unused rgoups into it */
+    /* First build one molecule + merge unused rgoups into it */
     AbstractMolecule molecule = BuilderMolecule.mergeRgroups(BuilderMolecule.getMoleculeForMonomer(monomer));
     LOG.info("Molecule was built and unused rgroups were merged into it");
     String molFile;
-      molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
+    molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
     LOG.info("Generate molfile for the built molecule");
-    return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
+    return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, PICTURE_WIDTH, PICTURE_HEIGHT, (int) Long.parseLong("D3D3D3", 16));
   }
 
   /**
    * method to generate an image of the HELM molecule
-   * 
+   *
    * @param helm2notation input HELMNotation
    * @return the generated image in byte[]
    * @throws BuilderMoleculeException if the HELM molecule can't be built
@@ -78,12 +93,12 @@ public final class Images {
   protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
     LOG.info("Image generation process of HELM molecule starts");
     /* get SMILES representation for the whole molecule */
-   String smiles = SMILES.getSMILESForAll(helm2notation);
+    String smiles = SMILES.getSMILESForAll(helm2notation);
     LOG.info("Get for the whole HELMNotation the smiles representation");
-   AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, null);
+    AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, null);
     LOG.info("Molecule was created using the smiles generation");
-   String molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
+    String molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
     LOG.info("Generate molfile for the built molecule(s)");
-    return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, 1000, 1000, (int) Long.parseLong("D3D3D3", 16));
+    return Chemistry.getInstance().getManipulator().renderMol(molFile, OutputType.PNG, PICTURE_WIDTH, PICTURE_HEIGHT, (int) Long.parseLong("D3D3D3", 16));
   }
 }

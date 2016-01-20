@@ -38,36 +38,40 @@ import org.slf4j.LoggerFactory;
 
 /**
  * MoleculeInformation, class to
- * 
+ *
  * @author hecht
  */
 public final class MoleculeInformation {
-  private static HELM2Notation helm2notation;
-
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(MoleculeInformation.class);
 
   /**
+   * Default constructor.
+   */
+  private MoleculeInformation() {
+
+  }
+
+  /**
    * method to build from one notation one molecule
-   * 
+   *
    * @throws BuilderMoleculeException
    */
-  private static List<AbstractMolecule> buildMolecule() throws BuilderMoleculeException {
+  private static List<AbstractMolecule> buildMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
     return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
   }
 
   /**
    * method to get the molecular weight for the whole HELM
-   * 
+   *
    * @param helm2notation input HELM2Notation
    * @return MolecularWeight of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
    */
   protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
-    MoleculeInformation.helm2notation = helm2notation;
     /* First build one big molecule; List of molecules? */
-    List<AbstractMolecule> molecules = buildMolecule();
+    List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
       molecule = BuilderMolecule.mergeRgroups(molecule);
@@ -79,7 +83,7 @@ public final class MoleculeInformation {
 
   /**
    * method to get the ExactMass for the whole HELM
-   * 
+   *
    * @param helm2notation input HELM2Notation
    * @return ExactMass of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
@@ -87,8 +91,7 @@ public final class MoleculeInformation {
    */
   protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big moleucle; List of molecules */
-    MoleculeInformation.helm2notation = helm2notation;
-    List<AbstractMolecule> molecules = buildMolecule();
+    List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
       result += Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getExactMass();
@@ -98,7 +101,7 @@ public final class MoleculeInformation {
 
   /**
    * method to get the MolecularFormular for the whole HELM
-   * 
+   *
    * @param helm2notation input HELM2Notation
    * @return MolecularFormular of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
@@ -106,10 +109,9 @@ public final class MoleculeInformation {
    */
   protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big molecule */
-    MoleculeInformation.helm2notation = helm2notation;
-    List<AbstractMolecule> molecules = buildMolecule();
+    List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     Map<String, Integer> atomNumberMap = new TreeMap<String, Integer>();
-    for(AbstractMolecule molecule : molecules){
+    for (AbstractMolecule molecule : molecules) {
       atomNumberMap = generateAtomNumberMap(molecule, atomNumberMap);
     }
     StringBuilder sb = new StringBuilder();
@@ -129,20 +131,19 @@ public final class MoleculeInformation {
 
   /**
    * method to get a Molecule for the whole HELM
-   * 
+   *
    * @param helm2notation input HELM2Notation;
    * @return Molecule molecule of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    */
   protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
-    MoleculeInformation.helm2notation = helm2notation;
-    return buildMolecule();
+    return buildMolecule(helm2notation);
   }
 
   /**
    * method to get for every atom the number of occurences
-   * 
-   * @param molecule input Moleucle
+   *
+   * @param molecule input Molecule
    * @param mapAtoms Map of atoms with the number its occurences
    * @return Map of atoms with the number of its occurences
    * @throws BuilderMoleculeException if the Rgroups of the molecule can not be
@@ -166,8 +167,7 @@ public final class MoleculeInformation {
           }
           if (mapAtoms.get(atom) != null) {
             mapAtoms.put(atom, mapAtoms.get(atom) + Integer.valueOf(number));
-          }
- else {
+          } else {
 
             mapAtoms.put(atom, Integer.valueOf(number));
           }

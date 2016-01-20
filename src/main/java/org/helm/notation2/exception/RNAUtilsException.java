@@ -23,13 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-
 /**
  * RNAUtilsException
- * 
+ *
  * @author hecht
  */
 public class RNAUtilsException extends Exception {
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public RNAUtilsException(String message) {
     super(message);

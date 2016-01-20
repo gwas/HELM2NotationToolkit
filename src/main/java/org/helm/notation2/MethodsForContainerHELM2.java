@@ -45,18 +45,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * MethodsForContainerHELM2
- * 
+ *
  * @author hecht
  */
 public final class MethodsForContainerHELM2 {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(MethodsForContainerHELM2.class);
-  
+
+  /**
+   * Default constructor.
+   */
+  private MethodsForContainerHELM2() {
+
+  }
+
   /**
    * method to get all HELM1 valid MonomerNotations Only on these monomers
    * required HELM1 functions are performed
-   * 
+   *
    * @param monomerNotations List of MonomerNotation
    * @return List of Monomer
    * @throws HELM2HandledException if the HELM2 features were there
@@ -68,9 +75,7 @@ public final class MethodsForContainerHELM2 {
       /* group element */
       if (monomerNotation instanceof MonomerNotationGroup || monomerNotation instanceof MonomerNotationList) {
         throw new HELM2HandledException("Functions can't be called for HELM2 objects");
-      }
-
-      else {
+      } else {
         try {
           int count = Integer.parseInt(monomerNotation.getCount());
           if (count == 0 || count > 1) {
@@ -78,7 +83,7 @@ public final class MethodsForContainerHELM2 {
           }
 
           // for (int j = 0; j < count; j++) {
-            items.addAll(Validation.getAllMonomers(monomerNotation));
+          items.addAll(Validation.getAllMonomers(monomerNotation));
           // }
         } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
@@ -92,7 +97,7 @@ public final class MethodsForContainerHELM2 {
   /**
    * method to get all HELM1 valid MonomerNotations Only on these monomers
    * required HELM1 functions are performed
-   * 
+   *
    * @param monomerNotations List of MonomerNotation
    * @return List of Monomer
    * @throws HELM2HandledException if HELM2 features are there
@@ -106,9 +111,7 @@ public final class MethodsForContainerHELM2 {
       /* group element */
       if (monomerNotation instanceof MonomerNotationGroup) {
         throw new HELM2HandledException("Functions can't be called for HELM2 objects");
-      }
-
-      else {
+      } else {
         try {
           int count = Integer.parseInt(monomerNotation.getCount());
           if (count == 0) {
@@ -131,7 +134,7 @@ public final class MethodsForContainerHELM2 {
 
   /**
    * method to get all MonomerNotations for all given polymers
-   * 
+   *
    * @param polymers List of PolymerNotation
    * @return List of MonomerNotation
    */
@@ -147,7 +150,7 @@ public final class MethodsForContainerHELM2 {
 
   /**
    * method to get all monomers for all MonomerNotations
-   * 
+   *
    * @param monomerNotations List of MonomerNotation
    * @return List of Monomer
    * @throws MonomerException if the Monomer is not valid
@@ -168,7 +171,7 @@ public final class MethodsForContainerHELM2 {
 
   /**
    * method to get all polymers for one specific polymer type
-   * 
+   *
    * @param str specific polymer type
    * @param polymers List of PolymerNotation
    * @return List of PolymerNotation with the specific type
@@ -185,7 +188,7 @@ public final class MethodsForContainerHELM2 {
 
   /**
    * method to get the monomer from the database!
-   * 
+   *
    * @param type Type of the Monomer
    * @param id Id of the Monomer
    * @return Monomer
@@ -205,8 +208,8 @@ public final class MethodsForContainerHELM2 {
         if (monomerFactory.getSmilesMonomerDB().get(id) != null) {
           monomer = monomerFactory.getSmilesMonomerDB().get(id);
           return monomer;
-        }
- else {
+
+        } else {
 
           monomer = monomerFactory.getSmilesMonomerDB().get(id);
           if (monomer == null) {
@@ -222,7 +225,8 @@ public final class MethodsForContainerHELM2 {
       return monomer;
     } catch (CTKException | IOException e) {
       /*
-       * monomer is not in the database and also not a valid SMILES -> throw exception
+       * monomer is not in the database and also not a valid SMILES -> throw
+       * exception
        */
       throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES");
     }
@@ -230,7 +234,7 @@ public final class MethodsForContainerHELM2 {
 
   /**
    * method to get all edge connections
-   * 
+   *
    * @param connections
    * @return List of all edge ConnectionNotation
    */
@@ -246,7 +250,7 @@ public final class MethodsForContainerHELM2 {
 
   /**
    * * method to get all base pair connections
-   * 
+   *
    * @param connections List of ConnectionNotation
    * @return List of all base pair ConnectionNotation
    */

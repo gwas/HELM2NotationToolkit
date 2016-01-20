@@ -23,7 +23,6 @@
  */
 package org.helm.notation2;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,11 +52,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * ContainerHELM2
- * 
+ *
  * @author hecht
  */
 public class ContainerHELM2 {
-
 
   /** The Logger for this class */
   private static final Logger LOG =
@@ -67,28 +65,26 @@ public class ContainerHELM2 {
 
   private InterConnections interconnection;
 
-
-
   public ContainerHELM2(HELM2Notation helm2notation,
       InterConnections interconnection) {
     this.helm2notation = helm2notation;
     this.interconnection = interconnection;
   }
 
-  public HELM2Notation getHELM2Notation() {
+  public final HELM2Notation getHELM2Notation() {
     return helm2notation;
   }
 
-  public InterConnections getInterconnection() {
+  public final InterConnections getInterconnection() {
     return interconnection;
   }
 
   /**
    * method to generate a JSON-Object from the NotationContainer
-   * 
+   *
    * @return NotationContainer in JSON-Format
    */
-  protected String toJSON() {
+  protected final String toJSON() {
     ObjectMapper mapper = new ObjectMapper();
 
     try {
@@ -101,44 +97,43 @@ public class ContainerHELM2 {
     }
     return null;
   }
-  
 
   /**
    * method to validate all notations objects
-   * 
+   *
    * @throws ConnectionNotationException
    * @throws GroupingNotationException
    * @throws MonomerException
    * @throws PolymerIDsException
    */
-  public void validate() throws PolymerIDsException, MonomerException, GroupingNotationException, ConnectionNotationException {
+  public final void validate() throws PolymerIDsException, MonomerException, GroupingNotationException, ConnectionNotationException {
     Validation.validateNotationObjects(this);
   }
 
   /**
    * method to get all polymers of this object
-   * 
+   *
    * @return list of polymer notation
    */
-  public List<PolymerNotation> getAllPolymers() {
+  public final List<PolymerNotation> getAllPolymers() {
     return helm2notation.getListOfPolymers();
   }
 
   /**
    * method to get all connections of this object
-   * 
+   *
    * @return list of connection notation
    */
-  public List<ConnectionNotation> getAllConnections() {
+  public final List<ConnectionNotation> getAllConnections() {
     return helm2notation.getListOfConnections();
   }
 
   /**
    * method to get all edge connections of this object
-   * 
+   *
    * @return all edge connections of this object
    */
-  public List<ConnectionNotation> getAllEdgeConnections() {
+  public final List<ConnectionNotation> getAllEdgeConnections() {
     List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
     for (ConnectionNotation connection : helm2notation.getListOfConnections()) {
       if (!(connection.getrGroupSource().equals("pair"))) {
@@ -150,10 +145,10 @@ public class ContainerHELM2 {
 
   /**
    * method to get all base pair connections of this object
-   * 
+   *
    * @return all base pair connections of this object
    */
-  public List<ConnectionNotation> getAllBasePairConnections() {
+  public final List<ConnectionNotation> getAllBasePairConnections() {
     List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
     for (ConnectionNotation connection : helm2notation.getListOfConnections()) {
       if ((connection.getrGroupSource().equals("pair"))) {
@@ -163,22 +158,21 @@ public class ContainerHELM2 {
     return listEdgeConnection;
   }
 
-
   /**
    * method to get all annotations of this object
-   * 
+   *
    * @return all annotation of this object
    */
-  public List<AnnotationNotation> getAllAnnotations() {
+  public final List<AnnotationNotation> getAllAnnotations() {
     return helm2notation.getListOfAnnotations();
   }
 
   /**
    * method to get all rna polymers of this object
-   * 
+   *
    * @return list of rna polymers
    */
-  public List<PolymerNotation> getRNAPolymers() {
+  public final List<PolymerNotation> getRNAPolymers() {
     List<PolymerNotation> rnaPolymers = new ArrayList<PolymerNotation>();
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       if (polymer.getPolymerID() instanceof RNAEntity) {
@@ -190,10 +184,10 @@ public class ContainerHELM2 {
 
   /**
    * method to get all peptide polymers of this object
-   * 
+   *
    * @return list of peptide polymers
    */
-  public List<PolymerNotation> getPeptidePolymers() {
+  public final List<PolymerNotation> getPeptidePolymers() {
     List<PolymerNotation> peptidePolymers = new ArrayList<PolymerNotation>();
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       if (polymer.getPolymerID() instanceof PeptideEntity) {
@@ -205,10 +199,10 @@ public class ContainerHELM2 {
 
   /**
    * method to get all chem polymers of this object
-   * 
+   *
    * @return list of chem polymers
    */
-  public List<PolymerNotation> getCHEMPolymers() {
+  public final List<PolymerNotation> getCHEMPolymers() {
     List<PolymerNotation> chemPolymers = new ArrayList<PolymerNotation>();
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       if (polymer.getPolymerID() instanceof ChemEntity) {
@@ -220,10 +214,10 @@ public class ContainerHELM2 {
 
   /**
    * method to get all blob polymers of this object
-   * 
+   *
    * @return list of blob polymers
    */
-  public List<PolymerNotation> getBLOBPolymers() {
+  public final List<PolymerNotation> getBLOBPolymers() {
     List<PolymerNotation> blobPolymers = new ArrayList<PolymerNotation>();
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       if (polymer.getPolymerID() instanceof BlobEntity) {
@@ -235,11 +229,11 @@ public class ContainerHELM2 {
 
   /**
    * method to add a new HELMNotation to the existing one
-   * 
+   *
    * @param newHELM2Notation new HELMNotation
    * @throws NotationException if the HELMNotation is not valid
    */
-  public void addHELM2notation(HELM2Notation newHELM2Notation) throws NotationException {
+  public final void addHELM2notation(HELM2Notation newHELM2Notation) throws NotationException {
     Map<String, String> mapIds = generateMapChangeIds(newHELM2Notation.getPolymerAndGroupingIDs());
     /* method to merge the new HELM2Notation into the existing one */
 
@@ -254,23 +248,22 @@ public class ContainerHELM2 {
     section4(newHELM2Notation.getListOfAnnotations(), mapIds);
   }
 
-
   /**
    * method to generate a Map of old ids with the new ids
-   * 
+   *
    * @param newIDs
    * @return
    */
   private Map<String, String> generateMapChangeIds(List<String> newIDs) {
     Map<String, String> mapIds = new HashMap<String, String>();
     List<String> oldIds = helm2notation.getPolymerAndGroupingIDs();
-    
+
     Map<String, String> mapOldIds = new HashMap<String, String>();
-    for(String oldID : oldIds){
+    for (String oldID : oldIds) {
       mapOldIds.put(oldID, "");
     }
     for (String newId : newIDs) {
-      if(mapOldIds.containsKey(newId)){
+      if (mapOldIds.containsKey(newId)) {
         int i = 1;
         String type = newId.split("\\d")[0];
 
@@ -287,7 +280,7 @@ public class ContainerHELM2 {
 
   /**
    * method to add PolymerNotations to the existent
-   * 
+   *
    * @param polymers PolymerNotation
    * @param mapIds Map of old and new Ids
    * @throws NotationException
@@ -302,15 +295,14 @@ public class ContainerHELM2 {
       } else {
         helm2notation.addPolymer(polymer);
       }
-     
+
     }
-    
-    
+
   }
 
   /**
    * method to add ConnectionNotation to the existent
-   * 
+   *
    * @param connections ConnectionNotatoin
    * @param mapIds Map of old and new Ids
    * @throws NotationException
@@ -342,7 +334,7 @@ public class ContainerHELM2 {
 
   /**
    * method to add groupings to the existent grouping section
-   * 
+   *
    * @param groupings new GroupingNotations
    * @param mapIds map of old and new Ids
    * @throws NotationException
@@ -354,17 +346,17 @@ public class ContainerHELM2 {
       if (mapIds.containsKey(groupID.getID())) {
         groupID = new GroupingNotation(mapIds.get(groupID.getID())).getGroupID();
       }
-      
+
       String details = grouping.toHELM2().split("\\(")[1].split("\\)")[0];
       details = changeIDs(details, mapIds);
       helm2notation.addGrouping(new GroupingNotation(groupID, details));
-        
+
     }
   }
 
   /**
    * method to add annotations to the existent annotation section
-   * 
+   *
    * @param annotations new AnnotationNotations
    * @param mapIds Map of old and new Ids
    */
@@ -378,7 +370,7 @@ public class ContainerHELM2 {
 
   /**
    * method to change the ids in a text according to map
-   * 
+   *
    * @param text input text
    * @param mapIds Map of old Id's value and new Id's
    * @return text with changed ids
@@ -391,7 +383,8 @@ public class ContainerHELM2 {
     return result;
   }
 
-  public void getNotationByReplacingSMILES() {
+  /* ToDo */
+  public final void getNotationByReplacingSMILES() {
     /* Go for every MonomerNotation */
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       for (MonomerNotation monomerNotation : polymer.getPolymerElements().getListOfElements()) {
@@ -401,5 +394,3 @@ public class ContainerHELM2 {
 
   }
 }
-
-

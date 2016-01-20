@@ -98,7 +98,7 @@ public class RNAUtilsTest {
     String notationTwo = "AACUG";
     ContainerHELM2 containerhelm2One = produceContainerHELM2(notationOne);
     ContainerHELM2 containerhelm2Two = produceContainerHELM2(notationTwo);
-    Assert.assertTrue(RNAUtils.AreAntiparallel(containerhelm2One.getAllPolymers().get(0), containerhelm2Two.getAllPolymers().get(0)));
+    Assert.assertTrue(RNAUtils.areAntiparallel(containerhelm2One.getAllPolymers().get(0), containerhelm2Two.getAllPolymers().get(0)));
   }
 
   @Test

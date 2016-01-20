@@ -23,14 +23,18 @@
  */
 package org.helm.notation2.exception;
 
-
 /**
  * ExtinctionCoefficientException
- * 
+ *
  * @author hecht
  */
+
 public class ExtinctionCoefficientException extends Exception {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public ExtinctionCoefficientException(String message) {
     super(message);

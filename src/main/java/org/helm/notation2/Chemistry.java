@@ -37,13 +37,13 @@ import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
 
 /**
  * Chemistry, singleton class to define which Chemistry-Plugin is used
- * 
+ *
  * @author hecht
  */
-public class Chemistry {
+public final class Chemistry {
   private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + "/.helm/Chemistry.property";
 
-  private static final String CHEMISTRY_PLUGIN="chemistry.plugin";
+  private static final String CHEMISTRY_PLUGIN = "chemistry.plugin";
 
   private static Chemistry _instance;
 
@@ -54,7 +54,7 @@ public class Chemistry {
   private static AbstractChemistryManipulator manipulator;
 
   /**
-   * 
+   * Default constructor.
    */
   private Chemistry() {
     readConfigFile();
@@ -72,11 +72,9 @@ public class Chemistry {
   private void setManipulatorType() {
     if (chemistry.equals("MARVIN")) {
       type = ManipulatorFactory.ManipulatorType.MARVIN;
-    }
- else if (chemistry.equals("CDK")) {
+    } else if (chemistry.equals("CDK")) {
       type = ManipulatorFactory.ManipulatorType.CDK;
-    }
- else {
+    } else {
       type = null;
     }
   }
@@ -104,7 +102,7 @@ public class Chemistry {
   /**
    * method to set the chemistry-plugin to the default one (MARVIN)
    */
-  private void resetConfigToDefault(){
+  private void resetConfigToDefault() {
     chemistry = "MARVIN";
     try {
       PrintWriter writer = new PrintWriter(CONFIG_FILE_PATH, "UTF-8");
@@ -119,7 +117,7 @@ public class Chemistry {
 
   /**
    * method to get the singleton instance
-   * 
+   *
    * @return Chemistry
    */
   public static Chemistry getInstance() {
@@ -131,7 +129,7 @@ public class Chemistry {
 
   /**
    * method to get the Manipulator
-   * 
+   *
    * @return AbstractChemistryManipulator
    */
   public synchronized AbstractChemistryManipulator getManipulator() {
@@ -140,7 +138,7 @@ public class Chemistry {
 
   /**
    * method to get the ManipulatorType
-   * 
+   *
    * @return ManipulatorType
    */
   public ManipulatorType getManipulatorType() {

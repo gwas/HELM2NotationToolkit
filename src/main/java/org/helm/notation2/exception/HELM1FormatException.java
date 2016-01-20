@@ -23,14 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-
-
 /**
  * HELM1FormatException
  * 
  * @author hecht
  */
 public class HELM1FormatException extends Exception {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   public HELM1FormatException(String message) {
     super(message);

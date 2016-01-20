@@ -23,13 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-
 /**
  * FastaFormatException
  * 
  * @author hecht
  */
 public class FastaFormatException extends Exception {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   public FastaFormatException(String message) {
     super(message);

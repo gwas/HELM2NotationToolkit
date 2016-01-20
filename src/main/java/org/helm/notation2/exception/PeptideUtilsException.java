@@ -21,37 +21,21 @@
  * SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation2;
-
-import java.util.Map;
-
-import org.helm.chemtoolkit.AbstractMolecule;
-import org.helm.chemtoolkit.IAtomBase;
+package org.helm.notation2.exception;
 
 /**
- * RgroupStructure
- * 
+ * PeptideUtilsException
+ *
  * @author hecht
  */
-public class RgroupStructure {
+public class PeptideUtilsException extends Exception {
 
-  private AbstractMolecule molecule;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-  private Map<String, IAtomBase> rgroupMap;
-
-  public AbstractMolecule getMolecule() {
-    return molecule;
-  }
-
-  public void setMolecule(AbstractMolecule molecule) {
-    this.molecule = molecule;
-  }
-
-  public Map<String, IAtomBase> getRgroupMap() {
-    return rgroupMap;
-  }
-
-  public void setRgroupMap(Map<String, IAtomBase> rgroupMap) {
-    this.rgroupMap = rgroupMap;
+  public PeptideUtilsException(String message) {
+    super(message);
   }
 }

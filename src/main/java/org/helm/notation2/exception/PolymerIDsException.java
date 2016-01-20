@@ -23,19 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * PolymerIDsException
- * 
+ *
  * @author hecht
  */
 public class PolymerIDsException extends Exception {
 
-  /** The Logger for this class */
-  private static final Logger LOG =
-      LoggerFactory.getLogger(PolymerIDsException.class);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public PolymerIDsException(String message) {
     super(message);

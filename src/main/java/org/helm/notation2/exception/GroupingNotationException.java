@@ -23,13 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-
 /**
  * GroupingNotationException
  * 
  * @author hecht
  */
 public class GroupingNotationException extends Exception {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   public GroupingNotationException(String message) {
     super(message);

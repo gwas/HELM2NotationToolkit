@@ -23,7 +23,6 @@
  */
 package org.helm.notation2.exception;
 
-
 /**
  * HELM2HandledException
  * 
@@ -31,6 +30,10 @@ package org.helm.notation2.exception;
  */
 public class HELM2HandledException extends Exception {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   public HELM2HandledException(String message) {
     super(message);

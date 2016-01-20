@@ -23,18 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * BuilderMoleculeException
- * 
+ *
  * @author hecht
  */
 public class BuilderMoleculeException extends Exception {
 
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(BuilderMoleculeException.class);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public BuilderMoleculeException(String message) {
     super(message);

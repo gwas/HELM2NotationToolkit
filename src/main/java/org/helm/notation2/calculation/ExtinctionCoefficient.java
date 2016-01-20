@@ -42,14 +42,17 @@ import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * ExtinctionCoefficient class to calculate the extinction coefficient
- * 
+ *
  * @author hecht
  */
-public class ExtinctionCoefficient {
+public final class ExtinctionCoefficient {
+
+  /**
+   *
+   */
+  private static final int UNIT = 1000;
 
   private static final Logger LOG =
       LoggerFactory.getLogger(ExtinctionCoefficient.class);
@@ -69,18 +72,18 @@ public class ExtinctionCoefficient {
   private static String peptidePropertyFile = "/org/helm/notation/resources/PEPTIDEExtinctionCoefficient.properties";
 
   private static ExtinctionCoefficient instance;
-  
+
   private ExtinctionCoefficient() {
-  
+
   }
 
-  public static ExtinctionCoefficient getInstance() throws CalculationException {
+  public static ExtinctionCoefficient getInstance() throws ExtinctionCoefficientException {
     if (null == instance) {
       instance = new ExtinctionCoefficient();
       try {
         initMaps();
       } catch (IOException ex) {
-        throw new CalculationException("Unable to initalize extinction coefficient property files");
+        throw new ExtinctionCoefficientException("Unable to initalize extinction coefficient property files");
       }
     }
     return instance;
@@ -91,7 +94,7 @@ public class ExtinctionCoefficient {
     Properties rp = new Properties();
     rp.load(ris);
 
-    Enumeration re = rp.propertyNames();
+    Enumeration<?> re = rp.propertyNames();
     while (re.hasMoreElements()) {
       String key = (String) re.nextElement();
       String value = rp.getProperty(key);
@@ -109,7 +112,7 @@ public class ExtinctionCoefficient {
     Properties pp = new Properties();
     pp.load(pis);
 
-    Enumeration pe = pp.propertyNames();
+    Enumeration<?> pe = pp.propertyNames();
     while (pe.hasMoreElements()) {
       String key = (String) pe.nextElement();
       String value = pp.getProperty(key);
@@ -149,7 +152,7 @@ public class ExtinctionCoefficient {
 
   /**
    * method to calculate the extinction coefficient for the whole HELM molecule
-   * 
+   *
    * @param helm2container input ContainerHELM2
    * @return extinction coefficient
    * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
@@ -171,7 +174,7 @@ public class ExtinctionCoefficient {
           throw new ExtinctionCoefficientException(e.getMessage());
         }
         if (unitType == PEPTIDE_UNIT_TYPE) {
-          ext = ext * 1000;
+          ext = ext * UNIT;
         }
       } else if (polymerType.equals(Monomer.PEPTIDE_POLYMER_TYPE)) {
         try {
@@ -180,7 +183,7 @@ public class ExtinctionCoefficient {
           throw new ExtinctionCoefficientException(e.getMessage());
         }
         if (unitType == RNA_UNIT_TYPE) {
-          ext = ext / 1000;
+          ext = ext / UNIT;
         }
       }
       result = result + ext;
@@ -190,7 +193,7 @@ public class ExtinctionCoefficient {
 
   /**
    * method to calculate the extinction coefficient for rna
-   * 
+   *
    * @param monomers all Monomers of the RNA/DNA
    * @return extinction coefficient
    * @throws CalculationException if the rna contains not valid nucleotides
@@ -236,10 +239,9 @@ public class ExtinctionCoefficient {
     return (2 * resultDi) - resultSingle;
   }
 
-
   /**
    * method to calculate the extinction coefficient for peptide
-   * 
+   *
    * @param monomers all monomers of the peptide
    * @return extinction coefficient
    * @throws IOException
@@ -262,14 +264,8 @@ public class ExtinctionCoefficient {
         throw new HELM2HandledException("Functions can not be called for HELM2 objects");
       }
 
-      }
+    }
     return result;
   }
 
-
-
-
 }
-
-
-

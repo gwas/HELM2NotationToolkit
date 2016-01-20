@@ -23,27 +23,74 @@
  */
 package org.helm.notation2;
 
-import org.helm.notation2.exception.HELM2HandledException;
-import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import java.util.List;
 
+import org.helm.notation.model.Monomer;
+import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.PeptideUtilsException;
+import org.helm.notation2.parser.notation.polymer.PeptideEntity;
+import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 
 /**
  * PeptideUtils, class to provide peptide utils
- * 
+ *
  * @author hecht
  */
 public final class PeptideUtils {
 
   /**
+   * Default constructor.
+   */
+  private PeptideUtils() {
+
+  }
+
+  /**
    * method to produce for a peptide PolymerNotation the natural analogue
    * sequence
-   * 
+   *
    * @param polymer PolymerNotation
    * @return natural analogue sequence
    * @throws HELM2HandledException if the polymer contains HELM2 features
+   * @throws PeptideUtilsException if the polymer is not a peptide
    */
-  protected static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException {
+  protected static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException {
+    checkPeptidePolymer(polymer);
     return FastaFormat.generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()));
   }
 
+  /**
+   * method to produce for a peptide PolymerNotation the sequence
+   *
+   * @param polymer PolymerNotation
+   * @return sequence
+   * @throws HELM2HandledException if the polmyer contains HELM2 features
+   * @throws PeptideUtilsException is not a peptide
+   */
+  protected static String getSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException {
+    checkPeptidePolymer(polymer);
+    StringBuilder sb = new StringBuilder();
+    List<Monomer> monomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers());
+
+    for (Monomer monomer : monomers) {
+      String id = monomer.getAlternateId();
+      if (id.length() > 1) {
+        id = "[" + id + "]";
+      }
+      sb.append(id);
+    }
+    return sb.toString();
+  }
+
+  /**
+   * method to check if the polmyer is a peptide
+   *
+   * @param polymer PolymerNotation
+   * @throws PeptideUtilsException if the polymer is not a peptide
+   */
+  private static void checkPeptidePolymer(PolymerNotation polymer) throws PeptideUtilsException {
+    if (!(polymer.getPolymerID() instanceof PeptideEntity)) {
+      throw new PeptideUtilsException("Polymer is not a peptide");
+    }
+  }
 }

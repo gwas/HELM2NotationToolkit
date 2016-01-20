@@ -23,18 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * ValidationException
- * 
+ *
  * @author hecht
  */
 public class ValidationException extends Exception {
 
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(ValidationException.class);
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public ValidationException(String message) {
     super(message);

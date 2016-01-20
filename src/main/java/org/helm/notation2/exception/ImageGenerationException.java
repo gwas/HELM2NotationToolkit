@@ -23,13 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-
 /**
  * ImageGenerationException
- * 
+ *
  * @author hecht
  */
 public class ImageGenerationException extends Exception {
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public ImageGenerationException(String message) {
     super(message);

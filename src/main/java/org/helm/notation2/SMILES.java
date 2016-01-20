@@ -34,8 +34,6 @@ import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * SMILES class to generate SMILES
  * 
@@ -46,7 +44,6 @@ public final class SMILES {
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(SMILES.class);
-
 
   /**
    * method to generate smiles for the whole HELMNotation
@@ -100,4 +97,3 @@ public final class SMILES {
   }
 
 }
-

@@ -25,29 +25,25 @@
  */
 package org.helm.notation2;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * InterConnections, class to save the interconnections of a HELM
- * 
+ *
  * @author hecht
  */
 public class InterConnections {
 
-
   private Map<String, String> mapInterConnections = new HashMap<String, String>();
 
-  public InterConnections(){  
+  public InterConnections() {
   }
 
   public InterConnections(Map<String, String> map) {
     mapInterConnections = map;
   }
-  
-  
+
   public void addConnection(String key, String value) {
     mapInterConnections.put(key, value);
   }
@@ -66,8 +62,4 @@ public class InterConnections {
     return mapInterConnections.containsKey(key);
   }
 
-
-
-  
-  
 }

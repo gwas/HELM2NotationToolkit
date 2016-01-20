@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.NotationException;
@@ -45,16 +46,23 @@ import org.jdom2.output.XMLOutputter;
 
 /**
  * xHELM
- * 
+ *
  * @author hecht
  */
-public final class xHELM {
+public final class XHELM {
 
   private static Set<Monomer> set = null;
 
   /**
+   * Default constructor.
+   */
+  private XHELM() {
+
+  }
+
+  /**
    * method to get xhelm for the helm2 notation with the new functionality
-   * 
+   *
    * @param containerhelm2, helm's notations objects
    * @return xhelm
    * @throws MonomerException
@@ -81,8 +89,7 @@ public final class xHELM {
         for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomernotation).getContents()) {
           addAdHocMonomer(unit);
         }
-      }
-      else {
+      } else {
         addAdHocMonomer(monomernotation);
 
       }
@@ -104,7 +111,7 @@ public final class xHELM {
   /**
    * method to get xhelm for the helm notation, only if it was possible to
    * convert the helm in the old format
-   * 
+   *
    * @param containerhelm2, helm's notations objects
    * @return xhelm
    * @throws MonomerException
@@ -112,9 +119,10 @@ public final class xHELM {
    * @throws JDOMException
    * @throws IOException
    * @throws NotationException
+   * @throws CTKException
    */
   protected static String getXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException,
-      IOException, JDOMException, NotationException {
+      IOException, JDOMException, NotationException, CTKException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
@@ -157,7 +165,7 @@ public final class xHELM {
 
   /**
    * method to add the monomer to the database if it is an adhoc monomer
-   * 
+   *
    * @param monomerNotation MonomerNotation
    * @throws JDOMException
    * @throws IOException

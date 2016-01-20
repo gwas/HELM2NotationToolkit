@@ -26,9 +26,7 @@ package org.helm.notation2;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.CalculationException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
@@ -37,7 +35,6 @@ import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.xHelmNotationParser;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
-import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
@@ -46,14 +43,13 @@ import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM1FormatException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
+import org.helm.notation2.exception.PeptideUtilsException;
 import org.helm.notation2.exception.PolymerIDsException;
-import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.helm.notation2.parser.notation.HELM2Notation;
-import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -61,10 +57,9 @@ import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * WebService class containing all required methods for the web-service
- * 
+ *
  * @author hecht
  */
 public class WebService {
@@ -72,7 +67,14 @@ public class WebService {
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(WebService.class);
 
-
+  /**
+   * method to get the XHELMRootElement of a document as a string
+   *
+   * @param resource xhelm input
+   * @return XHELMRootElement
+   * @throws JDOMException
+   * @throws IOException
+   */
   private Element getXHELMRootElement(String resource) throws JDOMException,
       IOException {
 
@@ -84,8 +86,9 @@ public class WebService {
   }
 
   /**
-   * method to combine the new MonomerStore to the existing one
-   * 
+   * method to combine the new MonomerStore to the existing one, in case of
+   * xHELM as input
+   *
    * @param monomerStore MonomerStore
    * @throws MonomerLoadingException
    * @throws IOException
@@ -102,7 +105,7 @@ public class WebService {
   /**
    * method to read the HELM string, the HELM can be in version 1 or 2, or in
    * Xhelm format
-   * 
+   *
    * @param notation HELM input
    * @return ContainerHELM2
    * @throws ParserException
@@ -146,28 +149,26 @@ public class WebService {
   }
 
   /**
-   * method to validate the input HELM-String
-   * 
-   * @param helm HELM input
-   * @throws ParserException
-   * @throws ValidationException
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
+   * method to validate the HELM-String input
+   *
+   * @param helm input HELM string
+   * @return ContainerHELM2
+   * @throws ValidationException if the HELM input is not valid
    */
-  private ContainerHELM2 validate(String helm) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
-    /* Read */
-    ContainerHELM2 containerhelm2 = readNotation(helm);
+  private ContainerHELM2 validate(String helm) throws ValidationException {
 
-    /* Validate */
     try {
+      /* Read */
+      ContainerHELM2 containerhelm2 = readNotation(helm);
+
+      /* Validate */
       LOG.info("Validation of HELM is starting");
       Validation.validateNotationObjects(containerhelm2);
       LOG.info("Validation was successful");
-      
+
       return containerhelm2;
 
-    } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException e) {
+    } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException | ParserException | JDOMException | IOException e) {
       LOG.info("Validation was not successful");
       LOG.error(e.getMessage());
       throw new ValidationException(e.getMessage());
@@ -176,103 +177,89 @@ public class WebService {
 
   /**
    * method to validate the input HELM-String
-   * 
+   *
    * @param helm input HELM-string
-   * @throws ParserException
-   * @throws ValidationException
-   * @throws JDOMException
-   * @throws IOException
-   * @throws MonomerException
+   * @throws ValidationException if the input HELM is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
    */
-  public void validateHELM(String helm) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
+  public void validateHELM(String helm) throws ValidationException, MonomerLoadingException {
     validate(helm);
     setMonomerFactoryToDefault(helm);
   }
 
   /**
-   * method to convert the input-HELM into a canonical HELM
-   * 
-   * @param notation input HELM
+   * method to convert the input HELM into canonical HELM
+   *
+   * @param notation HELM input
    * @return canonical HELM
-   * @throws HELM1FormatException
-   * @throws ParserException
-   * @throws ValidationException
-   * @throws NotationException
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
+   * @throws HELM1FormatException if HELM input contains HELM2 features
+   * @throws NotationException if the notation objects can not be built
+   * @throws ValidationException if the HELM input is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
    */
-  public String convertStandardHELMToCanonicalHELM(String notation) throws HELM1FormatException, ParserException,
-      ValidationException, NotationException, JDOMException, IOException, MonomerException {
+  public String convertStandardHELMToCanonicalHELM(String notation) throws HELM1FormatException, NotationException, ValidationException, MonomerLoadingException {
     String result = HELM1Utils.getCanonical(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
   }
 
   /**
-   * method to convert the input-HELM into a standardHELM
-   * 
-   * @param notation input HELM
+   * method to convert the input HELM into a standard HELM
+   *
+   * @param notation HELM input
    * @return standard HELM
-   * @throws HELM1FormatException
-   * @throws ParserException
-   * @throws ValidationException
-   * @throws NotationException
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
+   * @throws HELM1FormatException if the HELM input contains HELM2 features
+   * @throws NotationException if the notation objects can not be built
+   * @throws ValidationException if the HELM input is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
+   * @throws CTKException
    */
-  public String convertIntoStandardHELM(String notation) throws HELM1FormatException, ParserException,
-      ValidationException, NotationException, JDOMException, IOException, MonomerException {
+  public String convertIntoStandardHELM(String notation) throws HELM1FormatException, NotationException, ValidationException, MonomerLoadingException, CTKException {
     String result = HELM1Utils.getStandard(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
   }
 
   /**
-   * method to calculate the ExtinctionCoefficient from an input-HELM
-   * 
-   * @param notation input HELM
-   * @return extinction coefficient of the input HELM
-   * @throws ParserException
-   * @throws ValidationException
-   * @throws ExtinctionCoefficientException
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
+   * method to calculate from a non-ambiguous HELM string the extinction
+   * coefficient
+   *
+   * @param notation HELM input
+   * @return extinction coefficient from the HELM input
+   * @throws ExtinctionCoefficientException if the extinction coefficient can
+   *           not be calculated
+   * @throws ValidationException if the HELM input is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
    */
-  public Float calculateExtinctionCoefficient(String notation) throws ParserException, ValidationException,
-      ExtinctionCoefficientException, CalculationException, JDOMException, IOException, MonomerException {
+  public Float calculateExtinctionCoefficient(String notation) throws ExtinctionCoefficientException, ValidationException, MonomerLoadingException {
     Float result = ExtinctionCoefficient.getInstance().calculate(validate(notation));
     setMonomerFactoryToDefault(notation);
     return result;
   }
 
   /**
-   * method to generate FASTA-Formats for all rna and peptide sequences
-   * 
-   * @param notation
-   * @return
-   * @throws ParserException
-   * @throws ValidationException
-   * @throws FastaFormatException
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
+   * method to generate FASTA-Formats for all rna and peptide sequences from an
+   * HELM input
+   *
+   * @param notation HELM input
+   * @return FASTA containing all rna and peptide sequences
+   * @throws ValidationException if the HELM input is not valid
+   * @throws FastaFormatException if the FASTA-sequences can not be built
+   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
    */
-  public String generateFasta(String notation) throws ParserException, ValidationException, FastaFormatException, JDOMException, IOException, MonomerException {
+  public String generateFasta(String notation) throws FastaFormatException, ValidationException, MonomerLoadingException {
     String result = FastaFormat.generateFasta(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
   }
 
   /**
-   * method to generate HELM from a FASTA containing nucleotides
-   * 
-   * @param notation
-   * @return
-   * @throws FastaFormatException
-   * @throws MonomerLoadingException
+   * method to generate HELM from a FASTA containing rna/dna sequences
+   *
+   * @param notation FASTA containing rna/dna sequences
+   * @return HELM
+   * @throws FastaFormatException if the input is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
    */
   public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException, MonomerLoadingException {
     String result = new ContainerHELM2(FastaFormat.generateRNAPolymersFromFastaFormatHELM1(notation), new InterConnections()).getHELM2Notation().toHELM2();
@@ -281,12 +268,12 @@ public class WebService {
   }
 
   /**
-   * method to generate HELm from a FASTA containing amino acids
-   * 
-   * @param notation
-   * @return
-   * @throws FastaFormatException
-   * @throws MonomerLoadingException
+   * method to generate HELM from a FASTA containing peptide sequence(s)
+   *
+   * @param notation FASTA containing peptide sequence(s)
+   * @return HELM
+   * @throws FastaFormatException if the FASTA input is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
    */
   public String generateHELMFromFastaPeptide(String notation) throws FastaFormatException, MonomerLoadingException {
     String result = new ContainerHELM2(FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation), new InterConnections()).getHELM2Notation().toHELM2();
@@ -295,115 +282,117 @@ public class WebService {
   }
 
   /**
-   * method to calculate the molecular weight of the HELM string
-   * 
-   * @param notation
-   * @return
-   * @throws ParserException
-   * @throws ValidationException
-   * @throws BuilderMoleculeException
+   * method to calculate from a non-ambiguous HELM input the molecular weight
+   *
+   * @param notation HELM input
+   * @return moleuclar weight from the HELM input
+   * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
+   * @throws ValidationException if the HELM input is not valid
+   * @throws BuilderMoleculeException if the molecule for the calculation can
+   *           not be built
    * @throws CTKException
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
    */
-  public Double calculateMolecularWeight(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, JDOMException, IOException, MonomerException {
+  public Double calculateMolecularWeight(String notation) throws MonomerLoadingException, BuilderMoleculeException, CTKException, ValidationException {
     Double result = MoleculeInformation.getMolecularWeight(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
   }
 
   /**
-   * method to get the molecular formular of one HELM
-   * 
-   * @param notation
-   * @return
-   * @throws ValidationException
-   * @throws ParserException
-   * @throws BuilderMoleculeException
+   * method to calculate from a non-ambiguous HELM input the molecular formula
+   *
+   * @param notation HELM input
+   * @return molecular formula from the HELM input
+   * @throws ValidationException if the HELM input is not valid
+   * @throws BuilderMoleculeException if the molecule for the calculation can
+   *           not be built
    * @throws CTKException
-   * @throws MonomerException
-   * @throws IOException
-   * @throws JDOMException
+   * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
    */
-  public String getMolecularFormula(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, JDOMException, IOException, MonomerException {
+  public String getMolecularFormula(String notation) throws BuilderMoleculeException, CTKException, ValidationException, MonomerLoadingException {
     String result = MoleculeInformation.getMolecularFormular(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
   }
 
-  public String getNaturalAnalogSequence(String notation) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
-    /* is only possible for peptides + nucleotides */
-    /* replace each polymer into the analogsequence and generate HELM2 format */
-    HELM2Notation helm2notation;
-    try {
-      helm2notation = FastaFormat.convertIntoAnalogSequence(validate(notation).getHELM2Notation());
-      setMonomerFactoryToDefault(notation);
-      return helm2notation.toHELM2();
-    } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | FastaFormatException | AnalogSequenceException e) {
-      return e.getMessage();
-    }
-
+  /**
+   * method to read a single peptide sequence and generates HELM
+   *
+   * @param peptide peptide sequence
+   * @return HELM
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException if the
+   *           notation object can not be built
+   * @throws FastaFormatException if the peptide sequence is not in the right
+   *           format
+   */
+  public String readPeptide(String peptide) throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException {
+    return SequenceConverter.readPeptide(peptide).getHELM2Notation().toHELM2();
   }
-
-  public String readPeptide(String peptide) throws FastaFormatException {
-    HELM2Notation helm2notation = new HELM2Notation();
-    PolymerNotation polymer;
-    try {
-      polymer = new PolymerNotation("PEPTIDE" + "1");
-      helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
-          FastaFormat.generateElementsOfPeptide(peptide, polymer.getPolymerID()), null));
-      return helm2notation.toHELM2();
-    } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
-      return e.getMessage();
-    }
-  }
-
-  public String readRNA(String rna) throws FastaFormatException {
-    HELM2Notation helm2notation = new HELM2Notation();
-    PolymerNotation polymer;
-    try {
-      polymer = new PolymerNotation("RNA" + "1");
-
-      helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
-          FastaFormat.generateElementsforRNA(rna, polymer.getPolymerID()), null));
-      return helm2notation.toHELM2();
-    } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
-      return e.getMessage();
-    }
-  }
-
 
   /**
-   * method to generate for the whole HELMNotation the molecule
-   * 
+   * method to read a single rna sequence and generates HELM
+   *
+   * @param rna rna sequence
+   * @return HELM
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException if the
+   *           notation object can not be built
+   * @throws FastaFormatException if the rna-sequence is not in the right format
+   *           HELM
+   */
+  public String readRNA(String rna) throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException {
+    return SequenceConverter.readRNA(rna).getHELM2Notation().toHELM2();
+  }
+
+  /**
+   * method to generate a HELM molecule
+   *
    * @param notation HELM string
    * @return generated molecule image in byte[]
-   * @throws ParserException if the HELM string is not parsable
    * @throws ValidationException if the HELM string is not valid
    * @throws BuilderMoleculeException if the molecule can't be built
    * @throws CTKException
    * @throws IOException
-   * @throws JDOMException
-   * @throws MonomerException if
+   * @throws MonomerException if the MonomerFactory can not be loaded
    */
-  public byte[] generateImageForHELMMolecule(String notation) throws ParserException, ValidationException, BuilderMoleculeException, CTKException, IOException, JDOMException, MonomerException {
+  public byte[] generateImageForHELMMolecule(String notation) throws BuilderMoleculeException, CTKException, IOException, ValidationException {
     byte[] result = Images.generateImageHELMMolecule(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
   }
 
+  /**
+   * method to generate an image for a monomer
+   *
+   * @param monomer Monomer Input
+   * @return generated molecule image in byte[]
+   * @throws BuilderMoleculeException if the molecule can not be built
+   * @throws CTKException
+   */
   public byte[] generateImageForMonomer(Monomer monomer) throws BuilderMoleculeException, CTKException {
     return Images.generateImageofMonomer(monomer);
   }
 
-  public String generateJSON(String helm) throws ParserException, ValidationException, JDOMException, IOException, MonomerException {
+  /**
+   * method to generate JSON-Output for the HELM
+   *
+   * @param helm HELM input
+   * @return HELM as JSON-objects
+   * @throws ValidationException if the HELM input is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
+   */
+  public String generateJSON(String helm) throws ValidationException, MonomerLoadingException {
     String result = validate(helm).toJSON();
     setMonomerFactoryToDefault(helm);
     return result;
   }
 
-
+  /**
+   * method to set the MonomerFactory to the default one, this is only done in
+   * case of xHELM input
+   *
+   * @param helm input HELM
+   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
+   */
   private void setMonomerFactoryToDefault(String helm) throws MonomerLoadingException {
     if (helm.contains("<Xhelm>")) {
       LOG.info("Refresh local Monomer Store in case of Xhelm");
@@ -411,17 +400,43 @@ public class WebService {
     }
   }
 
-  public String generateNaturalAnalogSequencePeptide(String notation) throws org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ParserException, ValidationException,
-      JDOMException, IOException, MonomerException {
-    ContainerHELM2 containerhelm2 = validate(notation);
-    return SequenceConverter.getPeptideNaturalAnalogSequenceFromNotation(containerhelm2.getHELM2Notation());
-
+  /**
+   * method to generate the natural analogue sequence for all peptide-sequences
+   * from an HELM input
+   *
+   * @param notation input HELM
+   * @return natural analogue peptide sequences, divided by white spaces
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException if the
+   *           input complex notation contains non-peptide polymer(s)
+   * @throws HELM2HandledException if the HELM input contains HELM2 features
+   * @throws ValidationException if the input HELM is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
+   * @throws PeptideUtilsException if the polymer is not a peptide
+   */
+  public String generateNaturalAnalogSequencePeptide(String notation) throws org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ValidationException,
+      MonomerLoadingException, PeptideUtilsException {
+    String result = SequenceConverter.getPeptideNaturalAnalogSequenceFromNotation(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
-  public String generateNaturalAnalogSequenceRNA(String notation) throws org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, RNAUtilsException, ParserException,
-      ValidationException, JDOMException, IOException, MonomerException {
-    ContainerHELM2 containerhelm2 = validate(notation);
-    return SequenceConverter.getNucleotideNaturalAnalogSequenceFromNotation(containerhelm2.getHELM2Notation());
+  /**
+   * method to generate the natural analogue sequence for all rna-sequences from
+   * an HELM input
+   *
+   * @param notation HELM input
+   * @return natural analogue rna sequences, divided by white spaces
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException if the
+   *           input complex notation contains non-nucleid acid polymer(s)
+   * @throws HELM2HandledException if HELM input contains HELM2 features
+   * @throws ValidationException if the HELM input is not valid
+   * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
+   */
+  public String generateNaturalAnalogSequenceRNA(String notation) throws org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ValidationException,
+      MonomerLoadingException {
+    String result = SequenceConverter.getNucleotideNaturalAnalogSequenceFromNotation(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
   }
 
 }

@@ -23,14 +23,17 @@
  */
 package org.helm.notation2.exception;
 
-
-
 /**
  * AnalogSequenceException
- * 
+ *
  * @author hecht
  */
 public class AnalogSequenceException extends Exception {
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   public AnalogSequenceException(String message) {
     super(message);
