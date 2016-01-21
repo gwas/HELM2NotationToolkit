@@ -150,13 +150,9 @@ public class MonomerWSLoader {
     // through Windows platform specific methods via JNI.
     CloseableHttpResponse response = null;
     try {
-      HttpGet httpget = new HttpGet(
-          new URIBuilder(MonomerStoreConfiguration.getInstance()
-              .getWebserviceEditorCategorizationFullURL())
-              .build());
+      response = WSAdapterUtils.getResource(MonomerStoreConfiguration.getInstance()
+          .getWebserviceEditorCategorizationFullURL());
 
-      LOG.debug("Executing request " + httpget.getRequestLine());
-      response = httpclient.execute(httpget);
       LOG.debug(response.getStatusLine().toString());
 
       JsonFactory jsonf = new JsonFactory();

@@ -1,10 +1,12 @@
 package org.helm.notation.wsadapter;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
@@ -32,7 +34,7 @@ public class WSAdapterUtils {
   }
 
   /**
-   * Calls a put routine with given JSON on given resource URL.
+   * Calls a PUT routine with given JSON on given resource URL.
    * 
    * @param json the input JSON
    * @param fullURL the resource URL
@@ -43,7 +45,7 @@ public class WSAdapterUtils {
    */
   protected static CloseableHttpResponse putResource(String json, String fullURL) throws ClientProtocolException,
       IOException, URISyntaxException {
-    try (CloseableHttpClient httpclient = HttpClients.createDefault();) {
+    try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
       // There is no need to provide user credentials
       // HttpClient will attempt to access current user security context
       // through Windows platform specific methods via JNI.
@@ -53,6 +55,28 @@ public class WSAdapterUtils {
 
       LOG.debug("Executing request " + httpput.getRequestLine());
       return httpclient.execute(httpput);
+    }
+
+  }
+
+  /**
+   * Call a GET routine on given resource URL.
+   * 
+   * @param fullURL the resource URL
+   * @return Response
+   * @throws IOException
+   * @throws URISyntaxException
+   */
+  protected static CloseableHttpResponse getResource(String fullURL) throws IOException,
+      URISyntaxException {
+    URI uri = new URIBuilder(fullURL).build();
+
+    try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+      /* read url */
+      HttpGet httpget = new HttpGet(uri);
+      LOG.debug("Executing request " + httpget.getRequestLine());
+      return httpclient.execute(httpget);
+
     }
 
   }

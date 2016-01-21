@@ -21,17 +21,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 // import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -75,16 +70,10 @@ public class NucleotideWSLoader {
     Map<String, String> nucleotides = new HashMap<String, String>();
     LOG.debug("Loading nucleotide store by Webservice Loader");
     LOG.debug(MonomerStoreConfiguration.getInstance().toString());
-
-    CloseableHttpClient httpclient = HttpClients.createDefault();
     CloseableHttpResponse response = null;
-    URI uri = new URIBuilder(MonomerStoreConfiguration.getInstance().getWebserviceNucleotidesFullURL()).build();
-
     try {
-      /* read url */
-      HttpGet httpget = new HttpGet(uri);
-      LOG.debug("Executing request " + httpget.getRequestLine());
-      response = httpclient.execute(httpget);
+      response =
+          WSAdapterUtils.getResource(MonomerStoreConfiguration.getInstance().getWebserviceNucleotidesFullURL());
       LOG.debug(response.getStatusLine().toString());
 
       JsonFactory jsonf = new JsonFactory();
@@ -100,7 +89,8 @@ public class NucleotideWSLoader {
 
       /* read file */
       JsonFactory jsonf = new JsonFactory();
-      InputStream instream = new FileInputStream(new File(uri));
+      InputStream instream =
+          new FileInputStream(new File(MonomerStoreConfiguration.getInstance().getWebserviceNucleotidesFullURL()));
 
       JsonParser jsonParser = jsonf.createJsonParser(instream);
       nucleotides = deserializeNucleotideStore(jsonParser);
@@ -110,9 +100,6 @@ public class NucleotideWSLoader {
 
       if (response != null) {
         response.close();
-      }
-      if (httpclient != null) {
-        httpclient.close();
       }
     }
 
