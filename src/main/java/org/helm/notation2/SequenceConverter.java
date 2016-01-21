@@ -23,6 +23,7 @@
  */
 package org.helm.notation2;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.helm.notation.NucleotideLoadingException;
@@ -34,6 +35,7 @@ import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.jdom2.JDOMException;
 
 /**
  * SequenceConverter class to convert sequence into the ContainerHELM2 object
@@ -77,11 +79,19 @@ public final class SequenceConverter {
    * @throws FastaFormatException if the rna/dna sequence is not in the right
    *           format
    * @throws NotationException if the notation object can not be built
+   * @throws JDOMException
+   * @throws IOException
    */
-  protected static ContainerHELM2 readRNA(String notation) throws FastaFormatException, NotationException {
+  protected static ContainerHELM2 readRNA(String notation) throws FastaFormatException, NotationException, IOException, JDOMException {
     HELM2Notation helm2notation = new HELM2Notation();
     PolymerNotation polymer = new PolymerNotation("RNA1");
-    helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), FastaFormat.generateElementsforRNA(notation, polymer.getPolymerID())));
+    if (!(FastaFormat.isNormalDirection(notation))) {
+      String annotation = "3'-5'";
+      helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), FastaFormat.generateElementsforRNA(notation, polymer.getPolymerID()), annotation));
+    } else {
+      helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), FastaFormat.generateElementsforRNA(notation, polymer.getPolymerID())));
+    }
+
     ContainerHELM2 containerhelm2 = new ContainerHELM2(helm2notation, new InterConnections());
     return containerhelm2;
   }

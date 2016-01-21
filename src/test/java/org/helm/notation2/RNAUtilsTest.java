@@ -30,7 +30,10 @@ import org.helm.notation.tools.NucleotideSequenceParser;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.RNAUtilsException;
+import org.helm.notation2.parser.ConverterHELM1ToHELM2;
+import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
@@ -110,11 +113,63 @@ public class RNAUtilsTest {
     RNAUtils.getSirnaNotation(notation).getHELM2Notation().toHELM2();
   }
 
+  @Test
+  public void addLastPAndRemoveLastPTest() throws org.helm.notation2.parser.exceptionparser.NotationException, RNAUtilsException, IOException, FastaFormatException, HELM2HandledException,
+      JDOMException {
+    String notation = "CAGTT";
+
+    /* read notation */
+    ContainerHELM2 containerHELM2 = produceContainerHELM2(notation);
+
+    /* add phosphate */
+    RNAUtils.addLastP(containerHELM2.getHELM2Notation().getListOfPolymers().get(0));
+
+    /* check if the RNA Notation contains now the added phosphate */
+    Assert.assertEquals(containerHELM2.getHELM2Notation().toHELM2(), "RNA1{R(C)P.R(A)P.R(G)P.R(T)P.R(T)P}$$$$V2.0");
+
+    /* remove last phosphate */
+    RNAUtils.removeLastP(containerHELM2.getHELM2Notation().getListOfPolymers().get(0));
+
+    /* check if the RNA Notation contains now the removed phosphate */
+    Assert.assertEquals(containerHELM2.getHELM2Notation().toHELM2(), "RNA1{R(C)P.R(A)P.R(G)P.R(T)P.R(T)}$$$$V2.0");
+  }
+
+  @Test
+  public void hasNucleotideModificationTest() throws ParserException, JDOMException, org.helm.notation2.parser.exceptionparser.NotationException {
+    String notation = "RNA1{R(U)P.R([dabA])}$$$$V2.0";
+    ContainerHELM2 containerHELM2 = readNotation(notation);
+    Assert.assertTrue(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+    notation = "RNA1{R(U)P.R(A)P}$$$$V2.0";
+    containerHELM2 = readNotation(notation);
+    Assert.assertFalse(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+    notation = "RNA1{R(U)P.(R(A)P.R(G)P)'3'}$$$$V2.0";
+    containerHELM2 = readNotation(notation);
+    Assert.assertFalse(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+    notation = "RNA1{R(U)P.(R(A)P+R([dabA])P)}$$$$V2.0";
+    containerHELM2 = readNotation(notation);
+    Assert.assertTrue(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+  }
+
   private ContainerHELM2 produceContainerHELM2(String notation)
-      throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException {
+      throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, IOException, JDOMException {
     ContainerHELM2 containerhelm2 = SequenceConverter.readRNA(notation);
     return containerhelm2;
   }
 
+  private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {
+    /* HELM1-Format -> */
+    if (!(notation.contains("V2.0"))) {
+      notation = new ConverterHELM1ToHELM2().doConvert(notation);
+    }
+    /* parses the HELM notation and generates the necessary notation objects */
+    ParserHELM2 parser = new ParserHELM2();
+    try {
+      parser.parse(notation);
+    } catch (ExceptionState | IOException e) {
+      throw new ParserException(e.getMessage());
+    }
+    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
+    return containerhelm2;
+  }
 
 }

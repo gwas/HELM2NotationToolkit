@@ -42,6 +42,9 @@ import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupElement;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
@@ -80,8 +83,10 @@ public class RNAUtils {
    * @param sequence nucleotide sequence
    * @return ContainerHELM2
    * @throws RNAUtilsException if the sense or antisense strand can not be built
+   * @throws JDOMException
+   * @throws IOException
    */
-  protected static ContainerHELM2 getSirnaNotation(String sequence) throws RNAUtilsException {
+  protected static ContainerHELM2 getSirnaNotation(String sequence) throws RNAUtilsException, IOException, JDOMException {
     /* Build the sense + antisense sequence */
     ContainerHELM2 sense;
     try {
@@ -150,8 +155,10 @@ public class RNAUtils {
    * @throws RNAUtilsException if the polymers are not rna/dna or the
    *           antiparallel strand can not be built from polymerOne
    * @throws HELM2HandledException if the polymers contain HELM2 features
+   * @throws JDOMException
+   * @throws IOException
    */
-  protected static boolean areAntiparallel(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException {
+  protected static boolean areAntiparallel(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException, IOException, JDOMException {
     checkRNA(polymerOne);
     checkRNA(polymerTwo);
     PolymerNotation antiparallel = getAntiparallel(polymerOne);
@@ -167,16 +174,76 @@ public class RNAUtils {
 
   }
 
-  /* ToDo */
-  protected PolymerNotation removeLastP(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  /**
+   * method to remove the phosphate of the last nucleotide
+   *
+   * @param polymer PolymerNotation
+   * @throws RNAUtilsException if the PolmyerNotation is not a rna or dna
+   * @throws IOException
+   * @throws NotationException if the changed notation object can not be
+   *           generated
+   * @throws HELM2HandledException if HELM2 features are involved
+   */
+  protected static void removeLastP(PolymerNotation polymer) throws RNAUtilsException, NotationException, IOException, HELM2HandledException {
     checkRNA(polymer);
-    List<Monomer> listMonomers =
-        MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getPolymerElements().getListOfElements());
-    // if (listMonomers.get(listMonomers.size() -
-    // 1).getNaturalAnalog().equals("P")) {
-//
-// }
-    return null;
+    /* Get last monomerNotation */
+    MonomerNotation lastObject = polymer.getPolymerElements().getListOfElements().get(polymer.getPolymerElements().getListOfElements().size() - 1);
+
+    /* What happens to HELM2 features */
+    if (lastObject instanceof MonomerNotationGroup || lastObject instanceof MonomerNotationList) {
+      throw new HELM2HandledException("HELM2 features are involved");
+    }
+
+    if (hasPhosphat((MonomerNotationUnitRNA) lastObject)) {
+      MonomerNotation lastObjectwithoutPhosphat = new MonomerNotationUnitRNA(lastObject.getID().substring(0, lastObject.getID().length() - 1), "RNA");
+      ChangeObjects.changeMonomerNotation(polymer.getPolymerElements().getListOfElements().size() - 1, polymer, lastObjectwithoutPhosphat);
+      LOG.info("Last phosphate was removed from the last nucleotide");
+    }
+  }
+
+  /**
+   * method to check if the MonomerNotationUnitRNA has a phosphate
+   *
+   * @param monomerNotationUnitRNA MonomerNotationUnitRNA
+   * @return true, if it ends with "P", false otherwise
+   */
+  /* To Do check for other modified phosphates? */
+  private static boolean hasPhosphat(MonomerNotationUnitRNA monomerNotationUnitRNA) {
+    if (monomerNotationUnitRNA.getContents().get(monomerNotationUnitRNA.getContents().size() - 1).getID().endsWith("P")) {
+      LOG.info("MonomerNotationUnitRNA " + monomerNotationUnitRNA.getID() + " has a phosphate");
+      return true;
+    }
+    LOG.info("MonomerNotationUnitRNA " + monomerNotationUnitRNA.getID() + " has no phosphate");
+    return false;
+  }
+
+  /**
+   * method to add a phosphate to the last polymer's nucleotide
+   *
+   * @param polymer PolymerNotation
+   * @throws RNAUtilsException if the polymer is no rna or dna
+   * @throws NotationException if the changed notation object can not be
+   *           generated
+   * @throws IOException
+   * @throws HELM2HandledException if HELM2 features are involved
+   */
+  protected static void addLastP(PolymerNotation polymer) throws RNAUtilsException, NotationException, IOException, HELM2HandledException {
+    checkRNA(polymer);
+    /* Get last monomerNotation */
+    MonomerNotation lastObject = polymer.getPolymerElements().getListOfElements().get(polymer.getPolymerElements().getListOfElements().size() - 1);
+
+    /* What happens to HELM2 features */
+    if (lastObject instanceof MonomerNotationGroup || lastObject instanceof MonomerNotationList) {
+      System.out.println(lastObject.getClass());
+      throw new HELM2HandledException("HELM2 features are involved");
+    }
+
+    if (!(hasPhosphat((MonomerNotationUnitRNA) lastObject))) {
+      MonomerNotation lastObjectwithPhosphat = new MonomerNotationUnitRNA(lastObject.getID() + "P", "RNA");
+      ChangeObjects.changeMonomerNotation(polymer.getPolymerElements().getListOfElements().size() - 1, polymer, lastObjectwithPhosphat);
+      LOG.info("Phosphate was added to the last nucleotide");
+    }
+
   }
 
   /**
@@ -186,8 +253,10 @@ public class RNAUtils {
    * @return antiparallel polymer
    * @throws RNAUtilsException if the polymer is not rna or dna or the reverse
    *           polymer can not be built
+   * @throws JDOMException
+   * @throws IOException
    */
-  protected static PolymerNotation getAntiparallel(PolymerNotation polymer) throws RNAUtilsException {
+  protected static PolymerNotation getAntiparallel(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException {
     checkRNA(polymer);
     PolymerNotation reversePolymer;
     try {
@@ -221,8 +290,10 @@ public class RNAUtils {
    * @return reverse complement sequence
    * @throws RNAUtilsException if the polymer is not rna or dna or the inverse
    *           strand can not be built
+   * @throws JDOMException
+   * @throws IOException
    */
-  protected static PolymerNotation getInverse(PolymerNotation polymer) throws RNAUtilsException {
+  protected static PolymerNotation getInverse(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException {
     checkRNA(polymer);
     PolymerNotation inverse;
     try {
@@ -275,9 +346,11 @@ public class RNAUtils {
    *
    * @throws RNAUtilsException if the polymer is not rna or dna or the
    *           complement polymer can not be built
+   * @throws JDOMException
+   * @throws IOException
    *
    */
-  protected static PolymerNotation getComplement(PolymerNotation polymer) throws RNAUtilsException {
+  protected static PolymerNotation getComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException {
     checkRNA(polymer);
     PolymerNotation complementPolymer;
     try {
@@ -292,9 +365,67 @@ public class RNAUtils {
 
   }
 
-  /* ToDo */
-  protected void hasNucleotideModification(PolymerNotation polymer) {
+  /**
+   * method to check if the given PolymerNotation has a nucleotide Modification
+   *
+   * @param polymer PolymerNotation
+   * @return true if the polymer contains at least one modifcation, false
+   *         otherwise
+   * @throws NotationException
+   */
+  protected static boolean hasNucleotideModification(PolymerNotation polymer) throws NotationException {
+    for (MonomerNotation current : polymer.getPolymerElements().getListOfElements()) {
+      if (hasModification(current)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
+  /**
+   * method to check if the MonomerNotation contains a modification
+   *
+   * @param monomerNotation
+   * @return true, if the MonomerNotation contains a modification, false
+   *         otherwise
+   * @throws NotationException if the MonomerNotation is unknown
+   */
+  private static boolean hasModification(MonomerNotation monomerNotation) throws NotationException {
+
+    if (monomerNotation instanceof MonomerNotationUnitRNA) {
+      if (hasModification((MonomerNotationUnitRNA) monomerNotation)) {
+        return true;
+      }
+    } else if (monomerNotation instanceof MonomerNotationGroup) {
+      for (MonomerNotationGroupElement element : ((MonomerNotationGroup) monomerNotation).getListOfElements()) {
+        if (hasModification(element.getMonomerNotation())) {
+          return true;
+        }
+      }
+    } else if (monomerNotation instanceof MonomerNotationList) {
+      for (MonomerNotation element : ((MonomerNotationList) monomerNotation).getListofMonomerUnits()) {
+        if (hasModification(element)) {
+          return true;
+        }
+      }
+    } else {
+      throw new NotationException("Unknown MonomerNotation Type " + monomerNotation.getClass());
+    }
+    return false;
+  }
+
+  /**
+   * method to check if the MonomerNotationUnitRNA contains modification
+   *
+   * @param monomerNotation MonomerNotationUnitRNA
+   * @return true, if the MonomerNotationUnitRNA contains modification, false
+   *         otherwise
+   */
+  private static boolean hasModification(MonomerNotationUnitRNA monomerNotation) {
+    if (monomerNotation.getID().contains("[") || monomerNotation.getID().contains("(X)") || monomerNotation.getID().endsWith(")")) {
+      return true;
+    }
+    return false;
   }
 
   /**

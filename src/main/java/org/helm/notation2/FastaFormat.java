@@ -26,12 +26,17 @@ package org.helm.notation2;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.NotationConstant;
 import org.helm.notation.NucleotideFactory;
+import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.model.Monomer;
+import org.helm.notation.model.Nucleotide;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -141,8 +146,11 @@ public final class FastaFormat {
    * @param fasta FastaFile in string format
    * @return HELM2Notation generated HELM2Notation
    * @throws FastaFormatException if the input is not correct
+   * @throws JDOMException
+   * @throws IOException
+   * @throws NotationException
    */
-  protected static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException {
+  protected static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException, NotationException, IOException, JDOMException {
     helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Nucleotide Sequence must be specified");
@@ -151,7 +159,6 @@ public final class FastaFormat {
 
     /* initialize Map to get the information for nucleotides! */
     initMapNucleotides();
-
     /* walk through the fastafile: it can contain more than one sequence */
     StringBuilder elements = new StringBuilder();
     int counter = 0;
@@ -166,7 +173,9 @@ public final class FastaFormat {
       if (line.startsWith(">")) {
         counter++;
         if (counter > 1) {
-
+          if (!(isNormalDirection(elements.toString()))) {
+            annotation += " 3'-5'";
+          }
           helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
               generateElementsforRNA(elements.toString(), polymer.getPolymerID()), annotation));
           elements = new StringBuilder();
@@ -184,7 +193,9 @@ public final class FastaFormat {
       }
 
     }
-
+    if (!(isNormalDirection(elements.toString()))) {
+      annotation += " 3'-5'";
+    }
     helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(),
         generateElementsforRNA(elements.toString(), polymer.getPolymerID()), annotation));
 
@@ -281,23 +292,19 @@ public final class FastaFormat {
    * @param entity HELMEntity
    * @return PolymerListElements
    * @throws FastaFormatException if the input sequence is not correct
+   * @throws NotationException
+   * @throws JDOMException
+   * @throws IOException
    */
   protected static PolymerListElements generateElementsforRNA(String sequence, HELMEntity entity)
-      throws FastaFormatException {
+      throws FastaFormatException, NotationException, IOException, JDOMException {
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();
     PolymerListElements elements = new PolymerListElements(entity);
-    for (Character c : sequence.toCharArray()) {
-      /*
-       * -> get for each single nucleotide code the contents from the
-       * nucleotidefactory
-       */
-      try {
-        elements.addMonomerNotation(nucleotides.get(c.toString()));
-      } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException
-          | NullPointerException e) {
-        throw new FastaFormatException("Monomer can not be found:" + c.toString());
-      }
+    sequence = prepareSequence(sequence);
+    List<Nucleotide> normalNucleotideList = getNormalList(sequence);
+    for (Nucleotide nucleotide : normalNucleotideList) {
+      elements.addMonomerNotation(nucleotide.getNotation());
     }
     /* remove the phosphat of the last group */
     String id = elements.getCurrentMonomerNotation().getID();
@@ -308,6 +315,48 @@ public final class FastaFormat {
     }
 
     return elements;
+  }
+
+  /**
+   * @param sequence
+   * @return
+   * @throws NotationException
+   * @throws NucleotideLoadingException
+   */
+  private static List<Nucleotide> getNormalList(String sequence) throws NotationException, NucleotideLoadingException {
+    if (null == sequence) {
+      throw new NotationException("Sequence must be specified");
+    }
+    Map<String, Map<String, String>> templates = NucleotideFactory.getInstance().getNucleotideTemplates();
+    Map<String, String> nucleotides = null;
+    nucleotides = templates.get(NotationConstant.NOTATION_SOURCE);
+    Set<String> keySet = nucleotides.keySet();
+
+    // walk the sequence
+    List<Nucleotide> l = new ArrayList<Nucleotide>();
+    int pos = 0;
+    while (pos < sequence.length()) {
+      boolean found = false;
+      for (Iterator i = keySet.iterator(); i.hasNext();) {
+        String symbol = (String) i.next();
+
+        if (sequence.startsWith(symbol, pos)) {
+          found = true;
+          String notation = nucleotides.get(symbol);
+          Nucleotide nuc = new Nucleotide(symbol, notation);
+          l.add(nuc);
+          pos = pos + symbol.length();
+          break;
+        }
+      }
+      if (!found) {
+        throw new NotationException(
+            "Sequence contains unknown nucleotide starting at "
+                + sequence.substring(pos));
+      }
+    }
+
+    return l;
   }
 
   /**
@@ -666,6 +715,33 @@ public final class FastaFormat {
       }
       return id;
     }
+  }
+
+  /**
+   * method to check if the sequence is in normal direction 5' to 3'
+   *
+   * @param sequence rna sequence
+   * @return true, if the sequence is in normal direction, false otherwise
+   */
+  protected static boolean isNormalDirection(String sequence) {
+    if (sequence.startsWith("3")) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  private static String prepareSequence(String sequence) {
+    String result = sequence;
+    result = result.replace("-", "");
+    result = result.replace("5'", "");
+    result = result.replace("3'", "");
+
+    if (!(isNormalDirection(sequence))) {
+      result = new StringBuffer(result).reverse().toString();
+    }
+
+    return result;
   }
 
 }

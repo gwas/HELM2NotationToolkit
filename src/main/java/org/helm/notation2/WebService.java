@@ -259,9 +259,11 @@ public class WebService {
    * @param notation FASTA containing rna/dna sequences
    * @return HELM
    * @throws FastaFormatException if the input is not valid
-   * @throws MonomerLoadingException if the MonomerFactory can not be loaded
+   * @throws JDOMException
+   * @throws IOException
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
    */
-  public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException, MonomerLoadingException {
+  public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException, org.helm.notation2.parser.exceptionparser.NotationException, IOException, JDOMException {
     String result = new ContainerHELM2(FastaFormat.generateRNAPolymersFromFastaFormatHELM1(notation), new InterConnections()).getHELM2Notation().toHELM2();
     setMonomerFactoryToDefault(notation);
     return result;
@@ -338,8 +340,10 @@ public class WebService {
    *           notation object can not be built
    * @throws FastaFormatException if the rna-sequence is not in the right format
    *           HELM
+   * @throws JDOMException
+   * @throws IOException
    */
-  public String readRNA(String rna) throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException {
+  public String readRNA(String rna) throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, IOException, JDOMException {
     return SequenceConverter.readRNA(rna).getHELM2Notation().toHELM2();
   }
 
