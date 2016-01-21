@@ -22,3 +22,23 @@ HELMNotationToolkit 1.3
 -----------------------
 * Java 1.7
 * MarvinBeans 5.0
+
+
+There are two new configuration files in .helm.
+
+The Chemistry.property contains the information which Chemistry plugin you want to use. 
+chemistry.plugin=MARVIN
+The default one is MARVIN.
+The MonomerStoreConfig.properties contains the information if you want to use a webservice to do monomer management actions.
+use.webservice=false
+update.automatic=true
+webservice.monomers.url=http://localhost:8080
+webservice.monomers.path=DemoWebserver/service/monomerStore?polymerType=
+#webservice.monomers.put.path=path/monomerToolkit
+webservice.monomers.put.path=DemoWebserver/service/monomerStore
+webservice.nucleotides.url=http://localhost:8080
+webservice.nucleotides.path=DemoWebserver/service/nucleotideStore
+#webservice.nucleotides.put.path=path/nucleotideTemplate
+webservice.nucleotides.put.path=DemoWebserver/service/nucleotideStore
+webservice.editor.categorization.url=http://localhost:8080
+webservice.editor.categorization.path=path/monomerStoreEditorCategories
