@@ -47,7 +47,7 @@ public class ImagesTest {
   @Test
   public void TestGenerationImageOfMonomer() throws BuilderMoleculeException, CTKException, FileNotFoundException, IOException {
     Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", "P");
-    byte[] result = Images.generateImageofMonomer(monomer);
+    byte[] result = Images.generateImageofMonomer(monomer, false);
     if (!Files.exists(Paths.get("test-output"))) {
       Files.createDirectories(Paths.get("test-output"));
     }

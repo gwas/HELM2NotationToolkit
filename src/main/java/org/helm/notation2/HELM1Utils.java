@@ -187,9 +187,12 @@ public final class HELM1Utils {
     Map<String, String> convertsortedIdstoIds;
     try {
       Object[] temp = setCanonicalHELMFirstSection(helm2notation);
+      LOG.info("First Section of canonical HELM was generated");
       convertsortedIdstoIds = (Map<String, String>) temp[0];
       String firstSection = (String) temp[1];
+      LOG.info("Hallo");
       String secondSection = setCanonicalHELMSecondSection(convertsortedIdstoIds, helm2notation.getListOfConnections());
+      LOG.info("Second Section of canonical HELM was generated");
       return firstSection + "$" + secondSection + "$" + "" + "$" + "" + "$V2.0";
     } catch (ClassNotFoundException | IOException | HELM1ConverterException | ValidationException e) {
       LOG.error("Canonical HELM 1 can not be generated due to HELM2 features");
@@ -223,6 +226,8 @@ public final class HELM1Utils {
         elementsToHELM = elementsToHELM.replaceAll(e.getKey(), e.getValue());
       }
 
+      elementsToHELM = elementsToHELM.replace("[", "");
+      elementsToHELM = elementsToHELM.replace("]", "");
       idLabelMap.put(id, elementsToHELM);
       if (labelIdMap.containsKey(elementsToHELM)) {
         List<String> l = labelIdMap.get(elementsToHELM);
@@ -235,6 +240,7 @@ public final class HELM1Utils {
     }
 
     Set<String> sortedLabelSet = labelIdMap.keySet();
+    System.out.println(sortedLabelSet);
     List<List<String[]>> lol = new ArrayList<List<String[]>>();
     for (String key : sortedLabelSet) {
       List<String> value = labelIdMap.get(key);
@@ -244,6 +250,7 @@ public final class HELM1Utils {
     }
 
     List<List<String>> nodeIdPermutations = PermutationAndExpansion.linearize(lol);
+    System.out.println(nodeIdPermutations);
     List<String> notationList = new ArrayList<String>();
     Map<String, String> convertsortedIdstoIds = new HashMap<String, String>();
     for (List<String> sortedIdList : nodeIdPermutations) {
@@ -291,6 +298,7 @@ public final class HELM1Utils {
   private static String setCanonicalHELMSecondSection(Map<String, String> convertsortedIdstoIds, List<ConnectionNotation> connectionNotations) throws HELM1ConverterException {
     StringBuilder notation = new StringBuilder();
     for (ConnectionNotation connectionNotation : connectionNotations) {
+      System.out.println(connectionNotation);
       /* canonicalize connection */
       /* change the id's of the polymers to the sorted ids */
       List<String> connections = new ArrayList<String>();
@@ -308,7 +316,6 @@ public final class HELM1Utils {
     if (notation.length() > 1) {
       notation.setLength(notation.length() - 1);
     }
-
     return notation.toString();
   }
 

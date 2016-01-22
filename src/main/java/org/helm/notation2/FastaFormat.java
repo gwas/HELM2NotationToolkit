@@ -268,6 +268,7 @@ public final class FastaFormat {
   protected static PolymerListElements generateElementsOfPeptide(String sequence, HELMEntity entity)
       throws FastaFormatException {
     initMapAminoAcid();
+    sequence = cleanup(sequence);
     try {
       PolymerListElements elements = new PolymerListElements(entity);
       for (Character c : sequence.toCharArray()) {
@@ -301,6 +302,7 @@ public final class FastaFormat {
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();
     PolymerListElements elements = new PolymerListElements(entity);
+    sequence = cleanup(sequence);
     sequence = prepareSequence(sequence);
     List<Nucleotide> normalNucleotideList = getNormalList(sequence);
     for (Nucleotide nucleotide : normalNucleotideList) {

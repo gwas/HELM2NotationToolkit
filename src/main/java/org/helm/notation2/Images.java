@@ -66,15 +66,23 @@ public final class Images {
    * generates an image of the atom/bond representation of monomer
    *
    * @param monomer Input Monomer
+   * @param rgroupsInformation information if the rgroups should be should or
+   *          not
    * @return an image of the monomer in byte[]
    * @throws CTKException
    * @throws BuilderMoleculeException if the molecule can't be built
    */
-  protected static byte[] generateImageofMonomer(Monomer monomer) throws BuilderMoleculeException, CTKException {
+  protected static byte[] generateImageofMonomer(Monomer monomer, boolean rgroupsInformation) throws BuilderMoleculeException, CTKException {
     LOG.info("Image generation process of monomer starts");
-    /* First build one molecule + merge unused rgoups into it */
-    AbstractMolecule molecule = BuilderMolecule.mergeRgroups(BuilderMolecule.getMoleculeForMonomer(monomer));
-    LOG.info("Molecule was built and unused rgroups were merged into it");
+    /* First build one molecule */
+    AbstractMolecule molecule;
+    if (rgroupsInformation) {
+      molecule = BuilderMolecule.getMoleculeForMonomer(monomer);
+      LOG.info("Molecule was built");
+    } else {
+      molecule = BuilderMolecule.mergeRgroups(BuilderMolecule.getMoleculeForMonomer(monomer));
+      LOG.info("Molecule was built and unused rgroups were merged into it");
+    }
     String molFile;
     molFile = Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.MOLFILE);
     LOG.info("Generate molfile for the built molecule");

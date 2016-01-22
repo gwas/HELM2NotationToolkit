@@ -372,8 +372,8 @@ public class WebService {
    * @throws BuilderMoleculeException if the molecule can not be built
    * @throws CTKException
    */
-  public byte[] generateImageForMonomer(Monomer monomer) throws BuilderMoleculeException, CTKException {
-    return Images.generateImageofMonomer(monomer);
+  public byte[] generateImageForMonomer(Monomer monomer, boolean showRgroups) throws BuilderMoleculeException, CTKException {
+    return Images.generateImageofMonomer(monomer, showRgroups);
   }
 
   /**
