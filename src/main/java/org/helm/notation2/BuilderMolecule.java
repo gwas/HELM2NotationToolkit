@@ -138,7 +138,6 @@ public final class BuilderMolecule {
         LOG.error("Molecule can't be build for group connection");
         throw new BuilderMoleculeException("Molecule can't be build for group connection");
       }
-
       /* Get the source molecule + target molecule */
       String idFirst = connection.getSourceId().getID();
       String idSecond = connection.getTargetId().getID();
@@ -174,7 +173,8 @@ public final class BuilderMolecule {
       // &&
       // MethodsForContainerHELM2.isMonomerSpecific(map.get(connection.getTargetId().getID()),
       // target)))) {
-      // throw new BuilderMoleculeException("Connection has to be unambiguous");
+      // throw new BuilderMoleculeException("Connection has to be
+      // unambiguous");
       // }
 
       /* R group of connection is unknown */
@@ -184,28 +184,47 @@ public final class BuilderMolecule {
 
       String rgroupOne = connection.getrGroupSource();
       String rgroupTwo = connection.getrGroupTarget();
-      try {
-        molecule =
-            Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
-                + rgroupOne), two.getMolecule(), two.getRgroupMap().get(connection.getTargetId().getID() + ":"
-                    + target + ":"
-                    + rgroupTwo));
+      /* Bug */
+      /* Self cycle */
+      if (idFirst.equals(idSecond)) {
+        System.out.println("Self-cycle");
+        try {
+          molecule =
+              Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
+                  + rgroupOne), one.getMolecule(), one.getRgroupMap().get(connection.getTargetId().getID() + ":"
+                      + target + ":"
+                      + rgroupTwo));
+          one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + rgroupOne);
+          one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + rgroupTwo);
+          mapMolecules.put(idFirst, one);
+        } catch (CTKException e) {
+          throw new BuilderMoleculeException(e.getMessage());
+        }
+      } else {
+        try {
+          molecule =
+              Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
+                  + rgroupOne), two.getMolecule(), two.getRgroupMap().get(connection.getTargetId().getID() + ":"
+                      + target + ":"
+                      + rgroupTwo));
 
-        RgroupStructure actual = new RgroupStructure();
-        actual.setMolecule(molecule);
-        Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
-        one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + rgroupOne);
-        two.getRgroupMap().remove(connection.getTargetId().getID() + ":" + target + ":" + rgroupTwo);
-        rgroupMap.putAll(one.getRgroupMap());
-        rgroupMap.putAll(two.getRgroupMap());
-        actual.setRgroupMap(rgroupMap);
-        mapMolecules.put(idFirst + idSecond, actual);
-      } catch (CTKException e) {
-        throw new BuilderMoleculeException(e.getMessage());
+          RgroupStructure actual = new RgroupStructure();
+          actual.setMolecule(molecule);
+          Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
+          one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + rgroupOne);
+          two.getRgroupMap().remove(connection.getTargetId().getID() + ":" + target + ":" + rgroupTwo);
+          rgroupMap.putAll(one.getRgroupMap());
+          rgroupMap.putAll(two.getRgroupMap());
+          actual.setRgroupMap(rgroupMap);
+          mapMolecules.put(idFirst + idSecond, actual);
+        } catch (CTKException e) {
+          throw new BuilderMoleculeException(e.getMessage());
+        }
+
+        mapConnections.put(connection.getSourceId().getID(), idFirst + idSecond);
+        mapConnections.put(connection.getTargetId().getID(), idFirst + idSecond);
       }
 
-      mapConnections.put(connection.getSourceId().getID(), idFirst + idSecond);
-      mapConnections.put(connection.getTargetId().getID(), idFirst + idSecond);
     }
 
     for (Map.Entry<String, RgroupStructure> e : mapMolecules.entrySet()) {

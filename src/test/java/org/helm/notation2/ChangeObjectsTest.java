@@ -39,7 +39,7 @@ import org.testng.annotations.Test;
 
 /**
  * ChangeObjectsTest
- * 
+ *
  * @author hecht
  * @version $Id$
  */

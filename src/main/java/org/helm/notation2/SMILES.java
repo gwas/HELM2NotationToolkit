@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SMILES class to generate SMILES
- * 
- * 
+ *
+ *
  * @author hecht
  */
 public final class SMILES {
@@ -47,13 +47,13 @@ public final class SMILES {
 
   /**
    * method to generate smiles for the whole HELMNotation
-   * 
+   *
    * @param helm2notation input HELMNotation
    * @return smiles for the whole HELMNotation
    * @throws BuilderMoleculeException if the molecule can't be built
    * @throws CTKException
    */
-  protected static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  public static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* Build Molecues */
     LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules =
@@ -71,14 +71,14 @@ public final class SMILES {
 
   /**
    * method to generate canonical smiles for the whole HELMNotation
-   * 
+   *
    * @param helm2notation input HELMNotation
    * @return canonical smiles for the whole HELMNotation
    * @throws BuilderMoleculeException if the molecule can't be built
    * @throws CTKSmilesException
    * @throws CTKException
    */
-  protected static String getCanonicalSmilesForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKSmilesException, CTKException {
+  public static String getCanonicalSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKSmilesException, CTKException {
     LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
     LOG.debug("Built single molecule(s)");

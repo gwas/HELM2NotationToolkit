@@ -23,11 +23,20 @@
  */
 package org.helm.notation2;
 
+import java.io.IOException;
+
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.model.Monomer;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.grouping.GroupingNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupElement;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 
 /**
@@ -44,7 +53,7 @@ public final class ChangeObjects {
    * @param position position of the new annotation
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void addAnnotation(final AnnotationNotation notation, final int position, final ContainerHELM2 containerhelm2) {
+  protected static void addAnnotation(final AnnotationNotation notation, final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfAnnotations().add(position, notation);
   }
 
@@ -55,7 +64,7 @@ public final class ChangeObjects {
    * @param position position of the changed annotation
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void changeAnnotation(final AnnotationNotation notation, final int position, final ContainerHELM2 containerhelm2) {
+  protected static void changeAnnotation(final AnnotationNotation notation, final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfAnnotations().set(position, notation);
   }
 
@@ -66,7 +75,7 @@ public final class ChangeObjects {
    * @param position position of the to be deleted annotation
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void deleteAnnotation(final int position, final ContainerHELM2 containerhelm2) {
+  protected static void deleteAnnotation(final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfAnnotations().remove(position);
   }
 
@@ -75,7 +84,7 @@ public final class ChangeObjects {
    *
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void deleteAllAnnotations(final ContainerHELM2 containerhelm2) {
+  protected static void deleteAllAnnotations(final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfAnnotations().clear();
   }
 
@@ -86,7 +95,7 @@ public final class ChangeObjects {
    * @param position position of the new ConnectionNotation
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void addConnection(final ConnectionNotation notation, final int position, final ContainerHELM2 containerhelm2) {
+  protected static void addConnection(final ConnectionNotation notation, final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfConnections().add(position, notation);
   }
 
@@ -97,7 +106,7 @@ public final class ChangeObjects {
    * @param notation to be changed ConnectionNotation
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void changeConnection(final int position, final ConnectionNotation notation, final ContainerHELM2 containerhelm2) {
+  protected static void changeConnection(final int position, final ConnectionNotation notation, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfConnections().set(position, notation);
   }
 
@@ -108,7 +117,7 @@ public final class ChangeObjects {
    * @param position of the to deleted connection
    * @param containerhelm2 input containerHELM2
    */
-  protected void deleteConnection(final int position, final ContainerHELM2 containerhelm2) {
+  protected static void deleteConnection(final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfConnections().remove(position);
   }
 
@@ -119,7 +128,7 @@ public final class ChangeObjects {
    * @param annotation new annotation
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void addAnnotationToConnection(final int position, final String annotation, final ContainerHELM2 containerhelm2) {
+  protected static void addAnnotationToConnection(final int position, final String annotation, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfConnections().get(position).setAnnotation(annotation);
   }
 
@@ -128,7 +137,7 @@ public final class ChangeObjects {
    *
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void deleteAllConnections(final ContainerHELM2 containerhelm2) {
+  protected static void deleteAllConnections(final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfConnections().clear();
   }
 
@@ -139,7 +148,7 @@ public final class ChangeObjects {
    * @param position position of the new group
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void addGroup(final GroupingNotation notation, final int position, final ContainerHELM2 containerhelm2) {
+  protected static void addGroup(final GroupingNotation notation, final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfGroupings().add(position, notation);
   }
 
@@ -150,7 +159,7 @@ public final class ChangeObjects {
    * @param position position of the to be changed group
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void changeGroup(final GroupingNotation notation, final int position, final ContainerHELM2 containerhelm2) {
+  protected static void changeGroup(final GroupingNotation notation, final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfGroupings().set(position, notation);
   }
 
@@ -160,7 +169,7 @@ public final class ChangeObjects {
    * @param position position of the to be deleted group
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void deleteGroup(final int position, final ContainerHELM2 containerhelm2) {
+  protected static void deleteGroup(final int position, final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfGroupings().remove(position);
   }
 
@@ -169,7 +178,7 @@ public final class ChangeObjects {
    *
    * @param containerhelm2 input ContainerHELM2
    */
-  protected void deleteAllGroups(final ContainerHELM2 containerhelm2) {
+  protected static void deleteAllGroups(final ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfGroupings().clear();
   }
 
@@ -238,7 +247,7 @@ public final class ChangeObjects {
    * @param position position of the monomerNotation
    * @param annotation new annotation
    */
-  protected void addAnnotationToMonomerNotation(PolymerNotation polymer, int position, String annotation) {
+  protected static void addAnnotationToMonomerNotation(PolymerNotation polymer, int position, String annotation) {
     polymer.getPolymerElements().getListOfElements().get(position).setAnnotation(annotation);
   }
 
@@ -249,7 +258,7 @@ public final class ChangeObjects {
    * @param position position of the MonomerNotation
    * @param count new count of the MonomerNotation
    */
-  protected void addCountToMonomerNotation(PolymerNotation polymer, int position, String count) {
+  protected static void addCountToMonomerNotation(PolymerNotation polymer, int position, String count) {
     polymer.getPolymerElements().getListOfElements().get(position).setCount(count);
   }
 
@@ -259,7 +268,7 @@ public final class ChangeObjects {
    * @param polymer PolymerNotation
    * @param position position of the MonomerNotation
    */
-  protected void deleteAnnotationFromMonomerNotation(PolymerNotation polymer, int position) {
+  protected static void deleteAnnotationFromMonomerNotation(PolymerNotation polymer, int position) {
     polymer.getPolymerElements().getListOfElements().get(position).setAnnotation(null);
   }
 
@@ -269,7 +278,7 @@ public final class ChangeObjects {
    * @param polymer PolymerNotation
    * @param position position of the MonomerNotation
    */
-  protected void setCountToDefault(PolymerNotation polymer, int position) {
+  protected static void setCountToDefault(PolymerNotation polymer, int position) {
     polymer.getPolymerElements().getListOfElements().get(position).setCount("1");
   }
 
@@ -306,6 +315,104 @@ public final class ChangeObjects {
    */
   protected static void addPolymerNotation(int position, PolymerNotation polymer, ContainerHELM2 containerhelm2) {
     containerhelm2.getHELM2Notation().getListOfPolymers().add(position, polymer);
+  }
+
+  protected static void replaceMonomer(ContainerHELM2 containerhelm2, String polymerType, String existingMonomerID, String newMonomerID) throws NotationException, IOException {
+    for (int i = 0; i < containerhelm2.getHELM2Notation().getListOfPolymers().size(); i++) {
+      if (containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerID().getType().equals(polymerType)) {
+        for (int j = 0; j < containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerElements().getListOfElements().size(); j++) {
+          MonomerNotation monomerNotation =
+              replaceMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerElements().getListOfElements().get(j), existingMonomerID, newMonomerID);
+          if (monomerNotation != null) {
+            containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerElements().getListOfElements().set(j, monomerNotation);
+          }
+        }
+      }
+    }
+
+  }
+
+  private static MonomerNotation replaceMonomerNotation(MonomerNotation monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException {
+    if (newMonomerID.length() > 1) {
+      newMonomerID = "[" + newMonomerID + "]";
+    }
+    boolean hasChanged = false;
+
+    if (monomerNotation instanceof MonomerNotationUnitRNA) {
+      StringBuilder sb = new StringBuilder();
+      for (MonomerNotationUnit element : ((MonomerNotationUnitRNA) monomerNotation).getContents()) {
+        if (element.getID().equals(existingMonomerID)) {
+          hasChanged = true;
+          sb.append(newMonomerID);
+        } else {
+          if (MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", element.getID()).getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
+            sb.append("(" + element.getID() + ")");
+          } else {
+            sb.append(element.getID());
+          }
+        }
+      }
+      if (hasChanged) {
+        MonomerNotationUnitRNA newObject = new MonomerNotationUnitRNA(sb.toString(), monomerNotation.getType());
+        newObject.setCount(monomerNotation.getCount());
+        if (monomerNotation.isAnnotationTrue()) {
+          newObject.setAnnotation(monomerNotation.getAnnotation());
+        }
+      }
+
+    } else if (monomerNotation instanceof MonomerNotationUnit) {
+      if (monomerNotation.getID().equals(existingMonomerID)) {
+        return produceMonomerNotationUnitWithOtherID(monomerNotation, newMonomerID);
+      }
+    } else if (monomerNotation instanceof MonomerNotationList) {
+      StringBuilder sb = new StringBuilder();
+      for (MonomerNotation element : ((MonomerNotationList) monomerNotation).getListofMonomerUnits()) {
+        if (element.getID().equals(existingMonomerID)) {
+          hasChanged = true;
+          sb.append(newMonomerID);
+        } else {
+          if (MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", element.getID()).getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
+            sb.append("(" + element.getID() + ")");
+          } else {
+            sb.append(element.getID());
+          }
+        }
+      }
+      if (hasChanged) {
+        MonomerNotationUnitRNA newObject = new MonomerNotationUnitRNA(sb.toString(), monomerNotation.getType());
+        newObject.setCount(monomerNotation.getCount());
+        if (monomerNotation.isAnnotationTrue()) {
+          newObject.setAnnotation(monomerNotation.getAnnotation());
+        }
+      }
+
+    } else if (monomerNotation instanceof MonomerNotationGroup) {
+      for (int i = 0; i < ((MonomerNotationGroup) monomerNotation).getListOfElements().size(); i++) {
+
+        if (((MonomerNotationGroup) monomerNotation).getListOfElements().get(i).getMonomerNotation().getID().equals(monomerNotation.getID().equals(existingMonomerID))) {
+          hasChanged = true;
+          MonomerNotationGroupElement oldElement = ((MonomerNotationGroup) monomerNotation).getListOfElements().get(i);
+          oldElement.setMonomerNotation(produceMonomerNotationUnitWithOtherID(monomerNotation, newMonomerID));
+          ((MonomerNotationGroup) monomerNotation).getListOfElements().set(i, oldElement);
+        }
+      }
+    } else {
+      throw new NotationException("Unknown MonomerNotation Type " + monomerNotation.getClass());
+    }
+
+    if (hasChanged) {
+      return monomerNotation;
+    }
+    return null;
+  }
+
+  private static MonomerNotationUnit produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation, String newID) throws NotationException, IOException {
+    MonomerNotationUnit result = new MonomerNotationUnit(newID, monomerNotation.getType());
+    if (monomerNotation.isAnnotationTrue()) {
+      result.setAnnotation(monomerNotation.getAnnotation());
+    }
+    result.setCount(monomerNotation.getCount());
+    return result;
   }
 
 }

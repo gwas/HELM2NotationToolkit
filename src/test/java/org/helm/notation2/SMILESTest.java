@@ -27,15 +27,20 @@ import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
+import org.helm.notation.MonomerException;
+import org.helm.notation.NotationException;
+import org.helm.notation.StructureException;
+import org.helm.notation.tools.ComplexNotationParser;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 /**
  * SMILESTest
- * 
+ *
  * @author hecht
  */
 public class SMILESTest {
@@ -70,11 +75,31 @@ public class SMILESTest {
       test += "V2.0";
       parser.parse(test);
       ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
-        new InterConnections());
-      String canSmile = SMILES.getCanonicalSmilesForAll(containerhelm2.getHELM2Notation());
+          new InterConnections());
+      String canSmile = SMILES.getCanonicalSMILESForAll(containerhelm2.getHELM2Notation());
       Assert.assertEquals(canSmile, "OC(=O)C1CCC(CN2C(=O)C=CC2=O)CC1.CC(C)C[C@H](N)C(=O)N[C@@H](CCCNC(N)=N)C(=O)C(=O)C[C@H](N)C(=O)C(=O)CC[C@H](N)C(O)=O");
     }
   }
 
+  @Test
+  public void testHELM1AgainstHELM2() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, MonomerException, StructureException {
+    if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
+      // String notation = "PEPTIDE1{A.A.G.K}$PEPTIDE1,PEPTIDE1,1:R1-4:R2$$$";
+
+      String notation = "CHEM1{[SS3]}|CHEM2{[SS3]}$CHEM1,CHEM2,1:R1-1:R1$$$";
+      parser = new ParserHELM2();
+      String test = notation;
+      test += "V2.0";
+      parser.parse(test);
+      ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(),
+          new InterConnections());
+      String smile = SMILES.getSMILESForAll(containerhelm2.getHELM2Notation());
+      Assert.assertEquals(smile, ComplexNotationParser.getComplexPolymerSMILES(notation));
+      smile = SMILES.getCanonicalSMILESForAll(containerhelm2.getHELM2Notation());
+      Assert.assertEquals(smile, ComplexNotationParser.getComplexPolymerCanonicalSmiles(notation));
+
+    }
+
+  }
 
 }

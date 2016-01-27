@@ -23,15 +23,25 @@
  */
 package org.helm.notation2;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.helm.notation.MonomerException;
+import org.helm.notation.model.PolymerEdge;
+import org.helm.notation.model.RNAPolymerNode;
+import org.helm.notation.tools.ComplexNotationParser;
+import org.helm.notation.tools.NucleotideSequenceParser;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
+import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.PolymerIDsException;
+import org.helm.notation2.exception.RNAUtilsException;
+import org.helm.notation2.parser.exceptionparser.HELM1ConverterException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
@@ -45,6 +55,7 @@ import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,18 +110,6 @@ public class ContainerHELM2 {
   }
 
   /**
-   * method to validate all notations objects
-   *
-   * @throws ConnectionNotationException
-   * @throws GroupingNotationException
-   * @throws MonomerException
-   * @throws PolymerIDsException
-   */
-  public final void validate() throws PolymerIDsException, MonomerException, GroupingNotationException, ConnectionNotationException {
-    Validation.validateNotationObjects(this);
-  }
-
-  /**
    * method to get all polymers of this object
    *
    * @return list of polymer notation
@@ -134,13 +133,7 @@ public class ContainerHELM2 {
    * @return all edge connections of this object
    */
   public final List<ConnectionNotation> getAllEdgeConnections() {
-    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
-    for (ConnectionNotation connection : helm2notation.getListOfConnections()) {
-      if (!(connection.getrGroupSource().equals("pair"))) {
-        listEdgeConnection.add(connection);
-      }
-    }
-    return listEdgeConnection;
+    return MethodsForContainerHELM2.getAllEdgeConnections(getAllConnections());
   }
 
   /**
@@ -238,7 +231,7 @@ public class ContainerHELM2 {
     /* method to merge the new HELM2Notation into the existing one */
 
     /* section 1 */
-    /* id's müssen angepasst werden */
+    /* id's have to changed */
     section1(newHELM2Notation.getListOfPolymers(), mapIds);
     /* section 2 */
     section2(newHELM2Notation.getListOfConnections(), mapIds);
@@ -383,14 +376,303 @@ public class ContainerHELM2 {
     return result;
   }
 
-  /* ToDo */
-  public final void getNotationByReplacingSMILES() {
-    /* Go for every MonomerNotation */
+  /**
+   * method to get the total number of MonomerNotationUnits
+   *
+   * @return number of MonomerNotationUnits
+   */
+  public int getTotalMonomerCount() {
+    int result = 0;
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
-      for (MonomerNotation monomerNotation : polymer.getPolymerElements().getListOfElements()) {
-        System.out.println(monomerNotation);
-      }
+      result += PolymerUtils.getTotalMonomerCount(polymer);
+    }
+    return result;
+  }
+
+  /**
+   * This function replaces smiles in complex notation with temporary ids
+   */
+  public final void replaceSMILESWithTemporaryIds() {
+    /* Go for every PolymerNotation */
+    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
+      PolymerUtils.replaceSMILES(polymer);
     }
 
+  }
+
+  /**
+   * method to check if any of the rna polymers have a modified nucleotide
+   *
+   * @return true if at least one rna polymer has a modified nucleotide
+   * @throws NotationException
+   */
+  public boolean hasNucleotideModification() throws NotationException {
+    for (PolymerNotation polymer : getRNAPolymers()) {
+      if (RNAUtils.hasNucleotideModification(polymer)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void hybridize() throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation.NotationException {
+    if (getAllBasePairConnections().isEmpty() && getRNAPolymers().size() == 2) {
+      List<ConnectionNotation> connections = RNAUtils.hybridize(getRNAPolymers().get(0), getRNAPolymers().get(1));
+      for (ConnectionNotation connection : connections) {
+        ChangeObjects.addConnection(connection, getAllConnections().size(), this);
+      }
+    }
+  }
+
+  public String[] getFormatedSirnaSequences() throws NotationException, RNAUtilsException, HELM2HandledException {
+    return getFormatedSirnaSequences(ComplexNotationParser.DEFAULT_PADDING_CHAR, ComplexNotationParser.DEFAULT_BASE_PAIR_CHAR);
+  }
+
+  public String[] getFormatedSirnaSequences(String paddingChar, String basePairChar) throws NotationException, RNAUtilsException, HELM2HandledException {
+    if (null == paddingChar || paddingChar.length() != 1) {
+      throw new NotationException(
+          "Padding string must be single character");
+    }
+
+    if (null == basePairChar || basePairChar.length() != 1) {
+      throw new NotationException(
+          "Base pair string must be single character");
+    }
+
+    List<PolymerNotation> rnaList = getRNAPolymers();
+    int count = rnaList.size();
+    if (count == 0) {
+      return new String[0];
+    } else if (count == 1) {
+      return new String[] {RNAUtils.getSequence(rnaList.get(0))};
+    } else if (count == 2) {
+      String rna1Seq = null;
+      String rna2Seq = null;
+      String rna1Annotation = null;
+      String rna2Annotation = null;
+      PolymerNotation one = null;
+      PolymerNotation two = null;
+
+      for (PolymerNotation node : rnaList) {
+        if (node.getPolymerID().getID().equals("RNA1")) {
+          rna1Seq = RNAUtils.getSequence(node);
+          rna1Annotation = node.getAnnotation();
+          one = node;
+        } else if (node.getPolymerID().getID().equals("RNA2")) {
+          rna2Seq = RNAUtils.getSequence(node);
+          two = node;
+          rna2Annotation = node.getAnnotation();
+        }
+      }
+      String reverseRna2Seq = RNAUtils.getReverseSequence(two);
+
+      List<ConnectionNotation> connections = getAllBasePairConnections();
+      if (null == connections || connections.size() == 0) {
+        return new String[] {rna1Seq, rna2Seq};
+      } else {
+        Map<Integer, Integer> monomerPositionMap = getSirnaMonomerPositionMap(connections);
+        Map<Integer, Integer> seqPositionMap = new HashMap<Integer, Integer>();
+        Set<Integer> monomerSet = monomerPositionMap.keySet();
+        for (Integer key : monomerSet) {
+          Integer value = monomerPositionMap.get(key);
+          Integer seqKey = new Integer(key.intValue() / 3 + 1);
+          Integer seqValue = new Integer(value.intValue() / 3 + 1);
+          seqPositionMap.put(seqKey, seqValue);
+        }
+
+        Set<Integer> seqSet = seqPositionMap.keySet();
+        List<Integer> seqList = new ArrayList<Integer>();
+        for (Integer key : seqSet) {
+          seqList.add(key);
+        }
+        Collections.sort(seqList);
+
+        int rna1First = seqList.get(0).intValue();
+        int rna2Last = seqPositionMap.get(seqList.get(0)).intValue();
+        int rna1Last = seqList.get(seqList.size() - 1).intValue();
+        int rna2First = seqPositionMap.get(seqList.get(seqList.size() - 1)).intValue();
+
+        if ((rna1Last - rna1First) != (rna2Last - rna2First)) {
+          throw new NotationException(
+              "siRNA matching lengths are different");
+        }
+
+        int rna1LeftOverhang = rna1First - 1;
+        int rna1RightOverhang = rna1Seq.length() - rna1Last;
+        int rna2LeftOverhang = rna2Seq.length() - rna2Last;
+        int rna2RightOverhang = rna2First - 1;
+        StringBuffer[] sbs = new StringBuffer[3];
+        for (int i = 0; i < sbs.length; i++) {
+          sbs[i] = new StringBuffer();
+        }
+
+        if (rna1LeftOverhang >= rna2LeftOverhang) {
+          sbs[0].append(rna1Seq);
+
+          for (int i = 0; i < rna1LeftOverhang; i++) {
+            sbs[1].append(paddingChar);
+          }
+          for (int i = rna1First; i < (rna1Last + 1); i++) {
+            Integer in = new Integer(i);
+            if (seqPositionMap.containsKey(in)) {
+              sbs[1].append(basePairChar);
+            } else {
+              sbs[1].append(paddingChar);
+            }
+          }
+
+          for (int i = 0; i < rna1LeftOverhang - rna2LeftOverhang; i++) {
+            sbs[2].append(paddingChar);
+          }
+          sbs[2].append(reverseRna2Seq);
+        } else {
+          for (int i = 0; i < rna2LeftOverhang - rna1LeftOverhang; i++) {
+            sbs[0].append(paddingChar);
+          }
+          sbs[0].append(rna1Seq);
+
+          for (int i = 0; i < rna2LeftOverhang; i++) {
+            sbs[1].append(paddingChar);
+          }
+          for (int i = rna1First; i < (rna1Last + 1); i++) {
+            Integer in = new Integer(i);
+            if (seqPositionMap.containsKey(in)) {
+              sbs[1].append(basePairChar);
+            } else {
+              sbs[1].append(paddingChar);
+            }
+          }
+
+          sbs[2].append(reverseRna2Seq);
+        }
+
+        if (rna1RightOverhang >= rna2RightOverhang) {
+          for (int i = 0; i < rna1RightOverhang; i++) {
+            sbs[1].append(paddingChar);
+          }
+
+          for (int i = 0; i < rna1RightOverhang - rna2RightOverhang; i++) {
+            sbs[2].append(paddingChar);
+          }
+        } else {
+          for (int i = 0; i < rna2RightOverhang - rna1RightOverhang; i++) {
+            sbs[0].append(paddingChar);
+          }
+
+          for (int i = 0; i < rna2RightOverhang - rna1RightOverhang; i++) {
+            sbs[1].append(paddingChar);
+          }
+        }
+
+        if ((rna1Annotation != null && rna1Annotation.equalsIgnoreCase("AS"))
+            || (rna2Annotation != null && rna2Annotation.equalsIgnoreCase("SS"))) {
+          return new String[] {reverseString(sbs[2].toString()),
+              reverseString(sbs[1].toString()),
+              reverseString(sbs[0].toString())};
+        } else {
+          return new String[] {sbs[0].toString(), sbs[1].toString(),
+              sbs[2].toString()};
+        }
+      }
+
+    } else {
+      throw new NotationException(
+          "Structure contains more than two RNA sequences");
+    }
+
+  }
+
+  /**
+   * @param connections
+   * @return
+   * @throws NotationException
+   */
+  private Map<Integer, Integer> getSirnaMonomerPositionMap(List<ConnectionNotation> connections) throws NotationException {
+    Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+    for (ConnectionNotation connection : connections) {
+
+      String source = connection.getSourceId().getID();
+      String target = connection.getTargetId().getID();
+      Integer int1 = new Integer(connection.getSourceUnit());
+      Integer int2 = new Integer(connection.getTargetUnit());
+
+      if (source.equals("RNA1") && target.equals("RNA2")) {
+        map.put(int1, int2);
+      } else if (source.equals("RNA2") && target.equals("RNA1")) {
+        map.put(int2, int1);
+      } else {
+        throw new NotationException(
+            "Structure contains more than two RNA sequences");
+      }
+    }
+    return map;
+  }
+
+  private static String reverseString(String source) {
+    int i;
+    int len = source.length();
+    StringBuffer dest = new StringBuffer();
+
+    for (i = (len - 1); i >= 0; i--) {
+      dest.append(source.charAt(i));
+    }
+    return dest.toString();
+  }
+
+  /**
+   * decompose the HELM2 into smaller HELM2 objects
+   *
+   * @param polymers list of PolymerNotations
+   * @param connection: list contains only selfcycle connections
+   * @return list of ContainerHELM2 objects
+   */
+  protected List<ContainerHELM2> decompose() {
+    List<ContainerHELM2> list = new ArrayList<ContainerHELM2>();
+    List<ConnectionNotation> allselfConnections = getAllSelfCycleConnections(getAllConnections());
+    for (PolymerNotation polymer : getAllPolymers()) {
+      HELM2Notation helm2notation = new HELM2Notation();
+      helm2notation.addPolymer(polymer);
+      List<ConnectionNotation> selfConnections = getSelfCycleConnections(polymer.getPolymerID().getID(), allselfConnections);
+      for (ConnectionNotation selfConnection : selfConnections) {
+        helm2notation.addConnection(selfConnection);
+      }
+      list.add(new ContainerHELM2(helm2notation, new InterConnections()));
+
+    }
+
+    return list;
+  }
+
+  /**
+   * method to get all self-cycle Connections
+   *
+   * @param connections list of ConnectionNotation
+   * @return list of all self-cycle Connections
+   */
+  private static List<ConnectionNotation> getAllSelfCycleConnections(List<ConnectionNotation> connections) {
+    List<ConnectionNotation> listSelfCycle = new ArrayList<ConnectionNotation>();
+    for (ConnectionNotation connection : connections) {
+      if ((connection.getTargetId().getID().equals(connection.getSourceId().getID()))) {
+        listSelfCycle.add(connection);
+      }
+    }
+    return listSelfCycle;
+  }
+
+  /**
+   * method to get for one polymer all self-cycle ConnectionNotations
+   *
+   * @param id polymer id
+   * @param connections list of ConnectionNotation
+   * @return list of all self-cycle connections
+   */
+  private static List<ConnectionNotation> getSelfCycleConnections(String id, List<ConnectionNotation> connections) {
+    List<ConnectionNotation> list = new ArrayList<ConnectionNotation>();
+    for (ConnectionNotation connection : connections) {
+      if (connection.getSourceId().getID().equals(id)) {
+        list.add(connection);
+      }
+    }
+    return list;
   }
 }

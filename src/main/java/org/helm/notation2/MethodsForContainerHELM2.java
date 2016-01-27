@@ -248,19 +248,4 @@ public final class MethodsForContainerHELM2 {
     return listEdgeConnection;
   }
 
-  /**
-   * * method to get all base pair connections
-   *
-   * @param connections List of ConnectionNotation
-   * @return List of all base pair ConnectionNotation
-   */
-  protected static List<ConnectionNotation> getAllBasePairConnections(List<ConnectionNotation> connections) {
-    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
-    for (ConnectionNotation connection : connections) {
-      if ((connection.getrGroupSource().equals("pair"))) {
-        listEdgeConnection.add(connection);
-      }
-    }
-    return listEdgeConnection;
-  }
 }

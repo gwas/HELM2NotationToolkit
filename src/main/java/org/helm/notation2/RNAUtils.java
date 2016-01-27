@@ -35,6 +35,7 @@ import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.model.Nucleotide;
+import org.helm.notation.tools.NucleotideSequenceParser;
 import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -85,8 +86,9 @@ public class RNAUtils {
    * @throws RNAUtilsException if the sense or antisense strand can not be built
    * @throws JDOMException
    * @throws IOException
+   * @throws org.helm.notation.NotationException
    */
-  protected static ContainerHELM2 getSirnaNotation(String sequence) throws RNAUtilsException, IOException, JDOMException {
+  protected static ContainerHELM2 getSirnaNotation(String sequence) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException {
     /* Build the sense + antisense sequence */
     ContainerHELM2 sense;
     try {
@@ -112,10 +114,6 @@ public class RNAUtils {
       throw new RNAUtilsException("Antisense Strand can not be built");
     }
 
-  }
-
-  /* TODO */
-  protected void getFormatedSirnaSequence() {
   }
 
   /**
@@ -169,9 +167,17 @@ public class RNAUtils {
     return sequenceOne.equals(sequenceTwo);
   }
 
-  /* ToDo */
-  protected void getMaxMatchFragment() {
-
+  /**
+   * method to get the largest matched fragment between two sequences, replace T
+   * with U before Match
+   *
+   * @param seq1 single letter, all upper case nucleotide sequence
+   * @param seq2 single letter, all upper case nucleotide sequence
+   * @return
+   * @throws org.helm.notation.NotationException
+   */
+  protected static String getMaxMatchFragment(String seq1, String seq2) throws org.helm.notation.NotationException {
+    return NucleotideSequenceParser.getMaxMatchFragment(seq1, seq2);
   }
 
   /**
@@ -440,7 +446,7 @@ public class RNAUtils {
    * @throws JDOMException
    * @throws HELM2HandledException
    */
-  protected static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException, HELM2HandledException {
+  protected static List<ConnectionNotation> hybridize1(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException, HELM2HandledException {
     checkRNA(one);
     checkRNA(two);
 
@@ -461,6 +467,109 @@ public class RNAUtils {
       throw new RNAUtilsException("The given RNAs are not antiparallel to each other");
     }
 
+  }
+
+  protected static String getSequence(PolymerNotation one) throws RNAUtilsException, HELM2HandledException {
+    checkRNA(one);
+
+    List<Nucleotide> nucleotideList = getNucleotideList(one);
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < nucleotideList.size(); i++) {
+      sb.append(nucleotideList.get(i).getNaturalAnalog());
+    }
+    return sb.toString();
+
+  }
+
+  protected static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, HELM2HandledException, JDOMException, IOException,
+      org.helm.notation.NotationException {
+    initComplementMap();
+    checkRNA(one);
+    checkRNA(two);
+
+    List<ConnectionNotation> connections = new ArrayList<ConnectionNotation>();
+    ConnectionNotation connection;
+    String seq1 = RNAUtils.getSequence(one).replaceAll("T", "U");
+    String seq2 = RNAUtils.getSequence(two).replaceAll("T", "U");
+
+    char[] chars = seq2.toCharArray();
+    StringBuffer sb = new StringBuffer();
+    for (int i = chars.length; i > 0; i--) {
+      String symbol = String.valueOf(chars[i - 1]);
+      System.out.println(symbol);
+      String compSymbol = complementMap.get(symbol);
+      sb.append(compSymbol);
+    }
+    String compSeq2 = sb.toString();
+    String maxSeqMatch = getMaxMatchFragment(seq1, compSeq2);
+    int seqMatchLength = maxSeqMatch.length();
+    int seq1NucStart = -1;
+    int seq1MonomerStart = 0;
+    int seq2NucStart = -1;
+    int seq2MonomerStart = 0;
+
+    List<Nucleotide> seq1NucList = RNAUtils.getNucleotideList(one);
+    List<Nucleotide> seq2NucList = RNAUtils.getNucleotideList(two);
+
+    if (seqMatchLength > 0) {
+      // get the starting monomer position for sequence 1
+      seq1NucStart = seq1.indexOf(maxSeqMatch);
+      for (int i = 0; i < seq1NucStart; i++) {
+        Nucleotide nuc = seq1NucList.get(i);
+        int monomerCount = SimpleNotationParser.getMonomerCountForRNA(nuc.getNotation());
+        seq1MonomerStart = seq1MonomerStart + monomerCount;
+      }
+
+      // get the starting monomer position for sequence 2
+      int compSeq2NucStart = compSeq2.indexOf(maxSeqMatch);
+      seq2NucStart = seq2.length() - seqMatchLength - compSeq2NucStart;
+      for (int i = 0; i < seq2NucStart; i++) {
+        Nucleotide nuc = seq2NucList.get(i);
+        int monomerCount = SimpleNotationParser.getMonomerCountForRNA(nuc.getNotation());
+        seq2MonomerStart = seq2MonomerStart + monomerCount;
+      }
+
+      // build the matching monomer position
+      for (int i = 0; i < seqMatchLength; i++) {
+
+        Nucleotide nuc1 = seq1NucList.get(i + seq1NucStart);
+        if (null == nuc1.getBaseMonomer()) {
+          throw new NotationException(
+              "Nucleotide without base cannot be hybridized with others");
+        }
+        if (i == 0) {
+          seq1MonomerStart = seq1MonomerStart + 2;
+        } else {
+          seq1MonomerStart = seq1MonomerStart + 3;
+        }
+
+        Nucleotide nuc2 = seq2NucList.get(i + seq2NucStart);
+        if (null == nuc2.getBaseMonomer()) {
+          throw new NotationException(
+              "Nucleotide without base cannot be hybridized with others");
+        }
+        if (i == 0) {
+          seq2MonomerStart = seq2MonomerStart + 2;
+        } else {
+          seq2MonomerStart = seq2MonomerStart + 3;
+        }
+      }
+
+      // what if there is an X with two monomers in the middle? exception
+      // should have been thrown
+      // now build the base pair string, offset by 3
+      for (int i = seqMatchLength; i > 0; i--) {
+        int seq1MonomerPos = seq1MonomerStart - (i - 1) * 3;
+        int seq2MonomerPos = seq2MonomerStart - (seqMatchLength - i)
+            * 3;
+
+        String details = seq1MonomerPos + ":pair-" + seq2MonomerPos + ":pair";
+        connection = new ConnectionNotation(one.getPolymerID(), two.getPolymerID(), details);
+        connections.add(connection);
+      }
+    }
+
+    return connections;
   }
 
   /**
@@ -517,6 +626,7 @@ public class RNAUtils {
 
       count++;
     }
+
     return sb.toString();
 
   }

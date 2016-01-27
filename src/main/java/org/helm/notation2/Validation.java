@@ -87,7 +87,7 @@ public final class Validation {
    * @throws GroupingNotationException if the grouping section is not valid
    * @throws ConnectionNotationException if the connection section is not valid
    */
-  protected static void validateNotationObjects(ContainerHELM2 containerhelm2) throws PolymerIDsException,
+  public static void validateNotationObjects(ContainerHELM2 containerhelm2) throws PolymerIDsException,
       MonomerException, GroupingNotationException, ConnectionNotationException {
     LOG.info("Validation process is starting");
     /* all polymer ids have to be unique */
