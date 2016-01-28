@@ -31,17 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.helm.notation.MonomerException;
-import org.helm.notation.model.PolymerEdge;
-import org.helm.notation.model.RNAPolymerNode;
 import org.helm.notation.tools.ComplexNotationParser;
-import org.helm.notation.tools.NucleotideSequenceParser;
-import org.helm.notation2.exception.ConnectionNotationException;
-import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM2HandledException;
-import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.exception.RNAUtilsException;
-import org.helm.notation2.parser.exceptionparser.HELM1ConverterException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
@@ -51,7 +43,6 @@ import org.helm.notation2.parser.notation.polymer.BlobEntity;
 import org.helm.notation2.parser.notation.polymer.ChemEntity;
 import org.helm.notation2.parser.notation.polymer.GroupEntity;
 import org.helm.notation2.parser.notation.polymer.HELMEntity;
-import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.PeptideEntity;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
@@ -390,10 +381,9 @@ public class ContainerHELM2 {
   }
 
   /**
-   * This function replaces smiles in complex notation with temporary ids
+   * This function replaces smiles in complex notation with temporary ids To Do
    */
   public final void replaceSMILESWithTemporaryIds() {
-    /* Go for every PolymerNotation */
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       PolymerUtils.replaceSMILES(polymer);
     }
@@ -415,6 +405,17 @@ public class ContainerHELM2 {
     return false;
   }
 
+  /**
+   * this method will automatically add base pair info into notation only if it
+   * contains two RNA polymer notations and there is no base pairing info
+   *
+   * @throws NotationException
+   * @throws RNAUtilsException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws HELM2HandledException
+   * @throws org.helm.notation.NotationException
+   */
   public void hybridize() throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation.NotationException {
     if (getAllBasePairConnections().isEmpty() && getRNAPolymers().size() == 2) {
       List<ConnectionNotation> connections = RNAUtils.hybridize(getRNAPolymers().get(0), getRNAPolymers().get(1));
@@ -424,10 +425,27 @@ public class ContainerHELM2 {
     }
   }
 
+  /**
+   * generate formated siRNA sequence with default padding char " " and
+   * base-pair char "|"
+   *
+   * @return string array of formated nucloeotide sequence
+   * @throws NotationException
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
   public String[] getFormatedSirnaSequences() throws NotationException, RNAUtilsException, HELM2HandledException {
     return getFormatedSirnaSequences(ComplexNotationParser.DEFAULT_PADDING_CHAR, ComplexNotationParser.DEFAULT_BASE_PAIR_CHAR);
   }
 
+  /**
+   * @param paddingChar
+   * @param basePairChar
+   * @return string array of formated nucleotide sequence
+   * @throws NotationException
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
   public String[] getFormatedSirnaSequences(String paddingChar, String basePairChar) throws NotationException, RNAUtilsException, HELM2HandledException {
     if (null == paddingChar || paddingChar.length() != 1) {
       throw new NotationException(
@@ -608,6 +626,12 @@ public class ContainerHELM2 {
     return map;
   }
 
+  /**
+   * method to reverse a String
+   * 
+   * @param source
+   * @return reversed String
+   */
   private static String reverseString(String source) {
     int i;
     int len = source.length();

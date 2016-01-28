@@ -79,6 +79,14 @@ public class TestContainerHELM2 {
 
     System.out.println(containerhelm2.getHELM2Notation().toHELM2());
 
+    /**/
+    notation = "PEPTIDE1{A'23'.C.D'12'.E'24'}|PEPTIDE2{G'22'.C.S'8'.P.P.P.P.P.P.P.P.P.K'6'}$$$$V2.0";
+
+    containerhelm2 = readNotation(notation);
+    ChangeObjects.replaceMonomer(containerhelm2, "PEPTIDE", "A", "G");
+
+    System.out.println(containerhelm2.getHELM2Notation().toHELM2());
+
     notation = "RNA1{P.R(A)P.R(G)P.R(C)P.R(U)P.R(U)P.R(U)P.R(U)}|RNA2{P.R(A)P.R(A)P.R(A)P.R(G)P.R(C)P.R(U)}$$$$";
     String hybridizedNotation = ComplexNotationParser.hybridize(notation);
     System.out.println(hybridizedNotation);

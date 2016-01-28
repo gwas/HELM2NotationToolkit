@@ -24,8 +24,11 @@
 package org.helm.notation2;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
@@ -34,10 +37,13 @@ import org.helm.notation2.parser.notation.grouping.GroupingNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupElement;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupMixture;
+import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupOr;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.jdom2.JDOMException;
 
 /**
  * ChangeObjects, class to provide simple methods to change the ContainerHELM2
@@ -219,6 +225,13 @@ public final class ChangeObjects {
     return polymer;
   }
 
+  /**
+   * method to change the MonomerNotation on the specific position
+   *
+   * @param position position of the changed MonomerNotation
+   * @param polymer PolymerNotation
+   * @param not changed MonomerNotation
+   */
   protected static void changeMonomerNotation(int position, PolymerNotation polymer, MonomerNotation not) {
     polymer.getPolymerElements().getListOfElements().set(position, not);
   }
@@ -317,7 +330,19 @@ public final class ChangeObjects {
     containerhelm2.getHELM2Notation().getListOfPolymers().add(position, polymer);
   }
 
-  protected static void replaceMonomer(ContainerHELM2 containerhelm2, String polymerType, String existingMonomerID, String newMonomerID) throws NotationException, IOException {
+  /**
+   * method to replace the MonomerID with the new MonomerID for a given polymer
+   * type
+   *
+   * @param containerhelm2
+   * @param polymerType String of the polymer type
+   * @param existingMonomerID old MonomerID
+   * @param newMonomerID new MonomerID
+   * @throws NotationException
+   * @throws IOException
+   * @throws JDOMException
+   */
+  protected static void replaceMonomer(ContainerHELM2 containerhelm2, String polymerType, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
     for (int i = 0; i < containerhelm2.getHELM2Notation().getListOfPolymers().size(); i++) {
       if (containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerID().getType().equals(polymerType)) {
         for (int j = 0; j < containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerElements().getListOfElements().size(); j++) {
@@ -332,80 +357,112 @@ public final class ChangeObjects {
 
   }
 
-  private static MonomerNotation replaceMonomerNotation(MonomerNotation monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException {
-    if (newMonomerID.length() > 1) {
-      newMonomerID = "[" + newMonomerID + "]";
-    }
-    boolean hasChanged = false;
-
+  /**
+   * method to replace the MonomerNotation having the MonomerID with the new
+   * MonomerID
+   *
+   * @param monomerNotation
+   * @param existingMonomerID
+   * @param newMonomerID
+   * @return MonomerNotation, if it had the old MonomerID, null otherwise
+   * @throws NotationException
+   * @throws IOException
+   * @throws JDOMException
+   */
+  private static MonomerNotation replaceMonomerNotation(MonomerNotation monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
+    /* Nucleotide */
     if (monomerNotation instanceof MonomerNotationUnitRNA) {
-      StringBuilder sb = new StringBuilder();
-      for (MonomerNotationUnit element : ((MonomerNotationUnitRNA) monomerNotation).getContents()) {
-        if (element.getID().equals(existingMonomerID)) {
-          hasChanged = true;
-          sb.append(newMonomerID);
-        } else {
-          if (MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", element.getID()).getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
-            sb.append("(" + element.getID() + ")");
-          } else {
-            sb.append(element.getID());
-          }
-        }
-      }
-      if (hasChanged) {
-        MonomerNotationUnitRNA newObject = new MonomerNotationUnitRNA(sb.toString(), monomerNotation.getType());
+      List<String> result = generateIDForNucleotide(((MonomerNotationUnitRNA) monomerNotation), existingMonomerID, newMonomerID);
+      if (result.get(1) != null) {
+        MonomerNotationUnitRNA newObject = new MonomerNotationUnitRNA(result.get(0), monomerNotation.getType());
         newObject.setCount(monomerNotation.getCount());
         if (monomerNotation.isAnnotationTrue()) {
           newObject.setAnnotation(monomerNotation.getAnnotation());
         }
+        return newObject;
       }
-
     } else if (monomerNotation instanceof MonomerNotationUnit) {
+      /* Simple MonomerNotationUnit */
       if (monomerNotation.getID().equals(existingMonomerID)) {
         return produceMonomerNotationUnitWithOtherID(monomerNotation, newMonomerID);
       }
     } else if (monomerNotation instanceof MonomerNotationList) {
-      StringBuilder sb = new StringBuilder();
-      for (MonomerNotation element : ((MonomerNotationList) monomerNotation).getListofMonomerUnits()) {
-        if (element.getID().equals(existingMonomerID)) {
-          hasChanged = true;
-          sb.append(newMonomerID);
-        } else {
-          if (MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", element.getID()).getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
-            sb.append("(" + element.getID() + ")");
-          } else {
-            sb.append(element.getID());
-          }
-        }
+      /* MonomerNotationList */
+      monomerNotation = replaceMonomerNotationList(((MonomerNotationList) monomerNotation), existingMonomerID, newMonomerID);
+      if (monomerNotation != null) {
+        return monomerNotation;
       }
-      if (hasChanged) {
-        MonomerNotationUnitRNA newObject = new MonomerNotationUnitRNA(sb.toString(), monomerNotation.getType());
-        newObject.setCount(monomerNotation.getCount());
-        if (monomerNotation.isAnnotationTrue()) {
-          newObject.setAnnotation(monomerNotation.getAnnotation());
-        }
-      }
-
     } else if (monomerNotation instanceof MonomerNotationGroup) {
-      for (int i = 0; i < ((MonomerNotationGroup) monomerNotation).getListOfElements().size(); i++) {
-
-        if (((MonomerNotationGroup) monomerNotation).getListOfElements().get(i).getMonomerNotation().getID().equals(monomerNotation.getID().equals(existingMonomerID))) {
-          hasChanged = true;
-          MonomerNotationGroupElement oldElement = ((MonomerNotationGroup) monomerNotation).getListOfElements().get(i);
-          oldElement.setMonomerNotation(produceMonomerNotationUnitWithOtherID(monomerNotation, newMonomerID));
-          ((MonomerNotationGroup) monomerNotation).getListOfElements().set(i, oldElement);
-        }
+      /* MonomerNotatationGroup */
+      System.out.println(monomerNotation.getID());
+      monomerNotation = replaceMonomerNotationGroup(((MonomerNotationGroup) monomerNotation), existingMonomerID, newMonomerID);
+      if (monomerNotation != null) {
+        return monomerNotation;
       }
     } else {
       throw new NotationException("Unknown MonomerNotation Type " + monomerNotation.getClass());
     }
 
-    if (hasChanged) {
-      return monomerNotation;
-    }
     return null;
+
   }
 
+  /**
+   * method to replace the MonomerNotationGroup having the MonomerID with the
+   * new MonomerID
+   *
+   * @param monomerNotation
+   * @param existingMonomerID
+   * @param newMonomerID
+   * @return MonomerNotationGroup, if it had the old MonomerID, null otherwise
+   * @throws NotationException
+   * @throws IOException
+   * @throws JDOMException
+   */
+  private static MonomerNotationGroup replaceMonomerNotationGroup(MonomerNotationGroup monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException,
+      JDOMException {
+    MonomerNotationGroup newObject = null;
+    boolean hasChanged = false;
+    StringBuilder sb = new StringBuilder();
+    String id = "";
+    for (MonomerNotationGroupElement object : monomerNotation.getListOfElements()) {
+      System.out.println(object.getMonomerNotation().getID());
+      System.out.println(object.getValue());
+      if (object.getMonomerNotation().getID().equals(existingMonomerID)) {
+        hasChanged = true;
+        id = generateGroupElement(newMonomerID, object.getValue());
+      } else {
+        id = generateGroupElement(object.getMonomerNotation().getID(), object.getValue());
+      }
+      if (monomerNotation instanceof MonomerNotationGroupOr) {
+        sb.append(id + ",");
+      } else {
+        sb.append(id + "+");
+      }
+
+    }
+    if (hasChanged) {
+      sb.setLength(sb.length() - 1);
+      System.out.println(sb.toString());
+      if (monomerNotation instanceof MonomerNotationGroupOr) {
+        newObject = new MonomerNotationGroupOr(sb.toString(), monomerNotation.getType());
+      } else {
+        newObject = new MonomerNotationGroupMixture(sb.toString(), monomerNotation.getType());
+      }
+    }
+    return newObject;
+  }
+
+  /**
+   * method to replace the MonomerNotationUnit having the MonomerID with the new
+   * MonomerID
+   *
+   * @param monomerNotation
+   * @param newID
+   * @return MonomerNotationUnit
+   * @throws NotationException
+   * @throws IOException
+   */
   private static MonomerNotationUnit produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation, String newID) throws NotationException, IOException {
     MonomerNotationUnit result = new MonomerNotationUnit(newID, monomerNotation.getType());
     if (monomerNotation.isAnnotationTrue()) {
@@ -415,4 +472,179 @@ public final class ChangeObjects {
     return result;
   }
 
+  /**
+   * method to replace the MonomerNotationList having the MonomerID with the new
+   * MonomerID
+   *
+   * @param object
+   * @param existingMonomerID
+   * @param newMonomerID
+   * @return MonomerNotationList, if it had the old MonomerID, null otherwise
+   * @throws NotationException
+   * @throws IOException
+   * @throws JDOMException
+   */
+  private static MonomerNotationList replaceMonomerNotationList(MonomerNotationList object, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
+    MonomerNotationList newObject = null;
+    boolean hasChanged = false;
+    StringBuilder sb = new StringBuilder();
+    String id = "";
+    for (MonomerNotation element : object.getListofMonomerUnits()) {
+      if (element instanceof MonomerNotationUnitRNA) {
+        List<String> result = generateIDForNucleotide(((MonomerNotationUnitRNA) element), existingMonomerID, newMonomerID);
+        id = result.get(0);
+        if (result.get(1) != null) {
+          hasChanged = true;
+        }
+      } else {
+        if (element.getID().equals(existingMonomerID)) {
+          hasChanged = true;
+          id = generateIDMonomerNotation(newMonomerID, element.getCount(), element.getAnnotation());
+        } else {
+          id = generateIDMonomerNotation(element.getID(), element.getCount(), element.getAnnotation());
+        }
+
+      }
+      sb.append(id + ".");
+    }
+    if (hasChanged) {
+      sb.setLength(sb.length() - 1);
+      newObject = new MonomerNotationList(sb.toString(), object.getType());
+      newObject.setCount(object.getCount());
+      if (object.isAnnotationTrue()) {
+        newObject.setAnnotation(object.getAnnotation());
+
+      }
+    }
+
+    return newObject;
+
+  }
+
+  /**
+   * method to generate the MonomerNotation in String format
+   *
+   * @param id id of the MonomerNotation
+   * @param count Count of the MonomerNotation
+   * @param annotation Annotation of the MonomerNotation
+   * @return MonomerNotation in String format
+   */
+  private static String generateIDMonomerNotation(String id, String count, String annotation) {
+    if (id.length() > 1) {
+      id = "[" + id + "]";
+    }
+    String result = id;
+    try {
+      if (!(Integer.parseInt(count) == 1)) {
+        result += "'" + count + "'";
+      }
+    } catch (NumberFormatException e) {
+      result += "'" + count + "'";
+    }
+    if (annotation != null) {
+      result += "\"" + annotation + "\"";
+    }
+    return result;
+  }
+
+  /**
+   * method to generate the MonomerNotation for a RNA
+   *
+   * @param id id of the MonomerNotation
+   * @param count Count of the MonomerNotation
+   * @param annotation Annotation of the MonomerNotation
+   * @return MonomerNotation in String format
+   * @throws MonomerLoadingException
+   */
+  private static String generateIDRNA(String id, String count, String annotation) throws MonomerLoadingException {
+    String result = id;
+    if (id.length() > 1) {
+      result = "[" + id + "]";
+    }
+    if (MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", id).getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
+      result = "(" + result + ")";
+    }
+
+    try {
+      if (!(Integer.parseInt(count) == 1)) {
+        result += "'" + count + "'";
+      }
+    } catch (NumberFormatException e) {
+      result += "'" + count + "'";
+    }
+    if (annotation != null) {
+      result += "\"" + annotation + "\"";
+    }
+    return result;
+  }
+
+  /**
+   * method to replace the MonomerNotationUnitRNA having the MonomerID with the
+   * new MonomerID
+   *
+   * @param object MonomerNotationUnitRNA
+   * @param existingMonomerID
+   * @param newMonomerID
+   * @return List of MonomerNotationUnitRNA in String format and the information
+   *         if the MonomerNotationUnitRNA has to be changed
+   * @throws MonomerLoadingException
+   */
+  private static List<String> generateIDForNucleotide(MonomerNotationUnitRNA object, String existingMonomerID, String newMonomerID) throws MonomerLoadingException {
+    List<String> result = new ArrayList<String>();
+    String hasChanged = null;
+    StringBuilder sb = new StringBuilder();
+    String id = "";
+    for (MonomerNotation element : object.getContents()) {
+      if (element.getID().equals(existingMonomerID)) {
+        hasChanged = "";
+        id = generateIDRNA(newMonomerID, element.getCount(), element.getAnnotation());
+      } else {
+        id = generateIDRNA(element.getID(), element.getCount(), element.getAnnotation());
+      }
+      sb.append(id);
+    }
+    try {
+      if (!(Integer.parseInt(object.getCount()) == 1)) {
+        sb.append("'" + object.getCount() + "'");
+      }
+    } catch (NumberFormatException e) {
+      sb.append("'" + object.getCount() + "'");
+    }
+    if (object.getAnnotation() != null) {
+      sb.append("\"" + object.getAnnotation() + "\"");
+    }
+    result.add(sb.toString());
+    result.add(hasChanged);
+    return result;
+  }
+
+  /**
+   * method to generate the MonomerNotationGroupElement in String format
+   * 
+   * @param id
+   * @param list
+   * @return MonomerNotationGroupElement in String format
+   */
+  private static String generateGroupElement(String id, List<Double> list) {
+    StringBuilder sb = new StringBuilder();
+
+    if (list.size() == 1) {
+      if (list.get(0) == -1.0) {
+        sb.append(id + ":");
+        sb.append("?" + "-");
+      } else if (list.get(0) == 1.0) {
+        sb.append(id + ":");
+      } else {
+        sb.append(id + ":" + list.get(0) + "-");
+      }
+    } else {
+      sb.append(id + ":");
+      for (Double item : list) {
+        sb.append(item + "-");
+      }
+    }
+
+    sb.setLength(sb.length() - 1);
+    return sb.toString();
+  }
 }

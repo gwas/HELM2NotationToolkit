@@ -87,7 +87,7 @@ public class FastaFormatTest {
     parserHELM2.parse(helm2);
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    FastaFormat.generateFastaFromPeptidePolymer(containerhelm2.getHELM2Notation().getListOfPolymers());
+    System.out.println(FastaFormat.generateFastaFromPeptidePolymer(containerhelm2.getHELM2Notation().getListOfPolymers()));
   }
 
   private void testHELMtoFastaRNA(String notation) throws ExceptionState, IOException, JDOMException,

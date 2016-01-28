@@ -25,10 +25,19 @@ package org.helm.notation2;
 
 import java.io.IOException;
 
+import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
+import org.helm.notation.StructureException;
+import org.helm.notation.model.Monomer;
+import org.helm.notation.tools.ComplexNotationParser;
+import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
+import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.exceptionparser.HELM1ConverterException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
@@ -98,6 +107,41 @@ public class ChangeObjectsTest {
     // ChangeObjects.changePolymerNotation(0,
     // ChangeObjects.deleteMonomerNotation(containerhelm2.getAllPolymers().get(0),
     // 0), containerhelm2);
+  }
+
+  @Test
+  public void testReplaceMonomer() throws NotationException, MonomerLoadingException, MonomerException, JDOMException, IOException, ParserException,
+      org.helm.notation2.parser.exceptionparser.NotationException, HELM1ConverterException, StructureException, RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException {
+
+    String notation =
+        "RNA1{R(A)P.R(G)P.R(C)P.R(U)P.R(A)P.R(A)P.R(A)P.R(G)P.R(G)}|RNA2{R(C)P.R(C)P.R(U)P.R(U)P.R(U)P.R(A)P.R(G)P.R(C)P.R(U)}$$$$";
+    String result = ComplexNotationParser.replaceMonomer(notation, Monomer.NUCLIEC_ACID_POLYMER_TYPE, "P", "sP");
+    System.out.println("Result: " + result);
+
+    ContainerHELM2 containerhelm2 = readNotation(notation);
+    ChangeObjects.replaceMonomer(containerhelm2, "RNA", "P", "sP");
+
+    System.out.println(containerhelm2.getHELM2Notation().toHELM2());
+
+    /**/
+    notation = "PEPTIDE1{A'23'\"jkj\".C.D'12'.E'24'}|PEPTIDE2{G'22'.C.S'8'.P.P.P.P.P.P.P.P.P.K'6'}$$$$V2.0";
+
+    containerhelm2 = readNotation(notation);
+    ChangeObjects.replaceMonomer(containerhelm2, "RNA", "N", "G");
+
+    System.out.println(containerhelm2.getHELM2Notation().toHELM2());
+
+    /**/
+    notation =
+        "PEPTIDE1{(A'3'\"Mutation\".G)'3'.X.G.C.(_,N).(A:10,G:30,R:30).T.C.F.D.W\"mutation\".(A:?+G:1.5).C}|RNA1{R(A)P.((R(N)P)'3'.R(G)P)'4'.(R(G)P)'3-7'\"mutation\"}|CHEM1{?}|BLOB1{BEAD}\"Animated Polystyrene\"$PEPTIDE1,BLOB1,X:R3-?:?\"Specific Conjugation\"|PEPTIDE1,CHEM1,(A+T):R3-?:?|PEPTIDE1,PEPTIDE1,(4,8):pair-12:pair$G1(PEPTIDE1:1+RNA1:2.5-2.7+BLOB1)|G2(G1:45,CHEM1:55)${\"Name\":\"lipid nanoparticle with RNA payload and peptide ligand\"}$V2.0";
+
+    containerhelm2 = readNotation(notation);
+
+    System.out.println(containerhelm2.getHELM2Notation().toHELM2());
+    ChangeObjects.replaceMonomer(containerhelm2, "PEPTIDE", "N", "G");
+
+    System.out.println(containerhelm2.getHELM2Notation().toHELM2());
+
   }
 
 }

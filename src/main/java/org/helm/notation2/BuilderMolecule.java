@@ -133,6 +133,7 @@ public final class BuilderMolecule {
     /* Build interconnections between single molecules */
     LOG.info("Connect the single molecules together");
     for (ConnectionNotation connection : connections) {
+
       /* Group Id -> throw exception */
       if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
         LOG.error("Molecule can't be build for group connection");
@@ -184,10 +185,8 @@ public final class BuilderMolecule {
 
       String rgroupOne = connection.getrGroupSource();
       String rgroupTwo = connection.getrGroupTarget();
-      /* Bug */
       /* Self cycle */
       if (idFirst.equals(idSecond)) {
-        System.out.println("Self-cycle");
         try {
           molecule =
               Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
@@ -223,6 +222,14 @@ public final class BuilderMolecule {
 
         mapConnections.put(connection.getSourceId().getID(), idFirst + idSecond);
         mapConnections.put(connection.getTargetId().getID(), idFirst + idSecond);
+
+        /* HashMap refresh */
+        for (Map.Entry e : mapConnections.entrySet()) {
+          if (e.getValue().equals(idFirst) || e.getValue().equals(idSecond)) {
+            mapConnections.put((String) e.getKey(), idFirst + idSecond);
+          }
+        }
+
       }
 
     }

@@ -38,7 +38,7 @@ import org.testng.annotations.Test;
 
 /**
  * ExtinctionCalculatorTest
- * 
+ *
  * @author hecht
  */
 public class ExtinctionCalculatorTest {
