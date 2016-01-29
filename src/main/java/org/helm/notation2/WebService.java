@@ -25,6 +25,7 @@ package org.helm.notation2;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
@@ -232,7 +233,7 @@ public class WebService {
    * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
    */
   public Float calculateExtinctionCoefficient(String notation) throws ExtinctionCoefficientException, ValidationException, MonomerLoadingException {
-    Float result = ExtinctionCoefficient.getInstance().calculate(validate(notation));
+    Float result = ExtinctionCoefficient.getInstance().calculate(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
   }
@@ -315,6 +316,26 @@ public class WebService {
     String result = MoleculeInformation.getMolecularFormular(validate(notation).getHELM2Notation());
     setMonomerFactoryToDefault(notation);
     return result;
+  }
+
+  /**
+   * method to calculate froma non-ambiguous HELM input the molecular
+   * properties: molecular formula, molecular weight, exact mass, extinction
+   * coefficient
+   *
+   * @param notation
+   * @return
+   * @throws BuilderMoleculeException
+   * @throws CTKException
+   * @throws ExtinctionCoefficientException
+   * @throws ValidationException
+   * @throws MonomerLoadingException
+   */
+  public List<String> getMolecularProperties(String notation) throws BuilderMoleculeException, CTKException, ExtinctionCoefficientException, ValidationException, MonomerLoadingException {
+    List<String> result = MoleculeInformation.getMoleculeProperties(validate(notation).getHELM2Notation());
+    setMonomerFactoryToDefault(notation);
+    return result;
+
   }
 
   /**

@@ -62,7 +62,7 @@ public class ExtinctionCalculatorTest {
         new InterConnections());
 
     Float f = (float) 1.55;
-    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
+    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation())).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
 
   }
 
@@ -82,7 +82,7 @@ public class ExtinctionCalculatorTest {
         new InterConnections());
 
     Float f = (float) 46.20;
-    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
+    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation())).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
 
   }
 
@@ -102,7 +102,7 @@ public class ExtinctionCalculatorTest {
         new InterConnections());
 
     Float f = (float) 80.58;
-    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
+    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation())).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
 
   }
 
@@ -122,7 +122,7 @@ public class ExtinctionCalculatorTest {
         new InterConnections());
 
     Float f = (float) 0.12;
-    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
+    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation())).setScale(2, BigDecimal.ROUND_DOWN).floatValue(), f);
 
   }
 
@@ -141,7 +141,7 @@ public class ExtinctionCalculatorTest {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
     Float f = (float) 0.19;
-    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
+    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation())).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
   }
 
   @Test
@@ -159,7 +159,7 @@ public class ExtinctionCalculatorTest {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
     Float f = (float) 10.21;
-    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
+    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation())).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
@@ -177,7 +177,7 @@ public class ExtinctionCalculatorTest {
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
     Float f = (float) 10.21;
-    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2)).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
+    Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation())).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
@@ -194,7 +194,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation());
 
   }
 
@@ -212,7 +212,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation());
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
@@ -229,7 +229,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation());
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
@@ -246,7 +246,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation());
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
@@ -263,7 +263,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    System.out.println(ExtinctionCoefficient.getInstance().calculate(containerhelm2));
+    System.out.println(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation()));
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
@@ -280,7 +280,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation());
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
@@ -298,7 +298,7 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    ExtinctionCoefficient.getInstance().calculate(containerhelm2);
+    ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation());
   }
 
 }

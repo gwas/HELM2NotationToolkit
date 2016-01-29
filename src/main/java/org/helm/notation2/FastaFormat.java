@@ -31,12 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.NotationConstant;
 import org.helm.notation.NucleotideFactory;
 import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.model.Nucleotide;
+import org.helm.notation.tools.PeptideSequenceParser;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -271,19 +273,20 @@ public final class FastaFormat {
     sequence = cleanup(sequence);
     try {
       PolymerListElements elements = new PolymerListElements(entity);
-      for (Character c : sequence.toCharArray()) {
-        if (aminoacids.get(c.toString()) != null) {
-          elements.addMonomerNotation(c.toString());
-        } else {
-          LOG.error("Not appropriate amino acid for HELM " + c.toString());
-          throw new FastaFormatException("Not appropriate amino acid for HELM " + c.toString());
+      List<String> aaList = PeptideSequenceParser.getAminoAcidList(sequence);
+      for (String aa : aaList) {
+        if (aa.length() > 1) {
+          aa = "[" + aa + "]";
         }
+
+        elements.addMonomerNotation(aa);
       }
       return elements;
-    } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException e) {
+    } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | MonomerException | org.helm.notation.NotationException e) {
       LOG.error("PolymerListElements can not be initialized");
       throw new FastaFormatException("PolymerListElements can not be initialized " + e.getMessage());
     }
+
   }
 
   /**

@@ -23,6 +23,7 @@
  */
 package org.helm.notation2;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,9 @@ import java.util.TreeMap;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
+import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,13 +75,25 @@ public final class MoleculeInformation {
   protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big molecule; List of molecules? */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
+    return calculateMolecularWeight(molecules);
+
+  }
+
+  /**
+   * intern method to calculate the molecular weight for a list of molecules
+   *
+   * @param molecules
+   * @return
+   * @throws BuilderMoleculeException
+   * @throws CTKException
+   */
+  private static double calculateMolecularWeight(List<AbstractMolecule> molecules) throws BuilderMoleculeException, CTKException {
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
       molecule = BuilderMolecule.mergeRgroups(molecule);
       result += Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularWeight();
     }
     return result;
-
   }
 
   /**
@@ -90,8 +105,19 @@ public final class MoleculeInformation {
    * @throws CTKException
    */
   protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
-    /* First build one big moleucle; List of molecules */
+    /* First build one big molecule; List of molecules */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
+    return calculateExactMass(molecules);
+  }
+
+  /**
+   * intern method to calculate the exact mass for a list of molecules
+   *
+   * @param molecules
+   * @return
+   * @throws CTKException
+   */
+  private static double calculateExactMass(List<AbstractMolecule> molecules) throws CTKException {
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
       result += Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getExactMass();
@@ -108,8 +134,20 @@ public final class MoleculeInformation {
    * @throws CTKException
    */
   protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
-    /* First build one big molecule */
+    /* First build HELM molecule */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
+    return calculateMolecularFormula(molecules);
+  }
+
+  /**
+   * intern method to calculate the molecular formular for a list of molecules
+   *
+   * @param molecules
+   * @return
+   * @throws BuilderMoleculeException
+   * @throws CTKException
+   */
+  private static String calculateMolecularFormula(List<AbstractMolecule> molecules) throws BuilderMoleculeException, CTKException {
     Map<String, Integer> atomNumberMap = new TreeMap<String, Integer>();
     for (AbstractMolecule molecule : molecules) {
       atomNumberMap = generateAtomNumberMap(molecule, atomNumberMap);
@@ -126,7 +164,32 @@ public final class MoleculeInformation {
       sb.append(num.toString());
     }
     return sb.toString();
+  }
 
+  /**
+   * method to get all molecule properties for one HELM2Notation
+   *
+   * @param helm2notation
+   * @return List of molecule properties: molecular formula, molecular weight,
+   *         exact mass, extinction coefficient
+   * @throws BuilderMoleculeException
+   * @throws CTKException
+   * @throws ExtinctionCoefficientException
+   */
+  protected static List<String> getMoleculeProperties(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ExtinctionCoefficientException {
+    List<String> result = new ArrayList<String>();
+    /* First build HELM molecule */
+    List<AbstractMolecule> molecules = buildMolecule(helm2notation);
+    /* calculate molecular formula */
+    result.add(calculateMolecularFormula(molecules));
+    /* calculate molecular weight */
+    result.add(Double.toString(calculateMolecularWeight(molecules)));
+    /* calculate exact mass */
+    result.add(Double.toString(calculateExactMass(molecules)));
+    /* add Extinction Coefficient calculation to it */
+    result.add(Float.toString(ExtinctionCoefficient.getInstance().calculate(helm2notation)));
+
+    return result;
   }
 
   /**

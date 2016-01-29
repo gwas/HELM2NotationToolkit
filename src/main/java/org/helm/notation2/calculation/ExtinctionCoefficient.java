@@ -38,6 +38,7 @@ import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,15 +154,15 @@ public final class ExtinctionCoefficient {
   /**
    * method to calculate the extinction coefficient for the whole HELM molecule
    *
-   * @param helm2container input ContainerHELM2
+   * @param helm2notation input HELM2Notation
    * @return extinction coefficient
    * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
    */
-  public float calculate(ContainerHELM2 helm2container) throws ExtinctionCoefficientException {
+  public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException {
     LOG.debug("ExtinctionCalculation is starting");
     int unitType = 1;
     float result = 0.0f;
-    List<PolymerNotation> polymerNodes = helm2container.getHELM2Notation().getListOfPolymers();
+    List<PolymerNotation> polymerNodes = helm2notation.getListOfPolymers();
     for (PolymerNotation polymerNode : polymerNodes) {
       String polymerType = polymerNode.getPolymerID().getType();
       float ext = 0.0f;
