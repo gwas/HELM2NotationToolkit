@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.helm.notation.CalculationException;
+import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
@@ -157,8 +158,9 @@ public final class ExtinctionCoefficient {
    * @param helm2notation input HELM2Notation
    * @return extinction coefficient
    * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
+   * @throws NotationException
    */
-  public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException {
+  public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException, NotationException {
     LOG.debug("ExtinctionCalculation is starting");
     int unitType = 1;
     float result = 0.0f;

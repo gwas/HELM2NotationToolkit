@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.helm.notation.CalculationException;
+import org.helm.notation.NotationException;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.parser.StateMachineParser;
@@ -46,7 +47,7 @@ public class ExtinctionCalculatorTest {
 
   @Test
   public void testCalculationOnePeptide() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException
+      ExtinctionCoefficientException, CalculationException, NotationException
 
   {
     parser = new StateMachineParser();
@@ -68,7 +69,7 @@ public class ExtinctionCalculatorTest {
 
   @Test
   public void testCalculationOneRNA() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}$$$$";
@@ -88,7 +89,7 @@ public class ExtinctionCalculatorTest {
 
   @Test
   public void testCalculationRepeatingRNA() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{P.(R(A)P.R(G)P)'2'.R([5meC])P.R(G)P.[mR](A)}$$$$";
@@ -108,7 +109,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationRepeatingMonomer() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{C'2'}$$$$";
@@ -128,7 +129,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationRepeatingList() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{(F.C.F)'3'}$$$$";
@@ -146,7 +147,7 @@ public class ExtinctionCalculatorTest {
 
   @Test
   public void testCalculationWithCHEMAndBlob() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "CHEM1{[MCC]}|RNA1{R(U)}|BLOB1{?}$$$$";
@@ -164,7 +165,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException() throws ExtinctionCoefficientException, CalculationException,
-      ExceptionState, IOException, JDOMException {
+      ExceptionState, IOException, JDOMException, NotationException {
     parser = new StateMachineParser();
 
     String test = "CHEM1{[MCC]}|RNA1{(R(U)+R(A))}|BLOB1{?}$$$$";
@@ -182,7 +183,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException2() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{?}$$$$";
@@ -200,7 +201,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException3() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{A.C._}$$$$";
@@ -217,7 +218,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException4() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{A.C.(_.K)}$$$$";
@@ -234,7 +235,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException5() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{X}$$$$";
@@ -246,12 +247,12 @@ public class ExtinctionCalculatorTest {
 
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
         new InterConnections());
-    ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation());
+    System.out.println(ExtinctionCoefficient.getInstance().calculate(containerhelm2.getHELM2Notation()));
   }
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException6() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "PEPTIDE1{?}$$$$";
@@ -268,7 +269,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException7() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test = "RNA1{R(N)P}$$$$";
@@ -285,7 +286,7 @@ public class ExtinctionCalculatorTest {
 
   @Test(expectedExceptions = ExtinctionCoefficientException.class)
   public void testCalculationWithException8() throws ExceptionState, IOException, JDOMException,
-      ExtinctionCoefficientException, CalculationException {
+      ExtinctionCoefficientException, CalculationException, NotationException {
     parser = new StateMachineParser();
 
     String test =

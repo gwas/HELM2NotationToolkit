@@ -86,9 +86,10 @@ public final class Validation {
    * @throws MonomerException if a monomer is not valid
    * @throws GroupingNotationException if the grouping section is not valid
    * @throws ConnectionNotationException if the connection section is not valid
+   * @throws NotationException
    */
   public static void validateNotationObjects(ContainerHELM2 containerhelm2) throws PolymerIDsException,
-      MonomerException, GroupingNotationException, ConnectionNotationException {
+      MonomerException, GroupingNotationException, ConnectionNotationException, NotationException {
     LOG.info("Validation process is starting");
     /* all polymer ids have to be unique */
     if (!validateUniquePolymerIDs(containerhelm2)) {
@@ -133,8 +134,9 @@ public final class Validation {
    *
    * @param containerhelm2 input ContainerHELM2
    * @return true if all connections are valid, false otherwise
+   * @throws NotationException
    */
-  protected static boolean validateConnections(ContainerHELM2 containerhelm2) {
+  protected static boolean validateConnections(ContainerHELM2 containerhelm2) throws NotationException {
     try {
       LOG.info("Validation of Connection section starts");
       List<ConnectionNotation> listConnections = containerhelm2.getHELM2Notation().getListOfConnections();
@@ -179,9 +181,9 @@ public final class Validation {
 
           List<Monomer> listMonomersOne;
 
-          listMonomersOne = getAllMonomers(source.getMonomerNotation(occurenceOne));
+          listMonomersOne = getAllMonomers(source.getMonomerNotation(occurenceOne), occurenceOne);
 
-          List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo));
+          List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo), occurenceTwo);
 
           /* check each single Attachment */
           checkAttachment(listMonomersOne, listMonomersTwo, connection, containerhelm2, interconnection, specific);
@@ -194,17 +196,17 @@ public final class Validation {
           /* ? - section has to be included */
           if (listMonomerOccurencesOne.isEmpty()) {
             for (Integer occurenceTwo : listMonomerOccurencesTwo) {
-              List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo));
+              List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo), occurenceTwo);
               checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), containerhelm2, connection, interconnection, connection.getTargetId().getID());
             }
           }
           for (Integer occurenceOne : listMonomerOccurencesOne) {
             /* get Monomers */
-            List<Monomer> listMonomersOne = getAllMonomers(source.getMonomerNotation(occurenceOne));
+            List<Monomer> listMonomersOne = getAllMonomers(source.getMonomerNotation(occurenceOne), occurenceOne);
             checkSingleAttachment(listMonomersOne, connection.getrGroupSource(), containerhelm2, connection, interconnection, connection.getSourceId().getID());
             /* check single attachment */
             for (Integer occurenceTwo : listMonomerOccurencesTwo) {
-              List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo));
+              List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo), occurenceTwo);
               checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), containerhelm2, connection, interconnection, connection.getTargetId().getID());
               checkAttachment(listMonomersOne, listMonomersTwo, connection, containerhelm2, interconnection, false);
 
@@ -516,40 +518,41 @@ public final class Validation {
    * @throws MonomerException
    * @throws IOException
    * @throws JDOMException
+   * @throws NotationException
    */
-  protected static List<Monomer> getAllMonomers(MonomerNotation not) throws HELM2HandledException, MonomerException,
-      IOException, JDOMException {
+  protected static List<Monomer> getAllMonomers(MonomerNotation not, int position) throws HELM2HandledException, MonomerException,
+      IOException, JDOMException, NotationException {
     List<Monomer> monomers = new ArrayList<Monomer>();
 
     MonomerFactory monomerFactory = MonomerFactory.getInstance();
     MonomerStore monomerStore = monomerFactory.getMonomerStore();
     if (not instanceof MonomerNotationUnitRNA) {
-      monomers.addAll(getMonomersRNA((MonomerNotationUnitRNA) not, monomerStore));
+      monomers.addAll(getMonomersRNA((MonomerNotationUnitRNA) not, monomerStore, position));
 
     } else if (not instanceof MonomerNotationUnit) {
       String id = not.getID();
       if (id.startsWith("[") && id.endsWith("]")) {
         id = id.substring(1, id.length() - 1);
       }
-      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
     } else if (not instanceof MonomerNotationGroup) {
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
         String id = groupElement.getMonomerNotation().getID();
         if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
-        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
       }
     } else if (not instanceof MonomerNotationList) {
       for (MonomerNotation listElement : ((MonomerNotationList) not).getListofMonomerUnits()) {
         if (listElement instanceof MonomerNotationUnitRNA) {
-          monomers.addAll(getMonomersRNA(((MonomerNotationUnitRNA) listElement), monomerStore));
+          monomers.addAll(getMonomersRNA(((MonomerNotationUnitRNA) listElement), monomerStore, position));
         } else {
           String id = listElement.getID();
           if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
           }
-          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
         }
       }
 
@@ -569,9 +572,10 @@ public final class Validation {
    * @throws MonomerException
    * @throws IOException
    * @throws JDOMException
+   * @throws NotationException
    */
   protected static List<Monomer> getAllMonomersOnlyBase(MonomerNotation not) throws HELM2HandledException, MonomerException,
-      IOException, JDOMException {
+      IOException, JDOMException, NotationException {
     LOG.debug("Get base for " + not);
     List<Monomer> monomers = new ArrayList<Monomer>();
 
@@ -587,7 +591,7 @@ public final class Validation {
       if (id.startsWith("[") && id.endsWith("]")) {
         id = id.substring(1, id.length() - 1);
       }
-      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
     } else if (not instanceof MonomerNotationGroup) {
       LOG.debug("MonomerNotationGroup");
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
@@ -595,7 +599,7 @@ public final class Validation {
         if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
-        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
       }
     } else if (not instanceof MonomerNotationList) {
       LOG.debug("MonomerNotationList");
@@ -607,7 +611,7 @@ public final class Validation {
           if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
           }
-          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id));
+          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
         }
       }
 
@@ -774,17 +778,30 @@ public final class Validation {
    * @return List of monomers of the MonomerNotationUnitRNA
    * @throws HELM2HandledException if HELM2 features were there
    */
-  private static List<Monomer> getMonomersRNA(MonomerNotationUnitRNA rna, MonomerStore monomerStore)
+  private static List<Monomer> getMonomersRNA(MonomerNotationUnitRNA rna, MonomerStore monomerStore, int position)
       throws HELM2HandledException {
     try {
       List<Monomer> monomers = new ArrayList<Monomer>();
-      for (MonomerNotationUnit unit : rna.getContents()) {
-        String id = unit.getID().replace("[", "");
-        id = id.replace("]", "");
-        monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id));
+      for (int index = 0; index < rna.getContents().size(); index++) {
+        String id = rna.getContents().get(index).getID();
+        if (rna.getContents().get(index).getID().startsWith("[") && rna.getContents().get(index).getID().endsWith("]")) {
+          id = id.substring(1, id.length() - 1);
+        }
+        /* Special case */
+        if (rna.getContents().size() == 1 && position == 0) {
+          monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id, "P"));
+
+        } else {
+
+          monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id, rna.getInformation().get(index)));
+        }
       }
       return monomers;
-    } catch (Exception e) {
+    } catch (
+
+    Exception e)
+
+    {
       throw new HELM2HandledException(e.getMessage());
     }
 
@@ -805,7 +822,7 @@ public final class Validation {
       for (MonomerNotationUnit unit : rna.getContents()) {
         String id = unit.getID().replace("[", "");
         id = id.replace("]", "");
-        Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id);
+        Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id, "");
 
         if (mon.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
           monomers.add(mon);
@@ -813,7 +830,6 @@ public final class Validation {
       }
       return monomers;
     } catch (Exception e) {
-      System.out.println(e.getMessage());
       throw new HELM2HandledException(e.getMessage());
     }
 

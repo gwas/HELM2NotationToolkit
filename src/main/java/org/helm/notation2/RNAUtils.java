@@ -123,8 +123,9 @@ public class RNAUtils {
    * @return sequence reverse rna/dna sequence
    * @throws RNAUtilsException if the polymer is not a RNA/DNA
    * @throws HELM2HandledException if the polymer contains HELM2 features
+   * @throws org.helm.notation.NotationException
    */
-  protected static String getReverseSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  protected static String getReverseSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException {
     StringBuilder sb = new StringBuilder(getNaturalAnalogSequence(polymer));
     return sb.reverse().toString();
   }
@@ -137,9 +138,10 @@ public class RNAUtils {
    * @return sequence natural analogue sequence
    * @throws HELM2HandledException if the polymer contains HELM2 features
    * @throws RNAUtilsException if the polymer is not RNA or DNA
+   * @throws org.helm.notation.NotationException
    */
   protected static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException,
-      RNAUtilsException {
+      RNAUtilsException, org.helm.notation.NotationException {
     checkRNA(polymer);
     return FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()));
   }
@@ -155,8 +157,10 @@ public class RNAUtils {
    * @throws HELM2HandledException if the polymers contain HELM2 features
    * @throws JDOMException
    * @throws IOException
+   * @throws org.helm.notation.NotationException
    */
-  protected static boolean areAntiparallel(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException, IOException, JDOMException {
+  protected static boolean areAntiparallel(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException, IOException, JDOMException,
+      org.helm.notation.NotationException {
     checkRNA(polymerOne);
     checkRNA(polymerTwo);
     PolymerNotation antiparallel = getAntiparallel(polymerOne);
@@ -261,8 +265,9 @@ public class RNAUtils {
    *           polymer can not be built
    * @throws JDOMException
    * @throws IOException
+   * @throws org.helm.notation.NotationException
    */
-  protected static PolymerNotation getAntiparallel(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException {
+  protected static PolymerNotation getAntiparallel(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException {
     checkRNA(polymer);
     PolymerNotation reversePolymer;
     try {
@@ -284,8 +289,9 @@ public class RNAUtils {
    * @return antiparallel sequence
    * @throws HELM2HandledException if th polymer contains HELM2 features
    * @throws RNAUtilsException if the polymer is not RNA or DNA
+   * @throws org.helm.notation.NotationException
    */
-  private static String generateAntiparallel(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException {
+  private static String generateAntiparallel(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException {
     return generateComplement(polymer).reverse().toString();
   }
 
@@ -298,8 +304,9 @@ public class RNAUtils {
    *           strand can not be built
    * @throws JDOMException
    * @throws IOException
+   * @throws org.helm.notation.NotationException
    */
-  protected static PolymerNotation getInverse(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException {
+  protected static PolymerNotation getInverse(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException {
     checkRNA(polymer);
     PolymerNotation inverse;
     try {
@@ -321,8 +328,9 @@ public class RNAUtils {
    * @return inverse sequence of the PolymerNotation
    * @throws HELM2HandledException if the polymer contains HELM2 features
    * @throws RNAUtilsException if the polymer is not rna or dna
+   * @throws org.helm.notation.NotationException
    */
-  private static StringBuilder generateInverse(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException {
+  private static StringBuilder generateInverse(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException {
     initComplementMap();
     String sequence = getNaturalAnalogSequence(polymer);
     StringBuilder sb = new StringBuilder(sequence);
@@ -336,8 +344,9 @@ public class RNAUtils {
    * @return complement sequence saved in StringBuilder
    * @throws HELM2HandledException if the polymer contains HELM2 features
    * @throws RNAUtilsException if the polymer is not RNA or DNA
+   * @throws org.helm.notation.NotationException
    */
-  private static StringBuilder generateComplement(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException {
+  private static StringBuilder generateComplement(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException {
     initComplementMap();
     String sequence = getNaturalAnalogSequence(polymer);
     StringBuilder sb = new StringBuilder();
@@ -354,9 +363,10 @@ public class RNAUtils {
    *           complement polymer can not be built
    * @throws JDOMException
    * @throws IOException
+   * @throws org.helm.notation.NotationException
    *
    */
-  protected static PolymerNotation getComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException {
+  protected static PolymerNotation getComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException {
     checkRNA(polymer);
     PolymerNotation complementPolymer;
     try {
@@ -445,8 +455,10 @@ public class RNAUtils {
    * @throws IOException
    * @throws JDOMException
    * @throws HELM2HandledException
+   * @throws org.helm.notation.NotationException
    */
-  protected static List<ConnectionNotation> hybridize1(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException, HELM2HandledException {
+  protected static List<ConnectionNotation> hybridize1(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException, HELM2HandledException,
+      org.helm.notation.NotationException {
     checkRNA(one);
     checkRNA(two);
 

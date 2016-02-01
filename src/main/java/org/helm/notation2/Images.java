@@ -29,6 +29,7 @@ import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractChemistryManipulator.OutputType;
+import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
@@ -45,12 +46,12 @@ public final class Images {
   /**
    *
    */
-  private static final int PICTURE_HEIGHT = 1000;
+  private static final int PICTURE_HEIGHT = 10000;
 
   /**
    *
    */
-  private static final int PICTURE_WIDTH = 1000;
+  private static final int PICTURE_WIDTH = 10000;
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(Images.class);
@@ -97,8 +98,9 @@ public final class Images {
    * @throws BuilderMoleculeException if the HELM molecule can't be built
    * @throws CTKException
    * @throws IOException
+   * @throws NotationException
    */
-  protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException {
+  protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException, NotationException {
     LOG.info("Image generation process of HELM molecule starts");
     /* get SMILES representation for the whole molecule */
     String smiles = SMILES.getSMILESForAll(helm2notation);

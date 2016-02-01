@@ -127,18 +127,18 @@ public class ChangeObjectsTest {
     notation = "PEPTIDE1{A'23'\"jkj\".C.D'12'.E'24'}|PEPTIDE2{G'22'.C.S'8'.P.P.P.P.P.P.P.P.P.K'6'}$$$$V2.0";
 
     containerhelm2 = readNotation(notation);
-    ChangeObjects.replaceMonomer(containerhelm2, "RNA", "N", "G");
+    ChangeObjects.replaceMonomer(containerhelm2, "RNA", "G", "A");
 
     System.out.println(containerhelm2.getHELM2Notation().toHELM2());
 
     /**/
     notation =
-        "PEPTIDE1{(A'3'\"Mutation\".G)'3'.X.G.C.(_,N).(A:10,G:30,R:30).T.C.F.D.W\"mutation\".(A:?+G:1.5).C}|RNA1{R(A)P.((R(N)P)'3'.R(G)P)'4'.(R(G)P)'3-7'\"mutation\"}|CHEM1{?}|BLOB1{BEAD}\"Animated Polystyrene\"$PEPTIDE1,BLOB1,X:R3-?:?\"Specific Conjugation\"|PEPTIDE1,CHEM1,(A+T):R3-?:?|PEPTIDE1,PEPTIDE1,(4,8):pair-12:pair$G1(PEPTIDE1:1+RNA1:2.5-2.7+BLOB1)|G2(G1:45,CHEM1:55)${\"Name\":\"lipid nanoparticle with RNA payload and peptide ligand\"}$V2.0";
+        "PEPTIDE1{(A'3'\"Mutation\".G)'3'.X.G.C.(_,G).(A:10,G:30,R:30).T.C.F.D.W\"mutation\".(A:?+G:1.5).C}|RNA1{R(A)P.((R(N)P)'3'.R(G)P)'4'.(R(G)P)'3-7'\"mutation\"}|CHEM1{?}|BLOB1{BEAD}\"Animated Polystyrene\"$PEPTIDE1,BLOB1,X:R3-?:?\"Specific Conjugation\"|PEPTIDE1,CHEM1,(A+T):R3-?:?|PEPTIDE1,PEPTIDE1,(4,8):pair-12:pair$G1(PEPTIDE1:1+RNA1:2.5-2.7+BLOB1)|G2(G1:45,CHEM1:55)${\"Name\":\"lipid nanoparticle with RNA payload and peptide ligand\"}$V2.0";
 
     containerhelm2 = readNotation(notation);
 
     System.out.println(containerhelm2.getHELM2Notation().toHELM2());
-    ChangeObjects.replaceMonomer(containerhelm2, "PEPTIDE", "N", "G");
+    ChangeObjects.replaceMonomer(containerhelm2, "PEPTIDE", "G", "A");
 
     System.out.println(containerhelm2.getHELM2Notation().toHELM2());
 

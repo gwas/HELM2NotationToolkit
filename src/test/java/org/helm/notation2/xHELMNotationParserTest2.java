@@ -90,9 +90,10 @@ public class xHELMNotationParserTest2 {
    * @throws ParserException
    * @throws ValidationException
    * @throws org.jdom.JDOMException
+   * @throws NotationException
    */
   public void validateHELM(String helm) throws ParserException,
-      ValidationException, JDOMException {
+      ValidationException, JDOMException, NotationException {
     /* Read */
     readNotation(helm);
 
@@ -130,8 +131,6 @@ public class xHELMNotationParserTest2 {
     String canonicalNotation = new WebService().convertStandardHELMToCanonicalHELM(helmString);
 
     AssertJUnit.assertEquals("CHEM1{SMCC}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}$CHEM1,PEPTIDE1,1:R2-2:R3|CHEM1,RNA1,1:R1-1:R1$$$", canonicalNotation);
-
-
 
     xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/simple.xhelm");
     helmString = xHelmNotationParser.getHELMNotationString(xHELMRootElement);

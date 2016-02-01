@@ -26,9 +26,12 @@ package org.helm.notation2;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
+import org.helm.notation.MonomerStore;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
@@ -341,8 +344,11 @@ public final class ChangeObjects {
    * @throws NotationException
    * @throws IOException
    * @throws JDOMException
+   * @throws MonomerException
    */
-  protected static void replaceMonomer(ContainerHELM2 containerhelm2, String polymerType, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
+  protected static void replaceMonomer(ContainerHELM2 containerhelm2, String polymerType, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException,
+      MonomerException {
+    validateMonomerReplacement(polymerType, existingMonomerID, newMonomerID);
     for (int i = 0; i < containerhelm2.getHELM2Notation().getListOfPolymers().size(); i++) {
       if (containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerID().getType().equals(polymerType)) {
         for (int j = 0; j < containerhelm2.getHELM2Notation().getListOfPolymers().get(i).getPolymerElements().getListOfElements().size(); j++) {
@@ -354,7 +360,6 @@ public final class ChangeObjects {
         }
       }
     }
-
   }
 
   /**
@@ -620,7 +625,7 @@ public final class ChangeObjects {
 
   /**
    * method to generate the MonomerNotationGroupElement in String format
-   * 
+   *
    * @param id
    * @param list
    * @return MonomerNotationGroupElement in String format
@@ -646,5 +651,74 @@ public final class ChangeObjects {
 
     sb.setLength(sb.length() - 1);
     return sb.toString();
+  }
+
+  protected static boolean validateMonomerReplacement(String polymerType,
+      String existingMonomerID, String newMonomerID) throws MonomerException, IOException,
+          JDOMException, NotationException {
+
+    if (null == polymerType || polymerType.length() == 0) {
+      throw new NotationException(
+          "Polymer type is required for monomer replacement");
+    }
+
+    if (null == existingMonomerID || existingMonomerID.length() == 0) {
+      throw new NotationException(
+          "Existing monomer ID is required for monomer replacement");
+    }
+
+    if (null == newMonomerID || newMonomerID.length() == 0) {
+      throw new NotationException(
+          "New monomer ID is required for monomer replacement");
+    }
+    Map<String, Monomer> monomers = MonomerFactory.getInstance().getMonomerStore().getMonomers(polymerType);
+
+    if (null == monomers || monomers.size() == 0) {
+      throw new NotationException("Unknown polymer type [" + polymerType
+          + "] found");
+    }
+
+    if (!monomers.containsKey(existingMonomerID)) {
+      throw new NotationException("Existing monomer ID ["
+          + existingMonomerID + "] is invalid in polymer type "
+          + polymerType);
+    }
+
+    if (!monomers.containsKey(newMonomerID)) {
+      throw new NotationException("New monomer ID [" + newMonomerID
+          + "] is invalid in polymer type " + polymerType);
+    }
+
+    Monomer existingMonomer = monomers.get(existingMonomerID);
+    Monomer newMonomer = monomers.get(newMonomerID);
+
+    if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
+      if (existingMonomer.getMonomerType().equals(newMonomer.getMonomerType())) {
+        if (existingMonomer.getMonomerType().equals(Monomer.BACKBONE_MOMONER_TYPE)) {
+          if (!existingMonomer.getNaturalAnalog().equals(newMonomer.getNaturalAnalog())) {
+            throw new NotationException(
+                "Existing monomer natural analog ["
+                    + existingMonomer.getNaturalAnalog()
+                    + "] and new monomer natural analog ["
+                    + newMonomer.getNaturalAnalog()
+                    + "] are different");
+          }
+        }
+      } else {
+        throw new NotationException("Existing monomer type ["
+            + existingMonomer.getMonomerType()
+            + "] and new monomer type ["
+            + newMonomer.getMonomerType() + "] are different");
+      }
+    }
+
+    if (!newMonomer.attachmentEquals(existingMonomer)) {
+      throw new NotationException("Existing monomer attachment ["
+          + existingMonomer.getAttachmentListString()
+          + "] and new monomer attachement ["
+          + newMonomer.getAttachmentListString() + "] are different");
+    }
+
+    return true;
   }
 }

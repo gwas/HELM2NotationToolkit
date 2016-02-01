@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
+import org.helm.notation.NotationException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
@@ -37,14 +38,13 @@ import org.testng.annotations.Test;
 
 /**
  * OutputFilesTest
- * 
+ *
  * @author hecht
  */
 public class MDLUtilsTest {
 
-
   @Test
-  public void TestGenerationMDL() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
+  public void TestGenerationMDL() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException {
     if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
       String notation = "RNA1{R(U)P}|RNA2{R(U)P.R(G)}|RNA3{R(C)P.R(A)}|CHEM1{[MCC]}$RNA1,CHEM1,3:R2-1:R1|RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$$";
       ContainerHELM2 containerhelm2 = readNotation(notation);
@@ -53,7 +53,7 @@ public class MDLUtilsTest {
   }
 
   @Test
-  public void TestGenerationMDLOligo() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException {
+  public void TestGenerationMDLOligo() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException {
     String notation = "RNA1{R(A)P.R(G)}$$$$";
     ContainerHELM2 containerhelm2 = readNotation(notation);
     System.out.println(MDLUtils.generateMDL(containerhelm2.getHELM2Notation()));

@@ -433,8 +433,9 @@ public class ContainerHELM2 {
    * @throws NotationException
    * @throws RNAUtilsException
    * @throws HELM2HandledException
+   * @throws org.helm.notation.NotationException
    */
-  public String[] getFormatedSirnaSequences() throws NotationException, RNAUtilsException, HELM2HandledException {
+  public String[] getFormatedSirnaSequences() throws NotationException, RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException {
     return getFormatedSirnaSequences(ComplexNotationParser.DEFAULT_PADDING_CHAR, ComplexNotationParser.DEFAULT_BASE_PAIR_CHAR);
   }
 
@@ -445,8 +446,9 @@ public class ContainerHELM2 {
    * @throws NotationException
    * @throws RNAUtilsException
    * @throws HELM2HandledException
+   * @throws org.helm.notation.NotationException
    */
-  public String[] getFormatedSirnaSequences(String paddingChar, String basePairChar) throws NotationException, RNAUtilsException, HELM2HandledException {
+  public String[] getFormatedSirnaSequences(String paddingChar, String basePairChar) throws NotationException, RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException {
     if (null == paddingChar || paddingChar.length() != 1) {
       throw new NotationException(
           "Padding string must be single character");
@@ -628,7 +630,7 @@ public class ContainerHELM2 {
 
   /**
    * method to reverse a String
-   * 
+   *
    * @param source
    * @return reversed String
    */

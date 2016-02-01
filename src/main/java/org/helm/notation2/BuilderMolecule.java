@@ -34,6 +34,7 @@ import org.helm.chemtoolkit.AttachmentList;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.IAtomBase;
+import org.helm.notation.NotationException;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
@@ -73,8 +74,9 @@ public final class BuilderMolecule {
    * @return molecule for the given single polymer
    * @throws BuilderMoleculeException if the polymer type is BLOB or unknown
    * @throws HELM2HandledException if the polymer contains HELM2 features
+   * @throws NotationException
    */
-  protected static RgroupStructure buildMoleculefromSinglePolymer(final PolymerNotation polymernotation) throws BuilderMoleculeException, HELM2HandledException {
+  protected static RgroupStructure buildMoleculefromSinglePolymer(final PolymerNotation polymernotation) throws BuilderMoleculeException, HELM2HandledException, NotationException {
     LOG.info("Build molecule for single Polymer " + polymernotation.getPolymerID().getID());
     /* Case 1: BLOB -> throw exception */
     if (polymernotation.getPolymerID() instanceof BlobEntity) {
@@ -101,9 +103,10 @@ public final class BuilderMolecule {
    * @param connections all connections of the HELMNotation
    * @return list of built molecules
    * @throws BuilderMoleculeException if HELM2 features were contained
+   * @throws NotationException
    */
   public static List<AbstractMolecule> buildMoleculefromPolymers(final List<PolymerNotation> polymers,
-      final List<ConnectionNotation> connections) throws BuilderMoleculeException {
+      final List<ConnectionNotation> connections) throws BuilderMoleculeException, NotationException {
 
     LOG.info("Building process for the all polymers is starting");
     Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
@@ -133,7 +136,6 @@ public final class BuilderMolecule {
     /* Build interconnections between single molecules */
     LOG.info("Connect the single molecules together");
     for (ConnectionNotation connection : connections) {
-
       /* Group Id -> throw exception */
       if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
         LOG.error("Molecule can't be build for group connection");

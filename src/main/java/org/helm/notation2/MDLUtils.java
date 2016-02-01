@@ -25,6 +25,7 @@ package org.helm.notation2;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
+import org.helm.notation.NotationException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
@@ -54,8 +55,9 @@ public final class MDLUtils {
    * @return MDL
    * @throws BuilderMoleculeException if the helm molecule can not be built
    * @throws CTKException
+   * @throws NotationException
    */
-  protected static String generateMDL(final HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static String generateMDL(final HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, NotationException {
     String smiles = SMILES.getSMILESForAll(helm2notation);
     return Chemistry.getInstance().getManipulator().convert(smiles, AbstractChemistryManipulator.StType.SMILES);
   }

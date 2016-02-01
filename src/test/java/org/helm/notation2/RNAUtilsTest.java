@@ -23,10 +23,16 @@
  */
 package org.helm.notation2;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import java.io.IOException;
 
+import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
+import org.helm.notation.NucleotideLoadingException;
+import org.helm.notation.StructureException;
 import org.helm.notation.tools.NucleotideSequenceParser;
+import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -59,6 +65,45 @@ public class RNAUtilsTest {
     String notation = "UTA";
     ContainerHELM2 containerhelm2 = produceContainerHELM2(notation);
     Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(containerhelm2.getAllPolymers().get(0)), NucleotideSequenceParser.getNaturalAnalogSequence(notation));
+
+  }
+
+  @Test
+  public void getNaturalAnalogSequenceTestExtended() throws ParserException, JDOMException, HELM2HandledException, RNAUtilsException, NotationException {
+    String notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R(C)P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
+    ContainerHELM2 containerhelm2 = readNotation(notation);
+
+    String nucleotideSeq = RNAUtils.getNaturalAnalogSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0));
+
+    assertEquals("CGAUAUGGGCUGAAUACAAUU", nucleotideSeq);
+
+    // replaced a C with 5meC (modified C)
+    notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R([5meC])P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
+    containerhelm2 = readNotation(notation);
+
+    nucleotideSeq = RNAUtils.getNaturalAnalogSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0));
+
+    assertEquals("CGAUAUGGGCUGAAUACAAUU", nucleotideSeq);
+
+  }
+
+  // @Test
+  public void getSequenceNucleotide() throws ParserException, JDOMException, HELM2HandledException, RNAUtilsException, NotationException, org.helm.notation2.parser.exceptionparser.NotationException,
+      MonomerException, IOException, StructureException {
+    String notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R(C)P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
+    ContainerHELM2 containerhelm2 = readNotation(notation);
+
+    String nucleotideSeq = RNAUtils.getNucleotideSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0));
+
+    assertEquals(SimpleNotationParser.getModifiedNucleotideSequence("R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R(C)P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)"), nucleotideSeq);
+
+    // replaced a C with 5meC (modified C)
+    notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R([5meC])P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
+    containerhelm2 = readNotation(notation);
+
+    nucleotideSeq = RNAUtils.getSequence((containerhelm2.getHELM2Notation().getListOfPolymers().get(0)));
+    System.out.println(SimpleNotationParser.getModifiedNucleotideSequence("R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R([5meC])P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)"));
+    assertEquals(SimpleNotationParser.getModifiedNucleotideSequence("R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R([5meC])P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)"), nucleotideSeq);
 
   }
 

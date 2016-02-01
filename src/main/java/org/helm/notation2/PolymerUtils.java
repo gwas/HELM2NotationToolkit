@@ -27,6 +27,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.helm.chemtoolkit.CTKException;
+import org.helm.chemtoolkit.CTKSmilesException;
+import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
