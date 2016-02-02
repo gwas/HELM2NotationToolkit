@@ -55,9 +55,8 @@ public final class SMILES {
    * @return smiles for the whole HELMNotation
    * @throws BuilderMoleculeException if the molecule can't be built
    * @throws CTKException
-   * @throws NotationException
    */
-  public static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, NotationException {
+  public static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* Build Molecues */
     LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules =

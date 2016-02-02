@@ -152,7 +152,7 @@ public final class FastaFormat {
    * @throws IOException
    * @throws NotationException
    */
-  protected static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException, NotationException, IOException, JDOMException {
+  protected static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException, IOException, JDOMException, NotationException {
     helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Nucleotide Sequence must be specified");
@@ -301,7 +301,7 @@ public final class FastaFormat {
    * @throws IOException
    */
   protected static PolymerListElements generateElementsforRNA(String sequence, HELMEntity entity)
-      throws FastaFormatException, NotationException, IOException, JDOMException {
+      throws FastaFormatException, IOException, JDOMException, NotationException {
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();
     PolymerListElements elements = new PolymerListElements(entity);
@@ -385,9 +385,8 @@ public final class FastaFormat {
    * @return generated FASTA
    * @throws FastaFormatException if the peptides can not be transformed to
    *           FASTA
-   * @throws org.helm.notation.NotationException
    */
-  protected static String generateFastaFromPeptidePolymer(List<PolymerNotation> polymers) throws FastaFormatException, org.helm.notation.NotationException {
+  protected static String generateFastaFromPeptidePolymer(List<PolymerNotation> polymers) throws FastaFormatException {
     initMapAminoAcid();
     StringBuilder fasta = new StringBuilder();
     for (PolymerNotation polymer : polymers) {
@@ -427,9 +426,8 @@ public final class FastaFormat {
    * @return Fasta
    * @throws FastaFormatException if the polymers can not be transformed into
    *           FASTA
-   * @throws org.helm.notation.NotationException
    */
-  protected static String generateFastaFromRNAPolymer(List<PolymerNotation> polymers) throws FastaFormatException, org.helm.notation.NotationException {
+  protected static String generateFastaFromRNAPolymer(List<PolymerNotation> polymers) throws FastaFormatException {
     StringBuilder fasta = new StringBuilder();
     for (PolymerNotation polymer : polymers) {
       String header = polymer.getPolymerID().getID();
@@ -473,9 +471,8 @@ public final class FastaFormat {
    * @return FASTA-File-Format
    * @throws FastaFormatException if the HELM2Notation can not be transformed to
    *           FASTA
-   * @throws org.helm.notation.NotationException
    */
-  protected static String generateFasta(HELM2Notation helm2Notation2) throws FastaFormatException, org.helm.notation.NotationException {
+  protected static String generateFasta(HELM2Notation helm2Notation2) throws FastaFormatException {
     List<PolymerNotation> polymersPeptides = new ArrayList<PolymerNotation>();
     List<PolymerNotation> polymerNucleotides = new ArrayList<PolymerNotation>();
     StringBuilder fasta = new StringBuilder();

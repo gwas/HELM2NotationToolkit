@@ -82,13 +82,13 @@ public final class HELM1Utils {
    * @throws MonomerLoadingException
    * @throws ValidationException if a smiles in the HELMNotation is not valid
    */
-  public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException, NotationException, MonomerLoadingException, CTKException, ValidationException {
+  public static String getStandard(HELM2Notation helm2notation) throws HELM1FormatException, MonomerLoadingException, CTKException, ValidationException {
     try {
       String firstSection = setStandardHELMFirstSection(helm2notation);
       List<String> ListOfSecondAndThirdSection = setStandardHELMSecondSectionAndThirdSection(helm2notation.getListOfConnections());
       String fourthSection = setStandardHELMFourthSection(helm2notation.getListOfAnnotations());
       return firstSection + "$" + ListOfSecondAndThirdSection.get(0) + "$" + ListOfSecondAndThirdSection.get(1) + "$" + fourthSection + "$V2.0";
-    } catch (HELM1ConverterException e) {
+    } catch (HELM1ConverterException | NotationException e) {
       throw new HELM1FormatException(e.getMessage());
     }
   }
@@ -183,7 +183,7 @@ public final class HELM1Utils {
    * @throws HELM1FormatException if HELM2 features are there
    * @throws NotationException if the notation objects can not be built
    */
-  public static String getCanonical(HELM2Notation helm2notation) throws HELM1FormatException, NotationException {
+  public static String getCanonical(HELM2Notation helm2notation) throws HELM1FormatException {
     Map<String, String> convertsortedIdstoIds;
     try {
       Object[] temp = setCanonicalHELMFirstSection(helm2notation);

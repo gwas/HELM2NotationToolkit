@@ -32,7 +32,6 @@ import java.util.TreeMap;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
@@ -60,9 +59,8 @@ public final class MoleculeInformation {
    * method to build from one notation one molecule
    *
    * @throws BuilderMoleculeException
-   * @throws NotationException
    */
-  private static List<AbstractMolecule> buildMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, NotationException {
+  private static List<AbstractMolecule> buildMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
     return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
   }
 
@@ -73,9 +71,8 @@ public final class MoleculeInformation {
    * @return MolecularWeight of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
-   * @throws NotationException
    */
-  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, NotationException {
+  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big molecule; List of molecules? */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     return calculateMolecularWeight(molecules);
@@ -106,9 +103,8 @@ public final class MoleculeInformation {
    * @return ExactMass of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
-   * @throws NotationException
    */
-  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, NotationException {
+  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build one big molecule; List of molecules */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     return calculateExactMass(molecules);
@@ -136,9 +132,8 @@ public final class MoleculeInformation {
    * @return MolecularFormular of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
-   * @throws NotationException
    */
-  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, NotationException {
+  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
     /* First build HELM molecule */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     return calculateMolecularFormula(molecules);
@@ -180,9 +175,8 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException
    * @throws CTKException
    * @throws ExtinctionCoefficientException
-   * @throws NotationException
    */
-  protected static List<String> getMoleculeProperties(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ExtinctionCoefficientException, NotationException {
+  protected static List<String> getMoleculeProperties(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ExtinctionCoefficientException {
     List<String> result = new ArrayList<String>();
     /* First build HELM molecule */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
@@ -204,9 +198,8 @@ public final class MoleculeInformation {
    * @param helm2notation input HELM2Notation;
    * @return Molecule molecule of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
-   * @throws NotationException
    */
-  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, NotationException {
+  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
     return buildMolecule(helm2notation);
   }
 

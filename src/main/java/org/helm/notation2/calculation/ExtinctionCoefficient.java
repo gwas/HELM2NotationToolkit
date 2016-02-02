@@ -160,9 +160,8 @@ public final class ExtinctionCoefficient {
    * @param helm2notation input HELM2Notation
    * @return extinction coefficient
    * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
-   * @throws NotationException
    */
-  public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException, NotationException {
+  public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException {
     return calculate(helm2notation, getDefaultUnitType());
   }
 
@@ -173,9 +172,8 @@ public final class ExtinctionCoefficient {
    * @param unitType Unit of the extinction coefficient
    * @return extinction coefficient
    * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
-   * @throws NotationException
    */
-  public float calculate(HELM2Notation helm2notation, int unitType) throws ExtinctionCoefficientException, NotationException {
+  public float calculate(HELM2Notation helm2notation, int unitType) throws ExtinctionCoefficientException {
     LOG.debug("ExtinctionCalculation is starting with the unitType: " + unitType);
     float result = 0.0f;
     List<PolymerNotation> polymerNodes = helm2notation.getListOfPolymers();
@@ -187,7 +185,7 @@ public final class ExtinctionCoefficient {
       if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
         try {
           ext = calculateExtinctionFromRNA(MethodsForContainerHELM2.getListOfHandledMonomersOnlyBase(polymerNode.getPolymerElements().getListOfElements()));
-        } catch (CalculationException | IOException | HELM2HandledException e) {
+        } catch (CalculationException | IOException | HELM2HandledException | NotationException e) {
           throw new ExtinctionCoefficientException(e.getMessage());
         }
         if (unitType == PEPTIDE_UNIT_TYPE) {

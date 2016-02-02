@@ -148,9 +148,8 @@ public final class SequenceConverter {
    * @throws NotationException if the input complex notation contains
    *           non-nucleid acid polymer(s)
    * @throws HELM2HandledException if the polymer(s) contain(s) HELM2 features
-   * @throws org.helm.notation.NotationException
    */
-  public static String getNucleotideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws NotationException, HELM2HandledException, org.helm.notation.NotationException {
+  public static String getNucleotideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws NotationException, HELM2HandledException {
     List<PolymerNotation> polymers = helm2Notation.getListOfPolymers();
     StringBuffer sb = new StringBuffer();
     for (PolymerNotation polymer : polymers) {
@@ -175,8 +174,7 @@ public final class SequenceConverter {
    * @throws PeptideUtilsException if the polymer is not a peptide
    * @throws org.helm.notation.NotationException
    */
-  public static String getPeptideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws NotationException, HELM2HandledException, PeptideUtilsException,
-      org.helm.notation.NotationException {
+  public static String getPeptideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws HELM2HandledException, PeptideUtilsException, NotationException {
     List<PolymerNotation> polymers = helm2Notation.getListOfPolymers();
     StringBuffer sb = new StringBuffer();
     for (PolymerNotation polymer : polymers) {

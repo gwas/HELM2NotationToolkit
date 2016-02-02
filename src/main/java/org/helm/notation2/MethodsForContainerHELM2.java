@@ -76,7 +76,7 @@ public final class MethodsForContainerHELM2 {
    * @throws NotationException
    */
   public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations)
-      throws HELM2HandledException, NotationException {
+      throws HELM2HandledException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (int i = 0; i < monomerNotations.size(); i++) {
       MonomerNotation monomerNotation = monomerNotations.get(i);
@@ -94,7 +94,7 @@ public final class MethodsForContainerHELM2 {
           // for (int j = 0; j < count; j++) {
           items.addAll(Validation.getAllMonomers(monomerNotation, i));
           // }
-        } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
+        } catch (NumberFormatException | JDOMException | MonomerException | IOException | NotationException e) {
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
         }
 
