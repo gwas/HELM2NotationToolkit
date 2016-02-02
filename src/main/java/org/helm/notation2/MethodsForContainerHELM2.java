@@ -225,7 +225,6 @@ public final class MethodsForContainerHELM2 {
           if (monomer == null) {
             /* Rgroups information are not given -> only smiles information */
             AbstractChemistryManipulator manipulator = Chemistry.getInstance().getManipulator();
-            System.out.println("Check smiles");
             if (manipulator.validateSMILES(id)) {
               if (type.equals(Monomer.CHEMICAL_POLYMER_TYPE)) {
                 monomer = generateTemporaryMonomer(id, type, "X");

@@ -399,7 +399,6 @@ public final class ChangeObjects {
       }
     } else if (monomerNotation instanceof MonomerNotationGroup) {
       /* MonomerNotatationGroup */
-      System.out.println(monomerNotation.getID());
       monomerNotation = replaceMonomerNotationGroup(((MonomerNotationGroup) monomerNotation), existingMonomerID, newMonomerID);
       if (monomerNotation != null) {
         return monomerNotation;
@@ -431,8 +430,6 @@ public final class ChangeObjects {
     StringBuilder sb = new StringBuilder();
     String id = "";
     for (MonomerNotationGroupElement object : monomerNotation.getListOfElements()) {
-      System.out.println(object.getMonomerNotation().getID());
-      System.out.println(object.getValue());
       if (object.getMonomerNotation().getID().equals(existingMonomerID)) {
         hasChanged = true;
         id = generateGroupElement(newMonomerID, object.getValue());
@@ -448,7 +445,6 @@ public final class ChangeObjects {
     }
     if (hasChanged) {
       sb.setLength(sb.length() - 1);
-      System.out.println(sb.toString());
       if (monomerNotation instanceof MonomerNotationGroupOr) {
         newObject = new MonomerNotationGroupOr(sb.toString(), monomerNotation.getType());
       } else {

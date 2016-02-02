@@ -56,7 +56,7 @@ public final class PeptideUtils {
    * @throws PeptideUtilsException if the polymer is not a peptide
    * @throws NotationException
    */
-  protected static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException, NotationException {
+  protected static String getNaturalAnalogueSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException, NotationException {
     checkPeptidePolymer(polymer);
     return FastaFormat.generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()));
   }

@@ -47,6 +47,7 @@ import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupElement;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
+import org.helm.notation2.parser.notation.polymer.PolymerListElements;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.jdom2.JDOMException;
@@ -76,44 +77,6 @@ public class RNAUtils {
     complementMap.put("U", "A");
     complementMap.put("T", "A");
     complementMap.put("X", "X");
-  }
-
-  /**
-   * method to read a nucleotide sequence and build a double strand of it
-   *
-   * @param sequence nucleotide sequence
-   * @return ContainerHELM2
-   * @throws RNAUtilsException if the sense or antisense strand can not be built
-   * @throws JDOMException
-   * @throws IOException
-   * @throws org.helm.notation.NotationException
-   */
-  protected static ContainerHELM2 getSirnaNotation(String sequence) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException {
-    /* Build the sense + antisense sequence */
-    ContainerHELM2 sense;
-    try {
-      sense = SequenceConverter.readRNA(sequence);
-    } catch (NotationException | FastaFormatException e) {
-      throw new RNAUtilsException("Sense Strand can not be built");
-    }
-    try {
-      PolymerNotation antisense = new PolymerNotation("RNA2");
-      PolymerNotation current;
-      current = getAntiparallel(sense.getAllPolymers().get(0));
-      sense.getHELM2Notation().addPolymer(new PolymerNotation(antisense.getPolymerID(), current.getPolymerElements(),
-          current.getAnnotation()));
-
-      /* Build the hydrogenbonds between the two */
-      List<ConnectionNotation> connections =
-          hybridize(sense.getHELM2Notation().getListOfPolymers().get(0), sense.getHELM2Notation().getListOfPolymers().get(1));
-      for (ConnectionNotation connection : connections) {
-        sense.getHELM2Notation().addConnection(connection);
-      }
-      return sense;
-    } catch (NotationException | HELM2HandledException | IOException | JDOMException e) {
-      throw new RNAUtilsException("Antisense Strand can not be built");
-    }
-
   }
 
   /**
@@ -244,7 +207,6 @@ public class RNAUtils {
 
     /* What happens to HELM2 features */
     if (lastObject instanceof MonomerNotationGroup || lastObject instanceof MonomerNotationList) {
-      System.out.println(lastObject.getClass());
       throw new HELM2HandledException("HELM2 features are involved");
     }
 
@@ -299,7 +261,7 @@ public class RNAUtils {
    * method to get the polymer with the inverse sequence of the current polymer
    *
    * @param polymer PolymerNotation
-   * @return reverse complement sequence
+   * @return inverse sequence
    * @throws RNAUtilsException if the polymer is not rna or dna or the inverse
    *           strand can not be built
    * @throws JDOMException
@@ -319,6 +281,50 @@ public class RNAUtils {
       throw new RNAUtilsException("The inverse strand can not be built");
     }
 
+  }
+
+  /**
+   * method to get the polymer with the reverse complement sequence of the
+   * current polymer
+   *
+   * @param polymer PolymerNotation
+   * @return PolymerNotation with the reverse complement
+   * @throws RNAUtilsException if the polymer is not rna or dna or the inverse
+   *           strand can not be built
+   * @throws JDOMException
+   * @throws IOException
+   * @throws org.helm.notation.NotationException
+   */
+  protected static PolymerNotation getReverseComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException {
+    checkRNA(polymer);
+    PolymerNotation complementReversePolymer;
+    try {
+      complementReversePolymer = SequenceConverter.readRNA(generateReverseComplement(polymer).toString()).getHELM2Notation().getListOfPolymers().get(0);
+      complementReversePolymer =
+          new PolymerNotation(complementReversePolymer.getPolymerID(), complementReversePolymer.getPolymerElements(),
+              "ReverseComplement to " + polymer.getPolymerID().getID());
+      return complementReversePolymer;
+    } catch (NotationException | FastaFormatException | HELM2HandledException e) {
+      throw new RNAUtilsException("Complement polymer can not be built");
+    }
+
+  }
+
+  /**
+   * @param polymer
+   * @return reverse complement sequence
+   * @throws org.helm.notation.NotationException
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
+  private static StringBuilder generateReverseComplement(PolymerNotation polymer) throws HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException {
+    initComplementMap();
+    String sequence = getNaturalAnalogSequence(polymer);
+    StringBuilder sb = new StringBuilder();
+    for (char c : sequence.toCharArray()) {
+      sb.append(complementMap.get(String.valueOf(c)));
+    }
+    return sb.reverse();
   }
 
   /**
@@ -457,7 +463,8 @@ public class RNAUtils {
    * @throws HELM2HandledException
    * @throws org.helm.notation.NotationException
    */
-  protected static List<ConnectionNotation> hybridize1(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException, HELM2HandledException,
+  protected static List<ConnectionNotation> hybridizeAntiparallel(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException,
+      HELM2HandledException,
       org.helm.notation.NotationException {
     checkRNA(one);
     checkRNA(two);
@@ -481,6 +488,14 @@ public class RNAUtils {
 
   }
 
+  /**
+   * method to get the rna sequence of the given PolymerNotation
+   *
+   * @param one PolymerNotation
+   * @return sequence
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
   protected static String getSequence(PolymerNotation one) throws RNAUtilsException, HELM2HandledException {
     checkRNA(one);
 
@@ -493,6 +508,38 @@ public class RNAUtils {
 
   }
 
+  /**
+   * method to get the modifiedNucleotideSequence of the given PolymerNotation
+   *
+   * @param polymer PolymerNotation
+   * @return modified nucleotide sequence
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
+  protected static String getModifiedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+    checkRNA(polymer);
+    List<Nucleotide> nucleotides = getNucleotideList(polymer);
+    StringBuilder sb = new StringBuilder();
+    for (Nucleotide nucleotide : nucleotides) {
+      sb.append(nucleotide.getSymbol());
+    }
+    return sb.toString();
+
+  }
+
+  /**
+   * method to hybridize two given PolymerNotations together
+   *
+   * @param one PolymerNotaiton
+   * @param two PolymerNotation
+   * @return List of ConnectionNotations
+   * @throws RNAUtilsException
+   * @throws NotationException
+   * @throws HELM2HandledException
+   * @throws JDOMException
+   * @throws IOException
+   * @throws org.helm.notation.NotationException
+   */
   protected static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, HELM2HandledException, JDOMException, IOException,
       org.helm.notation.NotationException {
     initComplementMap();
@@ -508,7 +555,6 @@ public class RNAUtils {
     StringBuffer sb = new StringBuffer();
     for (int i = chars.length; i > 0; i--) {
       String symbol = String.valueOf(chars[i - 1]);
-      System.out.println(symbol);
       String compSymbol = complementMap.get(symbol);
       sb.append(compSymbol);
     }
@@ -653,7 +699,7 @@ public class RNAUtils {
    * @throws HELM2HandledException if the polymer contains HELM2 features
    *
    */
-  private static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  protected static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
     checkRNA(polymer);
     List<Nucleotide> nucleotides = new ArrayList<Nucleotide>();
     /* check for HELM2Elements */
@@ -670,6 +716,39 @@ public class RNAUtils {
       }
     }
     return nucleotides;
+  }
+
+  /**
+   * method to get the trimmed nucleotide sequence
+   * 
+   * @param polymer
+   * @return trimmed nucleotide sequence
+   * @throws RNAUtilsException
+   * @throws HELM2HandledException
+   */
+  protected static String getTrimmedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+    checkRNA(polymer);
+    List<Nucleotide> list = getNucleotideList(polymer);
+
+    int start = 0;
+    Nucleotide na = list.get(start);
+    while (null == na.getBaseMonomer()) {
+      start++;
+      na = list.get(start);
+    }
+
+    int end = list.size() - 1;
+    na = list.get(end);
+    while (null == na.getBaseMonomer()) {
+      end--;
+      na = list.get(end);
+    }
+
+    StringBuffer sb = new StringBuffer();
+    for (int i = start; i <= end; i++) {
+      sb.append(list.get(i).getNaturalAnalog());
+    }
+    return sb.toString();
   }
 
 }

@@ -183,7 +183,7 @@ public final class SequenceConverter {
       if (!(polymer.getPolymerID() instanceof PeptideEntity)) {
         throw new NotationException("Input complex notation contains non-peptide polymer(s)");
       }
-      sb.append(PeptideUtils.getNaturalAnalogSequence(polymer) + " ");
+      sb.append(PeptideUtils.getNaturalAnalogueSequence(polymer) + " ");
     }
     sb.setLength(sb.length() - 1);
     return sb.toString();

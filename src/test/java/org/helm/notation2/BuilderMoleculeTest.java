@@ -150,12 +150,6 @@ public class BuilderMoleculeTest {
         ""));
   }
 
-  @Test
-  public void testBuildMolecule() throws org.helm.notation2.parser.exceptionparser.NotationException, IOException, BuilderMoleculeException, HELM2HandledException {
-
-    String notation = "RNA1{R(C)P.RP.R(A)P.RP.R(A)P.R(U)P}$RNA1,RNA1,4:R3-9:R3|RNA1,RNA1,1:R1-16:R2$$$";
-  }
-
   private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0"))) {

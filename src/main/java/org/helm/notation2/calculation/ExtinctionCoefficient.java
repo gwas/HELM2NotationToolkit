@@ -25,17 +25,19 @@ package org.helm.notation2.calculation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.helm.notation.CalculationException;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
-import org.helm.notation2.ContainerHELM2;
 import org.helm.notation2.MethodsForContainerHELM2;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -161,8 +163,20 @@ public final class ExtinctionCoefficient {
    * @throws NotationException
    */
   public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException, NotationException {
-    LOG.debug("ExtinctionCalculation is starting");
-    int unitType = 1;
+    return calculate(helm2notation, getDefaultUnitType());
+  }
+
+  /**
+   * method to calculate the extinction coefficient for the whole HELM molecule
+   *
+   * @param helm2notation input HELM2Notation
+   * @param unitType Unit of the extinction coefficient
+   * @return extinction coefficient
+   * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
+   * @throws NotationException
+   */
+  public float calculate(HELM2Notation helm2notation, int unitType) throws ExtinctionCoefficientException, NotationException {
+    LOG.debug("ExtinctionCalculation is starting with the unitType: " + unitType);
     float result = 0.0f;
     List<PolymerNotation> polymerNodes = helm2notation.getListOfPolymers();
     for (PolymerNotation polymerNode : polymerNodes) {
@@ -205,7 +219,6 @@ public final class ExtinctionCoefficient {
   private static float calculateExtinctionFromRNA(List<Monomer> monomers) throws CalculationException, IOException {
     LOG.debug("ExtinctionCalculation of RNA");
     float resultSingle = 0.0f;
-    float result = 0.0f;
     float resultDi = 0.0f;
     String previous = "";
     if (monomers.size() == 0) {
@@ -213,24 +226,26 @@ public final class ExtinctionCoefficient {
     } else {
       if (monomers.size() == 1) {
         if (monoNucleotideMap.containsKey(monomers.get(0).getNaturalAnalog())) {
-          result = monoNucleotideMap.get(monomers.get(0).getNaturalAnalog()).floatValue();
-          return result;
+          return monoNucleotideMap.get(monomers.get(0).getNaturalAnalog()).floatValue();
+
         } else {
           throw new CalculationException("Unknown nucleotide found");
         }
       }
       for (int i = 0; i < monomers.size(); i++) {
+        System.out.println("Monomer New: " + monomers.get(i).getAlternateId());
         if (i > 0 && i < monomers.size() - 1) {
+          System.out.println("Einfach: " + monomers.get(i).getNaturalAnalog());
           if (monoNucleotideMap.containsKey(monomers.get(i).getNaturalAnalog())) {
-            Float value = monoNucleotideMap.get(monomers.get(i).getNaturalAnalog());
-            resultSingle += value;
+            Float value = monoNucleotideMap.get(monomers.get(i).getNaturalAnalog()).floatValue();
+            resultSingle += (value.floatValue() * 1.0);
 
           }
         }
         if (previous != "") {
           if (diNucleotideMap.containsKey(previous + monomers.get(i).getNaturalAnalog())) {
-            Float value = diNucleotideMap.get(previous + monomers.get(i).getNaturalAnalog());
-            resultDi += value;
+            Float value = diNucleotideMap.get(previous + monomers.get(i).getNaturalAnalog()).floatValue();
+            resultDi += (value.floatValue() * 1.0);
           }
         }
 
@@ -238,8 +253,9 @@ public final class ExtinctionCoefficient {
       }
 
     }
-
-    return (2 * resultDi) - resultSingle;
+    resultSingle = BigDecimal.valueOf(resultSingle).floatValue();
+    resultDi = BigDecimal.valueOf(resultDi).floatValue();
+    return 2 * resultDi - resultSingle;
   }
 
   /**
@@ -251,24 +267,34 @@ public final class ExtinctionCoefficient {
    * @throws HELM2HandledException if HELM2 features were there
    */
   private static float calculateExtinctionFromPeptide(List<Monomer> monomers) throws IOException, HELM2HandledException {
-    if (monomers.isEmpty()) {
+
+    if (null == monomers || monomers.isEmpty()) {
       return 0.0f;
     }
 
-    float result = 0.0f;
-    for (Monomer mon : monomers) {
-      try {
-        String id = mon.getAlternateId();
-        if (aminoAcidMap.containsKey(id)) {
-          float value = aminoAcidMap.get(id);
-          result = result + value;
+    Map<String, Integer> countMap = new HashMap<String, Integer>();
+    for (Monomer monomer : monomers) {
+      if (aminoAcidMap.containsKey(monomer.getAlternateId())) {
+        int count = 1;
+        if (countMap.containsKey(monomer.getAlternateId())) {
+          count = count + countMap.get(monomer.getAlternateId());
         }
-      } catch (NullPointerException e) {
-        throw new HELM2HandledException("Functions can not be called for HELM2 objects");
+        countMap.put(monomer.getAlternateId(), count);
       }
-
     }
-    return result;
+
+    float result = 0.0f;
+    Set<String> keys = countMap.keySet();
+    for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+      String key = it.next();
+      int count = countMap.get(key);
+      float factor = aminoAcidMap.get(key);
+      System.out.println("Factor: " + factor);
+      result = result + factor * count;
+    }
+
+    return BigDecimal.valueOf(result).floatValue();
+
   }
 
 }
