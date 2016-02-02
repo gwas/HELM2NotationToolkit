@@ -129,6 +129,7 @@ public class BuilderMoleculeTest {
   }
 
   // @Test
+  /* chiral centers test */
   public void testBuildMoleculeComplexPeptide() throws ParserException, JDOMException, BuilderMoleculeException, NotationException {
     // String notation =
     // "PEPTIDE1{D.F.D}|PEPTIDE2{C}|PEPTIDE3{E.D}$PEPTIDE3,PEPTIDE1,2:R3-1:R3|PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";

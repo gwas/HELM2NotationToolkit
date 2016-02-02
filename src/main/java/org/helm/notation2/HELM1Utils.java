@@ -240,7 +240,6 @@ public final class HELM1Utils {
     }
 
     Set<String> sortedLabelSet = labelIdMap.keySet();
-    System.out.println(sortedLabelSet);
     List<List<String[]>> lol = new ArrayList<List<String[]>>();
     for (String key : sortedLabelSet) {
       List<String> value = labelIdMap.get(key);
@@ -250,7 +249,6 @@ public final class HELM1Utils {
     }
 
     List<List<String>> nodeIdPermutations = PermutationAndExpansion.linearize(lol);
-    System.out.println(nodeIdPermutations);
     List<String> notationList = new ArrayList<String>();
     Map<String, String> convertsortedIdstoIds = new HashMap<String, String>();
     for (List<String> sortedIdList : nodeIdPermutations) {
@@ -298,7 +296,6 @@ public final class HELM1Utils {
   private static String setCanonicalHELMSecondSection(Map<String, String> convertsortedIdstoIds, List<ConnectionNotation> connectionNotations) throws HELM1ConverterException {
     StringBuilder notation = new StringBuilder();
     for (ConnectionNotation connectionNotation : connectionNotations) {
-      System.out.println(connectionNotation);
       /* canonicalize connection */
       /* change the id's of the polymers to the sorted ids */
       List<String> connections = new ArrayList<String>();

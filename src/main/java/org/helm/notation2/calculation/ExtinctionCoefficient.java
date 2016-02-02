@@ -233,9 +233,7 @@ public final class ExtinctionCoefficient {
         }
       }
       for (int i = 0; i < monomers.size(); i++) {
-        System.out.println("Monomer New: " + monomers.get(i).getAlternateId());
         if (i > 0 && i < monomers.size() - 1) {
-          System.out.println("Einfach: " + monomers.get(i).getNaturalAnalog());
           if (monoNucleotideMap.containsKey(monomers.get(i).getNaturalAnalog())) {
             Float value = monoNucleotideMap.get(monomers.get(i).getNaturalAnalog()).floatValue();
             resultSingle += (value.floatValue() * 1.0);
@@ -289,7 +287,6 @@ public final class ExtinctionCoefficient {
       String key = it.next();
       int count = countMap.get(key);
       float factor = aminoAcidMap.get(key);
-      System.out.println("Factor: " + factor);
       result = result + factor * count;
     }
 

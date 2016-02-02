@@ -267,7 +267,6 @@ public final class BuilderMolecule {
           for (Attachment attachment : listAttachments) {
             list.add(new org.helm.chemtoolkit.Attachment(attachment.getAlternateId(), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
           }
-
           AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, list);
           RgroupStructure result = new RgroupStructure();
           result.setMolecule(molecule);
@@ -281,8 +280,8 @@ public final class BuilderMolecule {
       } catch (NullPointerException ex) {
         throw new BuilderMoleculeException("Monomer is not stored in the monomer database");
       } catch (IOException | CTKException e) {
-        LOG.error("Molecule can't be built");
-        throw new BuilderMoleculeException("Molecule can't be built");
+        LOG.error("Molecule can't be built " + e.getMessage());
+        throw new BuilderMoleculeException("Molecule can't be built " + e.getMessage());
       }
     } else {
       LOG.error("Chemical molecule should contain exactly one monomer");
