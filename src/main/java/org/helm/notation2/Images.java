@@ -45,12 +45,12 @@ public final class Images {
   /**
    *
    */
-  private static final int PICTURE_HEIGHT = 10000;
+  private static final int PICTURE_HEIGHT = 1000;
 
   /**
    *
    */
-  private static final int PICTURE_WIDTH = 10000;
+  private static final int PICTURE_WIDTH = 1000;
 
   /** The Logger for this class */
   private static final Logger LOG = LoggerFactory.getLogger(Images.class);

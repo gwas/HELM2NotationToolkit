@@ -31,6 +31,7 @@ import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
 import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
@@ -45,6 +46,7 @@ import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
+import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 
 /**
@@ -229,6 +231,27 @@ public class SMILESTest {
     }
     ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
     return containerhelm2;
+  }
+
+  @Test
+  public void testInlineNotation() throws CTKSmilesException, BuilderMoleculeException, CTKException, NotationException, ParserException, JDOMException, MonomerLoadingException, IOException,
+      MonomerException, StructureException {
+
+    String notation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    String smiles = SMILES.getCanonicalSMILESForAll(readNotation(notation).getHELM2Notation());
+
+    // replaced A with Smiles String
+    notation = "PEPTIDE1{[C[C@H](N[*])C([*])=O |$;;;_R1;;_R2;$|].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    String smilesInline = SMILES.getCanonicalSMILESForAll(readNotation(notation).getHELM2Notation());
+    AssertJUnit.assertEquals(smiles, smilesInline);
+
+    // replaced A with slightly modified A
+    notation = "PEPTIDE1{[C[C@H](N[*])C(=O)C[*] |$;;;_R1;;;;_R2$|].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+
+    smilesInline = ComplexNotationParser.getComplexPolymerSMILES(notation);
+    System.out.println(smilesInline);
+    System.out.println(SMILES.getCanonicalSMILESForAll(readNotation(notation).getHELM2Notation()));
+
   }
 
 }
