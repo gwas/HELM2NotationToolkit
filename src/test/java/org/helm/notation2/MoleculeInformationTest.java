@@ -123,8 +123,7 @@ public class MoleculeInformationTest {
 
   }
 
-  // @Test
-  /* To Do */
+  @Test
   public void testExtended() throws MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, PluginException, StructureException, BuilderMoleculeException,
       CTKException, ParserException {
 
@@ -134,15 +133,16 @@ public class MoleculeInformationTest {
     String newNotation =
         "RNA1{R(A)P.R(U)P.R(C)P.R(C)P.R(A)P.R(A)P.R(A)P.R(G)P.R(A)P.R(U)P.R(A)P.R(C)P.R(U)P.R(A)P.R(G)P.R(C)P.R(U)P.R(U)P.R(U)P.R(G)P.R(C)P.R(A)P.R(G)P.R(A)P.R(A)P.R(U)P.R(G)}|RNA2{R(U)P.R(U)P.R(C)P.R(U)P.R(G)P.R(C)P.R(A)P.R(A)P.R(A)P.R(G)P.R(C)P.R(U)P.R(A)P.R(G)P.R(U)P.R(A)P.R(U)P.R(C)P.R(U)P.R(U)P.R(U)P.R(G)P.R(G)P.[dR](A)P.[dR](T)}$RNA1,RNA2,2:pair-74:pair|RNA1,RNA2,5:pair-71:pair|RNA1,RNA2,8:pair-68:pair|RNA1,RNA2,11:pair-65:pair|RNA1,RNA2,14:pair-62:pair|RNA1,RNA2,17:pair-59:pair|RNA1,RNA2,20:pair-56:pair|RNA1,RNA2,23:pair-53:pair|RNA1,RNA2,26:pair-50:pair|RNA1,RNA2,29:pair-47:pair|RNA1,RNA2,32:pair-44:pair|RNA1,RNA2,35:pair-41:pair|RNA1,RNA2,38:pair-38:pair|RNA1,RNA2,41:pair-35:pair|RNA1,RNA2,44:pair-32:pair|RNA1,RNA2,47:pair-29:pair|RNA1,RNA2,50:pair-26:pair|RNA1,RNA2,53:pair-23:pair|RNA1,RNA2,56:pair-20:pair|RNA1,RNA2,59:pair-17:pair|RNA1,RNA2,62:pair-14:pair|RNA1,RNA2,65:pair-11:pair|RNA1,RNA2,68:pair-8:pair|RNA1,RNA2,71:pair-5:pair|RNA1,RNA2,74:pair-2:pair$$$V2.0";
 
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getExactMass(), MoleculeInformation.getExactMass(readNotation(newNotation).getHELM2Notation()));
+    // AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getExactMass(),
+    // MoleculeInformation.getExactMass(readNotation(newNotation).getHELM2Notation()));
     AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(newNotation).getHELM2Notation()));
-    // AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(),
-    // MoleculeInformation.getMolecularWeight(readNotation(newNotation).getHELM2Notation()));
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(newNotation).getHELM2Notation()), 0.001);
 
     // conjugate
     oldNotation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
-    // AssertJUnit.assertTrue(testGetMoleculeInfo(oldNotation));
-    // AssertJUnit.assertTrue(testGetMoleculeInfoViaSmiles(oldNotation));
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(oldNotation).getHELM2Notation()));
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(oldNotation).getHELM2Notation()));
+
   }
 
   private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {
