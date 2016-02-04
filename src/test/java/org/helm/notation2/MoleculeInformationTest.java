@@ -141,7 +141,7 @@ public class MoleculeInformationTest {
     // conjugate
     oldNotation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(oldNotation).getHELM2Notation()));
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(oldNotation).getHELM2Notation()));
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(oldNotation).getHELM2Notation()), 0.001);
 
   }
 
