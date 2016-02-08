@@ -34,10 +34,12 @@ import java.util.Set;
 import org.helm.notation.NucleotideFactory;
 import org.helm.notation.model.Nucleotide;
 import org.helm.notation.tools.NucleotideSequenceParser;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
@@ -67,11 +69,11 @@ public class SiRNANotation {
   private static final Logger LOG = LoggerFactory.getLogger(SiRNANotation.class);
 
   /**
-   * this method converts nucleotide sequences into ContainerHELM2
+   * this method converts nucleotide sequences into HELM2Notation
    *
    * @param senseSeq 5-3 nucleotide sequence for default notation
    * @param antiSenseSeq 3-5 nucleotide sequence for default notation
-   * @return ContainerHELM2 for siRNA
+   * @return HELM2Notation for siRNA
    * @throws NotationException
    * @throws FastaFormatException
    * @throws IOException
@@ -79,9 +81,10 @@ public class SiRNANotation {
    * @throws HELM2HandledException
    * @throws RNAUtilsException
    * @throws org.helm.notation.NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public static ContainerHELM2 getSiRNANotation(String senseSeq, String antiSenseSeq) throws NotationException, FastaFormatException, IOException, JDOMException, HELM2HandledException,
-      RNAUtilsException, org.helm.notation.NotationException {
+  public static HELM2Notation getSiRNANotation(String senseSeq, String antiSenseSeq) throws NotationException, FastaFormatException, IOException, JDOMException, HELM2HandledException,
+      RNAUtilsException, org.helm.notation.NotationException, ChemistryException {
     return getSirnaNotation(senseSeq, antiSenseSeq, NucleotideSequenceParser.RNA_DESIGN_NONE);
   }
 
@@ -92,7 +95,7 @@ public class SiRNANotation {
    * @param senseSeq 5-3 nucleotide sequence
    * @param antiSenseSeq 3-5 nucleotide sequence
    * @param rnaDesignType
-   * @return ContainerHELM2 for siRNA
+   * @return HELM2Notation for siRNA
    * @throws NotationException
    * @throws FastaFormatException
    * @throws IOException
@@ -100,23 +103,24 @@ public class SiRNANotation {
    * @throws HELM2HandledException
    * @throws RNAUtilsException
    * @throws org.helm.notation.NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public static ContainerHELM2 getSirnaNotation(String senseSeq, String antiSenseSeq, String rnaDesignType) throws NotationException, FastaFormatException, IOException, JDOMException,
-      HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException {
-    ContainerHELM2 containerHELM2 = null;
+  public static HELM2Notation getSirnaNotation(String senseSeq, String antiSenseSeq, String rnaDesignType) throws NotationException, FastaFormatException, IOException, JDOMException,
+      HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException, ChemistryException {
+    HELM2Notation helm2notation = null;
     if (senseSeq != null && senseSeq.length() > 0) {
-      containerHELM2 = SequenceConverter.readRNA(senseSeq);
+      helm2notation = SequenceConverter.readRNA(senseSeq);
     }
     if (antiSenseSeq != null && antiSenseSeq.length() > 0) {
       PolymerNotation antisense = new PolymerNotation("RNA2");
       antisense = new PolymerNotation(antisense.getPolymerID(), FastaFormat.generateElementsforRNA(antiSenseSeq, antisense.getPolymerID()));
 
-      containerHELM2.getHELM2Notation().addPolymer(antisense);
+      helm2notation.addPolymer(antisense);
     }
-    validateSiRNADesign(containerHELM2.getHELM2Notation().getListOfPolymers().get(0), containerHELM2.getHELM2Notation().getListOfPolymers().get(0), rnaDesignType);
-    containerHELM2.getHELM2Notation().getListOfConnections().addAll(hybridization(containerHELM2.getHELM2Notation().getListOfPolymers().get(0), containerHELM2.getHELM2Notation().getListOfPolymers().get(1), rnaDesignType));
-    ChangeObjects.addAnnotation(new AnnotationNotation("RNA1{ss}|RNA2{as}"), 0, containerHELM2);
-    return containerHELM2;
+    validateSiRNADesign(helm2notation.getListOfPolymers().get(0), helm2notation.getListOfPolymers().get(1), rnaDesignType);
+    helm2notation.getListOfConnections().addAll(hybridization(helm2notation.getListOfPolymers().get(0), helm2notation.getListOfPolymers().get(1), rnaDesignType));
+    ChangeObjects.addAnnotation(new AnnotationNotation("RNA1{ss}|RNA2{as}"), 0, helm2notation);
+    return helm2notation;
   }
 
   /**
@@ -133,9 +137,10 @@ public class SiRNANotation {
    * @throws org.helm.notation.NotationException
    * @throws RNAUtilsException
    * @throws HELM2HandledException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   private static List<ConnectionNotation> hybridization(PolymerNotation one, PolymerNotation two, String rnaDesignType) throws NotationException, IOException, JDOMException, HELM2HandledException,
-      RNAUtilsException, org.helm.notation.NotationException {
+      RNAUtilsException, org.helm.notation.NotationException, ChemistryException {
     List<ConnectionNotation> connections = new ArrayList<ConnectionNotation>();
     ConnectionNotation connection;
     if (one.getPolymerElements().getListOfElements() != null && one.getPolymerElements().getListOfElements().size() > 0 && two.getPolymerElements().getListOfElements() != null
@@ -212,7 +217,7 @@ public class SiRNANotation {
 
   /**
    * validates the required siRNA
-   * 
+   *
    * @param senseSeq
    * @param antiSenseSeq
    * @param rnaDesignType

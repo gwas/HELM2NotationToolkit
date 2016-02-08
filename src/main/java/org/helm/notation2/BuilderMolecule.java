@@ -37,6 +37,7 @@ import org.helm.chemtoolkit.IAtomBase;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.BlobEntity;
@@ -73,8 +74,9 @@ public final class BuilderMolecule {
    * @return molecule for the given single polymer
    * @throws BuilderMoleculeException if the polymer type is BLOB or unknown
    * @throws HELM2HandledException if the polymer contains HELM2 features
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static RgroupStructure buildMoleculefromSinglePolymer(final PolymerNotation polymernotation) throws BuilderMoleculeException, HELM2HandledException {
+  protected static RgroupStructure buildMoleculefromSinglePolymer(final PolymerNotation polymernotation) throws BuilderMoleculeException, HELM2HandledException, ChemistryException {
     LOG.info("Build molecule for single Polymer " + polymernotation.getPolymerID().getID());
     /* Case 1: BLOB -> throw exception */
     if (polymernotation.getPolymerID() instanceof BlobEntity) {
@@ -101,9 +103,10 @@ public final class BuilderMolecule {
    * @param connections all connections of the HELMNotation
    * @return list of built molecules
    * @throws BuilderMoleculeException if HELM2 features were contained
+   * @throws ChemistryException if the Chemistry Engine can not be iniialized
    */
   public static List<AbstractMolecule> buildMoleculefromPolymers(final List<PolymerNotation> polymers,
-      final List<ConnectionNotation> connections) throws BuilderMoleculeException {
+      final List<ConnectionNotation> connections) throws BuilderMoleculeException, ChemistryException {
 
     LOG.info("Building process for the all polymers is starting");
     Map<String, PolymerNotation> map = new HashMap<String, PolymerNotation>();
@@ -187,6 +190,7 @@ public final class BuilderMolecule {
       /* Self cycle */
       if (idFirst.equals(idSecond)) {
         try {
+          LOG.debug("Self-cycle connection: " + connection.toString());
           molecule =
               Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
                   + rgroupOne), one.getMolecule(), one.getRgroupMap().get(connection.getTargetId().getID() + ":"
@@ -247,8 +251,9 @@ public final class BuilderMolecule {
    * @return Built Molecule
    * @throws BuilderMoleculeException if the polymer contains more than one
    *           monomer or if the molecule can't be built
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  private static RgroupStructure buildMoleculefromCHEM(final String id, final List<Monomer> validMonomers) throws BuilderMoleculeException {
+  private static RgroupStructure buildMoleculefromCHEM(final String id, final List<Monomer> validMonomers) throws BuilderMoleculeException, ChemistryException {
     LOG.info("Build molecule for chemical component");
     /* a chemical molecule should only contain one monomer */
     if (validMonomers.size() == 1) {
@@ -310,8 +315,9 @@ public final class BuilderMolecule {
    * @param validMonomers all valid monomers of the component
    * @return generated molecule
    * @throws BuilderMoleculeException if the molecule can't be built
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  private static RgroupStructure buildMoleculefromPeptideOrRNA(final String id, final List<Monomer> validMonomers) throws BuilderMoleculeException {
+  private static RgroupStructure buildMoleculefromPeptideOrRNA(final String id, final List<Monomer> validMonomers) throws BuilderMoleculeException, ChemistryException {
     try {
       AbstractMolecule currentMolecule = null;
       AbstractMolecule prevMolecule =
@@ -331,9 +337,11 @@ public final class BuilderMolecule {
       int i = 0;
       /* First catch all IAtomBases */
       for (Monomer currentMonomer : validMonomers) {
+        LOG.debug("Monomer " + currentMonomer.getAlternateId());
         i++;
         if (prevMonomer != null) {
           currentMolecule = Chemistry.getInstance().getManipulator().getMolecule(currentMonomer.getCanSMILES(), generateAttachmentList(currentMonomer.getAttachmentList()));
+
           current.setMolecule(currentMolecule);
           current.setRgroupMap(generateRgroupMap(id + ":" + String.valueOf(i), currentMolecule));
           /* Backbone Connection */
@@ -380,7 +388,7 @@ public final class BuilderMolecule {
         }
 
       }
-
+      LOG.debug(first.getRgroupMap().keySet().toString());
       return first;
     } catch (IOException | CTKException e) {
       LOG.error("Polymer(Peptide/RNA) molecule can't be built " + e.getMessage());
@@ -409,8 +417,9 @@ public final class BuilderMolecule {
    * @param molecule input molecule
    * @return molecule with all merged unused rgroups
    * @throws BuilderMoleculeException if the molecule can't be built
+   * @throws ChemistryException if the Chemistry Engine ca not be initialized
    */
-  protected static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws BuilderMoleculeException {
+  protected static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws BuilderMoleculeException, ChemistryException {
     try {
       boolean flag = true;
       while (flag) {
@@ -436,8 +445,9 @@ public final class BuilderMolecule {
    * @param monomer input monomer
    * @return generated molecule for the given monomer
    * @throws BuilderMoleculeException if the monomer can't be built
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static AbstractMolecule getMoleculeForMonomer(final Monomer monomer) throws BuilderMoleculeException {
+  protected static AbstractMolecule getMoleculeForMonomer(final Monomer monomer) throws BuilderMoleculeException, ChemistryException {
     String smiles = monomer.getCanSMILES();
 
     List<Attachment> listAttachments = monomer.getAttachmentList();

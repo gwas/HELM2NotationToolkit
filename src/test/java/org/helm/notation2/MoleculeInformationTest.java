@@ -35,11 +35,13 @@ import org.helm.notation.StructureException;
 import org.helm.notation.tools.ComplexNotationParser;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
@@ -50,7 +52,7 @@ import chemaxon.marvin.plugin.PluginException;
 public class MoleculeInformationTest {
 
   @Test
-  public void testgetMolecularFormularExamples() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException {
+  public void testgetMolecularFormularExamples() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     String result = testMolecularFormular(notation);
     Assert.assertEquals(result, "C16H20N4O4");
@@ -58,7 +60,7 @@ public class MoleculeInformationTest {
 
   @Test
   public void testgetExactMass() throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException {
+      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     Double resultEditor = (double) 332.15;
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     Assert.assertEquals(BigDecimal.valueOf(testExactMass(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
@@ -66,7 +68,7 @@ public class MoleculeInformationTest {
 
   @Test
   public void testgetMolecularWeight() throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException {
+      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     Double resultEditor = (double) 332.35;
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
@@ -76,7 +78,7 @@ public class MoleculeInformationTest {
 
   @Test
   public void testgetMolecularWeightPair() throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException {
+      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     Double resultEditor = (double) 2462.60;
     String notation = "RNA1{R(G)P.R(A)P.R(G)P.R(G)}|RNA2{R(C)P.R(C)P.R(U)P.R(C)}$$RNA1,RNA2,5:pair-8:pair|RNA1,RNA2,11:pair-2:pair|RNA1,RNA2,8:pair-5:pair|RNA1,RNA2,2:pair-11:pair$$";
     if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
@@ -86,46 +88,43 @@ public class MoleculeInformationTest {
 
   @Test
   public void testgetMolecularWeightWithSMILES() throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException {
+      FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     Double resultEditor = (double) 106.12;
     String notation = "CHEM1{[[*]OCCOCCO[*] |$_R1;;;;;;;;_R2$|]}$$$$";
     Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
   }
 
   private String testMolecularFormular(String notation) throws ExceptionState, IOException, JDOMException,
-      BuilderMoleculeException, CTKException, NotationException {
+      BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    return MoleculeInformation.getMolecularFormular(containerhelm2.getHELM2Notation());
+    return MoleculeInformation.getMolecularFormular(parserHELM2.getHELM2Notation());
   }
 
-  private Double testExactMass(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException {
+  private Double testExactMass(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    return MoleculeInformation.getExactMass(containerhelm2.getHELM2Notation());
+    return MoleculeInformation.getExactMass(parserHELM2.getHELM2Notation());
 
   }
 
-  private Double testMolecularWeight(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException {
+  private Double testMolecularWeight(String notation) throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    return MoleculeInformation.getMolecularWeight(containerhelm2.getHELM2Notation());
+    return MoleculeInformation.getMolecularWeight(parserHELM2.getHELM2Notation());
 
   }
 
   @Test
   public void testExtended() throws MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, PluginException, StructureException, BuilderMoleculeException,
-      CTKException, ParserException {
+      CTKException, ParserException, ChemistryException {
 
     // siRNA
     String oldNotation =
@@ -135,17 +134,17 @@ public class MoleculeInformationTest {
 
     // AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getExactMass(),
     // MoleculeInformation.getExactMass(readNotation(newNotation).getHELM2Notation()));
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(newNotation).getHELM2Notation()));
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(newNotation).getHELM2Notation()), 0.001);
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(newNotation)));
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(newNotation)), 0.001);
 
     // conjugate
     oldNotation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(oldNotation).getHELM2Notation()));
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(oldNotation).getHELM2Notation()), 0.001);
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(oldNotation)));
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(oldNotation)), 0.001);
 
   }
 
-  private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {
+  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0"))) {
       notation = new ConverterHELM1ToHELM2().doConvert(notation);
@@ -157,7 +156,7 @@ public class MoleculeInformationTest {
     } catch (ExceptionState | IOException e) {
       throw new ParserException(e.getMessage());
     }
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
-    return containerhelm2;
+    return parser.getHELM2Notation();
+
   }
 }

@@ -29,6 +29,7 @@ import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation2.exception.AnalogSequenceException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM1FormatException;
 import org.helm.notation2.exception.ValidationException;
@@ -41,7 +42,7 @@ import org.testng.annotations.Test;
 public class xHELMTest {
 
   public void testxHELMExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException,
-      AnalogSequenceException, MonomerException, HELM1FormatException, org.jdom2.JDOMException, NotationException, CTKException, ValidationException {
+      AnalogSequenceException, MonomerException, HELM1FormatException, org.jdom2.JDOMException, NotationException, CTKException, ValidationException, ChemistryException {
     String notation = "RNA1{R(U)P.R(T)P.R(G)P.R(C)}$$$$";
     testxHELM1(notation);
 
@@ -55,7 +56,7 @@ public class xHELMTest {
   @Test(expectedExceptions = HELM1FormatException.class)
   public void testxHELMWithException() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, MonomerException, HELM1FormatException,
-      org.jdom2.JDOMException, NotationException, CTKException, ValidationException {
+      org.jdom2.JDOMException, NotationException, CTKException, ValidationException, ChemistryException {
     String notation;
 
     notation = "PEPTIDE1{(A+G).L}$$$$";
@@ -70,18 +71,16 @@ public class xHELMTest {
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    System.out.println(XHELM.getXHELM2(containerhelm2));
+    System.out.println(XHELM.getXHELM2(parserHELM2.getHELM2Notation()));
   }
 
   private void testxHELM1(String notation) throws ExceptionState, IOException, JDOMException, MonomerException,
-      HELM1FormatException, org.jdom2.JDOMException, NotationException, CTKException, ValidationException {
+      HELM1FormatException, org.jdom2.JDOMException, NotationException, CTKException, ValidationException, ChemistryException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    System.out.println(XHELM.getXHELM(containerhelm2));
+    System.out.println(XHELM.getXHELM(parserHELM2.getHELM2Notation()));
   }
 }

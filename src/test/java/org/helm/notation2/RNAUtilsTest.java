@@ -33,6 +33,7 @@ import org.helm.notation.StructureException;
 import org.helm.notation.tools.NucleotideSequenceParser;
 import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.AnalogSequenceException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
@@ -40,6 +41,7 @@ import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
@@ -50,45 +52,42 @@ public class RNAUtilsTest {
   @Test
   public void getReverseSequenceTest() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, RNAUtilsException, HELM2HandledException, NotationException,
-      org.jdom2.JDOMException {
+      org.jdom2.JDOMException, ChemistryException {
     String notation = "UTA";
-    ContainerHELM2 containerhelm2 = produceContainerHELM2(notation);
-    Assert.assertEquals(RNAUtils.getReverseSequence(containerhelm2.getAllPolymers().get(0)), NucleotideSequenceParser.getReverseSequence(notation));
+
+    Assert.assertEquals(RNAUtils.getReverseSequence(produceHELM2Notation(notation).getListOfPolymers().get(0)), NucleotideSequenceParser.getReverseSequence(notation));
   }
 
   @Test
   public void getNaturalAnalogSequenceTest() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
-      org.jdom2.JDOMException {
+      org.jdom2.JDOMException, ChemistryException {
     String notation = "UTA";
-    ContainerHELM2 containerhelm2 = produceContainerHELM2(notation);
-    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(containerhelm2.getAllPolymers().get(0)), NucleotideSequenceParser.getNaturalAnalogSequence(notation));
+
+    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(produceHELM2Notation(notation).getListOfPolymers().get(0)), NucleotideSequenceParser.getNaturalAnalogSequence(notation));
 
   }
 
   @Test
   public void testGetTrimmedNucleotideSequence() throws NotationException, MonomerException, IOException, JDOMException, StructureException, RNAUtilsException, HELM2HandledException, ParserException {
     String notation = "RNA1{R(G)P.R(A)[sP].RP.R(G)P.[LR]([5meC])}$$$$";
-    ContainerHELM2 containerhelm2 = readNotation(notation);
-    Assert.assertEquals(RNAUtils.getTrimmedNucleotideSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0)), SimpleNotationParser.getTrimmedNucleotideSequence("R(G)P.R(A)[sP].RP.R(G)P.[LR]([5meC])"));
+    Assert.assertEquals(RNAUtils.getTrimmedNucleotideSequence(readNotation(notation).getListOfPolymers().get(0)), SimpleNotationParser.getTrimmedNucleotideSequence("R(G)P.R(A)[sP].RP.R(G)P.[LR]([5meC])"));
 
   }
 
   @Test
-  public void getNaturalAnalogSequenceTestExtended() throws ParserException, JDOMException, HELM2HandledException, RNAUtilsException, NotationException {
+  public void getNaturalAnalogSequenceTestExtended() throws ParserException, JDOMException, HELM2HandledException, RNAUtilsException, NotationException, ChemistryException {
     String notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R(C)P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
-    ContainerHELM2 containerhelm2 = readNotation(notation);
 
-    String nucleotideSeq = RNAUtils.getNaturalAnalogSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0));
+    String nucleotideSeq = RNAUtils.getNaturalAnalogSequence(readNotation(notation).getListOfPolymers().get(0));
 
     assertEquals("CGAUAUGGGCUGAAUACAAUU", nucleotideSeq);
 
     // replaced a C with 5meC (modified C)
     notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R([5meC])P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
-    containerhelm2 = readNotation(notation);
 
-    nucleotideSeq = RNAUtils.getNaturalAnalogSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0));
+    nucleotideSeq = RNAUtils.getNaturalAnalogSequence(readNotation(notation).getListOfPolymers().get(0));
 
     assertEquals("CGAUAUGGGCUGAAUACAAUU", nucleotideSeq);
 
@@ -99,17 +98,15 @@ public class RNAUtilsTest {
       org.helm.notation2.parser.exceptionparser.NotationException,
       MonomerException, IOException, StructureException {
     String notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R(C)P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
-    ContainerHELM2 containerhelm2 = readNotation(notation);
 
-    String nucleotideSeq = RNAUtils.getModifiedNucleotideSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0));
+    String nucleotideSeq = RNAUtils.getModifiedNucleotideSequence(readNotation(notation).getListOfPolymers().get(0));
 
     assertEquals(SimpleNotationParser.getModifiedNucleotideSequence("R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R(C)P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)"), nucleotideSeq);
 
     // replaced a C with 5meC (modified C)
     notation = "RNA1{R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R([5meC])P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)}$$$$";
-    containerhelm2 = readNotation(notation);
 
-    nucleotideSeq = RNAUtils.getModifiedNucleotideSequence(containerhelm2.getHELM2Notation().getListOfPolymers().get(0));
+    nucleotideSeq = RNAUtils.getModifiedNucleotideSequence(readNotation(notation).getListOfPolymers().get(0));
     assertEquals(SimpleNotationParser.getModifiedNucleotideSequence("R(C)P.R(G)P.R(A)P.R(U)P.R(A)P.R(U)P.R(G)P.R(G)P.R(G)P.R([5meC])P.R(U)P.R(G)P.R(A)P.R(A)P.R(U)P.R(A)P.R(C)P.R(A)P.R(A)P.[dR](U)P.[dR](U)"), nucleotideSeq);
 
   }
@@ -118,10 +115,9 @@ public class RNAUtilsTest {
   public void generateComplementTest() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
-      org.jdom2.JDOMException {
+      org.jdom2.JDOMException, ChemistryException, ParserException {
     String notation = "UTACCGG";
-    ContainerHELM2 containerhelm2 = produceContainerHELM2(notation);
-    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(RNAUtils.getComplement(containerhelm2.getHELM2Notation().getListOfPolymers().get(0))), "AAUGGCC");
+    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(RNAUtils.getComplement(produceHELM2Notation(notation).getListOfPolymers().get(0))), "AAUGGCC");
 
   }
 
@@ -129,25 +125,23 @@ public class RNAUtilsTest {
   public void generateAntiparallel() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
-      org.jdom2.JDOMException {
+      org.jdom2.JDOMException, ChemistryException, ParserException {
     String notation = "UTACCGG";
-    ContainerHELM2 containerhelm2 = produceContainerHELM2(notation);
-    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(RNAUtils.getAntiparallel(containerhelm2.getHELM2Notation().getListOfPolymers().get(0))), "CCGGUAA");
+    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(RNAUtils.getAntiparallel(produceHELM2Notation(notation).getListOfPolymers().get(0))), "CCGGUAA");
   }
 
   @Test
   public void generateInverse() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, RNAUtilsException, HELM2HandledException,
       NotationException,
-      org.jdom2.JDOMException {
+      org.jdom2.JDOMException, ChemistryException {
     String notation = "UTA";
-    ContainerHELM2 containerhelm2 = produceContainerHELM2(notation);
-    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(RNAUtils.getInverse(containerhelm2.getHELM2Notation().getListOfPolymers().get(0))), "ATU");
+    Assert.assertEquals(RNAUtils.getNaturalAnalogSequence(RNAUtils.getInverse(produceHELM2Notation(notation).getListOfPolymers().get(0))), "ATU");
   }
 
   @Test
   public void testGetComplementSequence() throws NotationException,
-      IOException, JDOMException, org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, RNAUtilsException, HELM2HandledException {
+      IOException, JDOMException, org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, RNAUtilsException, HELM2HandledException, ChemistryException {
 
     String sequence = "5'-UAU GUC UCC AGA AUG UAG CdTdT-3'";
 
@@ -155,72 +149,64 @@ public class RNAUtilsTest {
     AssertJUnit.assertEquals("5'-AAGCUACAUUCUGGAGACAUA-3'", normal);
 
     Assert.assertEquals(new StringBuilder(
-        RNAUtils.getNucleotideSequence(RNAUtils.getComplement(produceContainerHELM2(sequence).getHELM2Notation().getListOfPolymers().get(0)))).reverse().toString(), "AAGCUACAUUCUGGAGACAUA");
+        RNAUtils.getNucleotideSequence(RNAUtils.getComplement(produceHELM2Notation(sequence).getListOfPolymers().get(0)))).reverse().toString(), "AAGCUACAUUCUGGAGACAUA");
 
     String reverse = NucleotideSequenceParser.getReverseComplementSequence(sequence);
     AssertJUnit.assertEquals("3'-AUACAGAGGUCUUACAUCGAA-5'", reverse);
     String notation = NucleotideSequenceParser.getNotation(sequence);
     AssertJUnit.assertEquals("R(U)P.R(A)P.R(U)P.R(G)P.R(U)P.R(C)P.R(U)P.R(C)P.R(C)P.R(A)P.R(G)P.R(A)P.R(A)P.R(U)P.R(G)P.R(U)P.R(A)P.R(G)P.R(C)P.[dR](T)P.[dR](T)P", notation);
     Assert.assertEquals(new StringBuilder(
-        RNAUtils.getNucleotideSequence(RNAUtils.getReverseComplement(produceContainerHELM2(sequence).getHELM2Notation().getListOfPolymers().get(0)))).reverse().toString(), "AUACAGAGGUCUUACAUCGAA");
+        RNAUtils.getNucleotideSequence(RNAUtils.getReverseComplement(produceHELM2Notation(sequence).getListOfPolymers().get(0)))).reverse().toString(), "AUACAGAGGUCUUACAUCGAA");
 
   }
 
   @Test
   public void AreInOppositeDirectionTest() throws RNAUtilsException, HELM2HandledException,
       org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, NotationException,
-      IOException, org.jdom2.JDOMException {
+      IOException, org.jdom2.JDOMException, ChemistryException {
     String notationOne = "CAGTT";
     String notationTwo = "AACUG";
-    ContainerHELM2 containerhelm2One = produceContainerHELM2(notationOne);
-    ContainerHELM2 containerhelm2Two = produceContainerHELM2(notationTwo);
-    Assert.assertTrue(RNAUtils.areAntiparallel(containerhelm2One.getAllPolymers().get(0), containerhelm2Two.getAllPolymers().get(0)));
+
+    Assert.assertTrue(RNAUtils.areAntiparallel(produceHELM2Notation(notationOne).getListOfPolymers().get(0), produceHELM2Notation(notationTwo).getListOfPolymers().get(0)));
   }
 
   @Test
   public void addLastPAndRemoveLastPTest() throws org.helm.notation2.parser.exceptionparser.NotationException, RNAUtilsException, IOException, FastaFormatException, HELM2HandledException,
       JDOMException {
     String notation = "CAGTT";
-
-    /* read notation */
-    ContainerHELM2 containerHELM2 = produceContainerHELM2(notation);
-
+    HELM2Notation helm2notation = produceHELM2Notation(notation);
     /* add phosphate */
-    RNAUtils.addLastP(containerHELM2.getHELM2Notation().getListOfPolymers().get(0));
+    RNAUtils.addLastP(helm2notation.getListOfPolymers().get(0));
 
     /* check if the RNA Notation contains now the added phosphate */
-    Assert.assertEquals(containerHELM2.getHELM2Notation().toHELM2(), "RNA1{R(C)P.R(A)P.R(G)P.R(T)P.R(T)P}$$$$V2.0");
+    Assert.assertEquals(helm2notation.toHELM2(), "RNA1{R(C)P.R(A)P.R(G)P.R(T)P.R(T)P}$$$$V2.0");
 
     /* remove last phosphate */
-    RNAUtils.removeLastP(containerHELM2.getHELM2Notation().getListOfPolymers().get(0));
+    RNAUtils.removeLastP(helm2notation.getListOfPolymers().get(0));
 
     /* check if the RNA Notation contains now the removed phosphate */
-    Assert.assertEquals(containerHELM2.getHELM2Notation().toHELM2(), "RNA1{R(C)P.R(A)P.R(G)P.R(T)P.R(T)}$$$$V2.0");
+    Assert.assertEquals(helm2notation.toHELM2(), "RNA1{R(C)P.R(A)P.R(G)P.R(T)P.R(T)}$$$$V2.0");
   }
 
   @Test
   public void hasNucleotideModificationTest() throws ParserException, JDOMException, org.helm.notation2.parser.exceptionparser.NotationException {
     String notation = "RNA1{R(U)P.R([dabA])}$$$$V2.0";
-    ContainerHELM2 containerHELM2 = readNotation(notation);
-    Assert.assertTrue(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+    Assert.assertTrue(RNAUtils.hasNucleotideModification(HELM2NotationUtils.getRNAPolymers(readNotation(notation).getListOfPolymers()).get(0)));
     notation = "RNA1{R(U)P.R(A)P}$$$$V2.0";
-    containerHELM2 = readNotation(notation);
-    Assert.assertFalse(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+    Assert.assertFalse(RNAUtils.hasNucleotideModification(HELM2NotationUtils.getRNAPolymers(readNotation(notation).getListOfPolymers()).get(0)));
     notation = "RNA1{R(U)P.(R(A)P.R(G)P)'3'}$$$$V2.0";
-    containerHELM2 = readNotation(notation);
-    Assert.assertFalse(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+    Assert.assertFalse(RNAUtils.hasNucleotideModification(HELM2NotationUtils.getRNAPolymers(readNotation(notation).getListOfPolymers()).get(0)));
     notation = "RNA1{R(U)P.(R(A)P+R([dabA])P)}$$$$V2.0";
-    containerHELM2 = readNotation(notation);
-    Assert.assertTrue(RNAUtils.hasNucleotideModification(containerHELM2.getRNAPolymers().get(0)));
+    Assert.assertTrue(RNAUtils.hasNucleotideModification(HELM2NotationUtils.getRNAPolymers(readNotation(notation).getListOfPolymers()).get(0)));
   }
 
-  private ContainerHELM2 produceContainerHELM2(String notation)
+  private HELM2Notation produceHELM2Notation(String notation)
       throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, IOException, JDOMException {
-    ContainerHELM2 containerhelm2 = SequenceConverter.readRNA(notation);
-    return containerhelm2;
+    return SequenceConverter.readRNA(notation);
+
   }
 
-  private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {
+  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0"))) {
       notation = new ConverterHELM1ToHELM2().doConvert(notation);
@@ -232,8 +218,8 @@ public class RNAUtilsTest {
     } catch (ExceptionState | IOException e) {
       throw new ParserException(e.getMessage());
     }
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
-    return containerhelm2;
+    return parser.getHELM2Notation();
+
   }
 
 }

@@ -39,6 +39,7 @@ import org.helm.notation.CalculationException;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.MethodsForContainerHELM2;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.HELM2Notation;
@@ -160,8 +161,9 @@ public final class ExtinctionCoefficient {
    * @param helm2notation input HELM2Notation
    * @return extinction coefficient
    * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException {
+  public float calculate(HELM2Notation helm2notation) throws ExtinctionCoefficientException, ChemistryException {
     return calculate(helm2notation, getDefaultUnitType());
   }
 
@@ -172,8 +174,9 @@ public final class ExtinctionCoefficient {
    * @param unitType Unit of the extinction coefficient
    * @return extinction coefficient
    * @throws ExtinctionCoefficientException if the HELM contains HELM2 features
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public float calculate(HELM2Notation helm2notation, int unitType) throws ExtinctionCoefficientException {
+  public float calculate(HELM2Notation helm2notation, int unitType) throws ExtinctionCoefficientException, ChemistryException {
     LOG.debug("ExtinctionCalculation is starting with the unitType: " + unitType);
     float result = 0.0f;
     List<PolymerNotation> polymerNodes = helm2notation.getListOfPolymers();

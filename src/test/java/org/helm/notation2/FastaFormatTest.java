@@ -26,6 +26,7 @@ package org.helm.notation2;
 import java.io.IOException;
 
 import org.helm.notation2.exception.AnalogSequenceException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
@@ -61,44 +62,42 @@ public class FastaFormatTest {
   }
 
   @Test(expectedExceptions = FastaFormatException.class)
-  public void testHELMToFastaPeptide() throws ExceptionState, IOException, JDOMException, FastaFormatException, org.helm.notation.NotationException {
+  public void testHELMToFastaPeptide() throws ExceptionState, IOException, JDOMException, FastaFormatException, org.helm.notation.NotationException, ChemistryException {
     String notation = "PEPTIDE1{[dY]'3'.I.K}|PEPTIDE2{G.H}$$$$";
     testHELMtoFastaPEPTIDE(notation);
   }
 
   @Test(expectedExceptions = FastaFormatException.class)
   public void testHELMToFastaPeptideWithException() throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, org.helm.notation.NotationException {
+      FastaFormatException, org.helm.notation.NotationException, ChemistryException {
     String notation = "PEPTIDE1{[dY]'3-5'.I.K}|PEPTIDE2{G.H}$$$$";
     testHELMtoFastaPEPTIDE(notation);
   }
 
   @Test
-  public void testHELMToFastaRNA() throws ExceptionState, IOException, JDOMException, FastaFormatException, org.helm.notation.NotationException {
+  public void testHELMToFastaRNA() throws ExceptionState, IOException, JDOMException, FastaFormatException, org.helm.notation.NotationException, ChemistryException {
     String notation = "RNA1{R(U)P.R(T)P.R(G)P.R(C)}$$$$";
     testHELMtoFastaRNA(notation);
   }
 
   private void testHELMtoFastaPEPTIDE(String notation) throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, org.helm.notation.NotationException {
+      FastaFormatException, org.helm.notation.NotationException, ChemistryException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    System.out.println(FastaFormat.generateFastaFromPeptidePolymer(containerhelm2.getHELM2Notation().getListOfPolymers()));
+    System.out.println(FastaFormat.generateFastaFromPeptidePolymer(parserHELM2.getHELM2Notation().getListOfPolymers()));
   }
 
   private void testHELMtoFastaRNA(String notation) throws ExceptionState, IOException, JDOMException,
-      FastaFormatException, org.helm.notation.NotationException {
+      FastaFormatException, org.helm.notation.NotationException, ChemistryException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    FastaFormat.generateFastaFromRNAPolymer(containerhelm2.getHELM2Notation().getListOfPolymers());
+    FastaFormat.generateFastaFromRNAPolymer(parserHELM2.getHELM2Notation().getListOfPolymers());
   }
 
   @Test
@@ -124,8 +123,7 @@ public class FastaFormatTest {
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parserHELM2.getHELM2Notation(), new InterConnections());
-    FastaFormat.convertIntoAnalogSequence(containerhelm2.getHELM2Notation());
+    FastaFormat.convertIntoAnalogSequence(parserHELM2.getHELM2Notation());
     // System.out.println(containerhelm2.getHELM2Notation().toHELM2());
   }
 

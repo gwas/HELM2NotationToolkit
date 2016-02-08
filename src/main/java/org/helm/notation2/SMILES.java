@@ -31,6 +31,7 @@ import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
 import org.helm.notation.NotationException;
 import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
@@ -55,8 +56,9 @@ public final class SMILES {
    * @return smiles for the whole HELMNotation
    * @throws BuilderMoleculeException if the molecule can't be built
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  public static String getSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ChemistryException {
     /* Build Molecues */
     LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules =
@@ -69,6 +71,7 @@ public final class SMILES {
       sb.append(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES) + ".");
     }
     sb.setLength(sb.length() - 1);
+    LOG.debug("SMILES-All :" + sb.toString());
     return sb.toString();
   }
 
@@ -81,8 +84,9 @@ public final class SMILES {
    * @throws CTKSmilesException
    * @throws CTKException
    * @throws NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public static String getCanonicalSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKSmilesException, CTKException, NotationException {
+  public static String getCanonicalSMILESForAll(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKSmilesException, CTKException, NotationException, ChemistryException {
     LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
     LOG.debug("Built single molecule(s)");
@@ -100,7 +104,19 @@ public final class SMILES {
   protected void containsGenericStructure() {
   }
 
-  public static String getSMILESForPolymer(PolymerNotation polymer) throws BuilderMoleculeException, HELM2HandledException, CTKSmilesException, CTKException, NotationException {
+  /**
+   * method to generate smiles for one single PolymerNotation
+   * 
+   * @param polymer PolymerNotation
+   * @return smiles for the sinlge given PolymerNotation
+   * @throws BuilderMoleculeException
+   * @throws HELM2HandledException
+   * @throws CTKSmilesException
+   * @throws CTKException
+   * @throws NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
+   */
+  public static String getSMILESForPolymer(PolymerNotation polymer) throws BuilderMoleculeException, HELM2HandledException, CTKSmilesException, CTKException, NotationException, ChemistryException {
     AbstractMolecule molecule = BuilderMolecule.buildMoleculefromSinglePolymer(polymer).getMolecule();
     molecule = BuilderMolecule.mergeRgroups(molecule);
 

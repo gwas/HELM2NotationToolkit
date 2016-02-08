@@ -34,6 +34,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.ManipulatorFactory;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
+import org.helm.notation2.exception.ChemistryException;
 
 /**
  * Chemistry, singleton class to define which Chemistry-Plugin is used
@@ -55,19 +56,21 @@ public final class Chemistry {
 
   /**
    * Default constructor.
+   *
+   * @throws ChemistryException
    */
-  private Chemistry() {
+  private Chemistry() throws ChemistryException {
     readConfigFile();
     setManipulatorType();
     try {
       manipulator = ManipulatorFactory.buildManipulator(type);
     } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-      e.printStackTrace();
+      throw new ChemistryException("Chemistry Engine could not be initialized");
     }
   }
 
   /**
-   * method to define the ManipulatorType
+   * method to define the ManipulatorType default type is CDK
    */
   private void setManipulatorType() {
     if (chemistry.equals("MARVIN")) {
@@ -75,7 +78,7 @@ public final class Chemistry {
     } else if (chemistry.equals("CDK")) {
       type = ManipulatorFactory.ManipulatorType.CDK;
     } else {
-      type = null;
+      type = ManipulatorFactory.ManipulatorType.CDK;
     }
   }
 
@@ -119,8 +122,9 @@ public final class Chemistry {
    * method to get the singleton instance
    *
    * @return Chemistry
+   * @throws ChemistryException
    */
-  public static Chemistry getInstance() {
+  public static Chemistry getInstance() throws ChemistryException {
     if (Chemistry._instance == null) {
       Chemistry._instance = new Chemistry();
     }

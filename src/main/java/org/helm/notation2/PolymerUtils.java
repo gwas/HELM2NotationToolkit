@@ -41,6 +41,7 @@ import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.helm.notation2.parser.notation.polymer.RNAEntity;
 
 /**
  * PolymerUtils, class to provide methods for polymer
@@ -56,7 +57,15 @@ public class PolymerUtils {
    * @return monomer count
    */
   protected static int getTotalMonomerCount(PolymerNotation polymer) {
-    return polymer.getPolymerElements().getListOfElements().size();
+    if (polymer.getPolymerID() instanceof RNAEntity) {
+      int count = 0;
+      for (MonomerNotation unit : polymer.getPolymerElements().getListOfElements()) {
+        count += ((MonomerNotationUnitRNA) unit).getContents().size();
+      }
+      return count;
+    } else {
+      return polymer.getPolymerElements().getListOfElements().size();
+    }
   }
 
   protected void getNotationByReplacingSMILES() {

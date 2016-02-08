@@ -29,6 +29,7 @@ import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
 import org.helm.notation.NotationException;
 import org.helm.notation2.exception.AttachmentException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.parser.StateMachineParser;
@@ -39,7 +40,7 @@ import org.testng.annotations.Test;
 
 /**
  * TestValidation
- * 
+ *
  * @author hecht
  */
 public class TestValidation {
@@ -60,9 +61,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateGrouping(containerhelm2));
+    Assert.assertTrue(Validation.validateGrouping(parser.notationContainer));
   }
 
   @Test
@@ -81,9 +80,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertFalse(Validation.validateGrouping(containerhelm2));
+    Assert.assertFalse(Validation.validateGrouping(parser.notationContainer));
   }
 
   @Test
@@ -101,9 +98,8 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertFalse(Validation.validateGrouping(containerhelm2));
+
+    Assert.assertFalse(Validation.validateGrouping(parser.notationContainer));
   }
 
   @Test
@@ -121,9 +117,8 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateUniquePolymerIDs(containerhelm2));
+
+    Assert.assertTrue(Validation.validateUniquePolymerIDs(parser.notationContainer));
   }
 
   @Test
@@ -141,9 +136,8 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertFalse(Validation.validateUniquePolymerIDs(containerhelm2));
+
+    Assert.assertFalse(Validation.validateUniquePolymerIDs(parser.notationContainer));
   }
 
   @Test
@@ -189,7 +183,7 @@ public class TestValidation {
   public void testConnectionRNA() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException, ChemistryException
 
   {
     parser = new StateMachineParser();
@@ -202,9 +196,8 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+
+    Assert.assertTrue(Validation.validateConnections(parser.notationContainer));
 
   }
 
@@ -212,7 +205,7 @@ public class TestValidation {
   public void testConnection() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException, ChemistryException
 
   {
     parser = new StateMachineParser();
@@ -224,9 +217,8 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
     test += "V2.0";
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+
+    Assert.assertTrue(Validation.validateConnections(parser.notationContainer));
 
   }
 
@@ -234,7 +226,7 @@ public class TestValidation {
   public void testConnectionMap() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException, ChemistryException
 
   {
     parser = new StateMachineParser();
@@ -248,9 +240,8 @@ public class TestValidation {
     }
     test += "V2.0";
     parser.notationContainer.getListOfPolymers().get(0).initializeMapOfMonomersAndMapOfIntraConnection();
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+
+    Assert.assertTrue(Validation.validateConnections(parser.notationContainer));
 
   }
 
@@ -258,7 +249,7 @@ public class TestValidation {
   public void testConnectionFalse() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException, ChemistryException
 
   {
     parser = new StateMachineParser();
@@ -271,9 +262,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertFalse(Validation.validateConnections(containerhelm2));
+    Assert.assertFalse(Validation.validateConnections(parser.notationContainer));
 
   }
 
@@ -281,7 +270,7 @@ public class TestValidation {
   public void testConnectionHELM2Simple() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException, ChemistryException
 
   {
     parser = new StateMachineParser();
@@ -294,9 +283,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+    Assert.assertTrue(Validation.validateConnections(parser.notationContainer));
 
   }
 
@@ -304,7 +291,7 @@ public class TestValidation {
   public void testConnectionHELM2SimpleWithException() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException, ChemistryException
 
   {
     parser = new StateMachineParser();
@@ -317,9 +304,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertFalse(Validation.validateConnections(containerhelm2));
+    Assert.assertFalse(Validation.validateConnections(parser.notationContainer));
 
   }
 
@@ -327,7 +312,7 @@ public class TestValidation {
   public void testConnectionHELM2SimpleWithExceptio() throws ExceptionState,
       MonomerException,
       IOException, NotationException, JDOMException, org.jdom2.JDOMException,
-      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException
+      AttachmentException, PolymerIDsException, HELM2HandledException, CTKException, ChemistryException
 
   {
     parser = new StateMachineParser();
@@ -340,16 +325,14 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+    Assert.assertTrue(Validation.validateConnections(parser.notationContainer));
 
   }
 
   @Test
   public void testConnectionHELM2Extended() throws ExceptionState,
       MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException,
-      PolymerIDsException, HELM2HandledException, CTKException {
+      PolymerIDsException, HELM2HandledException, CTKException, ChemistryException {
     parser = new StateMachineParser();
 
     String test =
@@ -360,16 +343,14 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+    Assert.assertTrue(Validation.validateConnections(parser.notationContainer));
 
   }
 
   @Test
   public void testConnectionHELM2ExtendedWithException() throws ExceptionState,
       MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException,
-      PolymerIDsException, HELM2HandledException, CTKException {
+      PolymerIDsException, HELM2HandledException, CTKException, ChemistryException {
     parser = new StateMachineParser();
 
     String test =
@@ -380,16 +361,14 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertFalse(Validation.validateConnections(containerhelm2));
+    Assert.assertFalse(Validation.validateConnections(parser.notationContainer));
 
   }
 
   @Test
   public void testConnectionHELM2Extended2() throws ExceptionState,
       MonomerException, IOException, NotationException, JDOMException, org.jdom2.JDOMException, AttachmentException,
-      PolymerIDsException, HELM2HandledException, CTKException {
+      PolymerIDsException, HELM2HandledException, CTKException, ChemistryException {
     parser = new StateMachineParser();
 
     String test =
@@ -400,15 +379,13 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateConnections(containerhelm2));
+    Assert.assertTrue(Validation.validateConnections(parser.notationContainer));
 
   }
 
   @Test
   public void testMonomerValidation() throws ExceptionState, IOException, JDOMException, MonomerException,
-      org.jdom2.JDOMException, NotationException, CTKException {
+      org.jdom2.JDOMException, NotationException, CTKException, ChemistryException {
     parser = new StateMachineParser();
 
     String test =
@@ -419,15 +396,13 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-    Assert.assertTrue(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
+    Assert.assertTrue(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
 
   }
 
   @Test
   public void testMonomerValidationWithException() throws ExceptionState, IOException, JDOMException, MonomerException,
-      org.jdom2.JDOMException, NotationException, CTKException {
+      org.jdom2.JDOMException, NotationException, CTKException, ChemistryException {
     parser = new StateMachineParser();
 
     String test =
@@ -438,16 +413,13 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-
-    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
+    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
 
   }
 
   @Test
   public void testMonomerValidationWithException2() throws ExceptionState, IOException, JDOMException,
-      MonomerException, org.jdom2.JDOMException, NotationException, CTKException {
+      MonomerException, org.jdom2.JDOMException, NotationException, CTKException, ChemistryException {
     parser = new StateMachineParser();
 
     String test =
@@ -458,10 +430,7 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
 
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.notationContainer,
-        new InterConnections());
-
-    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())));
+    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
 
   }
 

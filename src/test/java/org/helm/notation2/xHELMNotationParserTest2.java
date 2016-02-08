@@ -35,6 +35,7 @@ import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.xHelmNotationParser;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM1FormatException;
@@ -44,6 +45,7 @@ import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -54,8 +56,6 @@ import org.testng.annotations.Test;
 import chemaxon.marvin.plugin.PluginException;
 
 public class xHELMNotationParserTest2 {
-
-  private ContainerHELM2 containerhelm2 = null;
 
   private Element getXHELMRootElement(String resource) throws JDOMException,
       IOException {
@@ -68,7 +68,7 @@ public class xHELMNotationParserTest2 {
     return doc.getRootElement();
   }
 
-  private void readNotation(String notation) throws ParserException, JDOMException {
+  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0"))) {
       notation = new ConverterHELM1ToHELM2().doConvert(notation);
@@ -80,7 +80,7 @@ public class xHELMNotationParserTest2 {
     } catch (ExceptionState | IOException e) {
       throw new ParserException(e.getMessage());
     }
-    containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
+    return parser.getHELM2Notation();
   }
 
   /**
@@ -91,15 +91,14 @@ public class xHELMNotationParserTest2 {
    * @throws ValidationException
    * @throws org.jdom.JDOMException
    * @throws NotationException
+   * @throws ChemistryException
    */
   public void validateHELM(String helm) throws ParserException,
-      ValidationException, JDOMException, NotationException {
-    /* Read */
-    readNotation(helm);
+      ValidationException, JDOMException, NotationException, ChemistryException {
 
-    /* Validate */
+    /* Read + Validate */
     try {
-      Validation.validateNotationObjects(containerhelm2);
+      Validation.validateNotationObjects(readNotation(helm));
     } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException e) {
       throw new ValidationException(e.getMessage());
     }
@@ -109,7 +108,7 @@ public class xHELMNotationParserTest2 {
   public void testParseXHelmNotation() throws JDOMException, IOException,
       MonomerException, NotationException, StructureException,
       ClassNotFoundException, PluginException, ParserException,
-      ValidationException, HELM1FormatException, JDOMException {
+      ValidationException, HELM1FormatException, JDOMException, ChemistryException {
 
     String workingDir = System.getProperty("user.dir");
     Element xHELMRootElement =
@@ -129,8 +128,9 @@ public class xHELMNotationParserTest2 {
     /* Read + Validate */
     validateHELM(helmString);
     String canonicalNotation = new WebService().convertStandardHELMToCanonicalHELM(helmString);
+    System.out.println(canonicalNotation);
 
-    AssertJUnit.assertEquals("CHEM1{SMCC}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}$CHEM1,PEPTIDE1,1:R2-2:R3|CHEM1,RNA1,1:R1-1:R1$$$", canonicalNotation);
+    AssertJUnit.assertEquals("CHEM1{SMCC}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}$CHEM1,PEPTIDE1,1:R2-2:R3|CHEM1,RNA1,1:R1-1:R1$$$V2.0", canonicalNotation);
 
     xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/simple.xhelm");
     helmString = xHelmNotationParser.getHELMNotationString(xHELMRootElement);
@@ -159,7 +159,7 @@ public class xHELMNotationParserTest2 {
   @Test
   public void testQRPeptide() throws JDOMException, IOException,
       MonomerException, NotationException, StructureException,
-      ClassNotFoundException, ParserException, ValidationException, JDOMException {
+      ClassNotFoundException, ParserException, ValidationException, JDOMException, ChemistryException {
     Element xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation/tools/resources/qr_peptide.xhelm");
     String helmString = xHelmNotationParser.getComplexNotationString(xHELMRootElement);
     MonomerStore store = xHelmNotationParser.getMonomerStore(xHELMRootElement);

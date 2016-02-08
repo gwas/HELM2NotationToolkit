@@ -37,38 +37,38 @@ import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
  * SequenceConverterTest
- * 
- * 
+ *
+ *
  * @author hecht
  */
 public class SequenceConverterTest {
-
 
   @Test
   public void getNucleotideSequenceFromNotation() throws NucleotideLoadingException, MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, StructureException,
       org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ParserException, RNAUtilsException {
     String notation = "RNA1{R(T)P.R(G)P.R(U)}$$$$";
-    Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(readNotation(notation).getHELM2Notation()), NucleotideConverter.getInstance().getNucleotideSequencesFromComplexNotation(notation));
+    Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(readNotation(notation)), NucleotideConverter.getInstance().getNucleotideSequencesFromComplexNotation(notation));
     notation = "RNA1{[dR](U)P.R(T)P.R(G)P.R(U)}$$$$";
-    Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(readNotation(notation).getHELM2Notation()), NucleotideConverter.getInstance().getNucleotideSequencesFromComplexNotation(notation));
+    Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(readNotation(notation)), NucleotideConverter.getInstance().getNucleotideSequencesFromComplexNotation(notation));
 
   }
 
   @Test(expectedExceptions = HELM2HandledException.class)
-  public void getNucleotideSequenceFromNotationWithException() throws NucleotideLoadingException, MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, StructureException,
+  public void getNucleotideSequenceFromNotationWithException() throws NucleotideLoadingException, MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException,
+      StructureException,
       org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ParserException, RNAUtilsException {
     String notation = "RNA1{R(T)P.R(G)P.(R(U))'3'}$$$$";
-    System.out.println(SequenceConverter.getNucleotideSequenceFromNotation(readNotation(notation).getHELM2Notation()));
+    System.out.println(SequenceConverter.getNucleotideSequenceFromNotation(readNotation(notation)));
   }
 
-
-  private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {
+  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0"))) {
       notation = new ConverterHELM1ToHELM2().doConvert(notation);
@@ -80,7 +80,7 @@ public class SequenceConverterTest {
     } catch (ExceptionState | IOException e) {
       throw new ParserException(e.getMessage());
     }
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
-    return containerhelm2;
+    return parser.getHELM2Notation();
+
   }
 }

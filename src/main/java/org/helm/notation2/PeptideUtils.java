@@ -26,6 +26,7 @@ package org.helm.notation2;
 import java.util.List;
 
 import org.helm.notation.model.Monomer;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.PeptideUtilsException;
 import org.helm.notation2.parser.notation.polymer.PeptideEntity;
@@ -53,8 +54,9 @@ public final class PeptideUtils {
    * @return natural analogue sequence
    * @throws HELM2HandledException if the polymer contains HELM2 features
    * @throws PeptideUtilsException if the polymer is not a peptide
+   * @throws ChemistryException if the Chemistry Engine is not initialized
    */
-  protected static String getNaturalAnalogueSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException {
+  public static String getNaturalAnalogueSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException, ChemistryException {
     checkPeptidePolymer(polymer);
     return FastaFormat.generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()));
   }
@@ -66,8 +68,9 @@ public final class PeptideUtils {
    * @return sequence
    * @throws HELM2HandledException if the polmyer contains HELM2 features
    * @throws PeptideUtilsException is not a peptide
+   * @throws ChemistryException if the Chemistry Engine is not initialized
    */
-  protected static String getSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException {
+  public static String getSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException, ChemistryException {
     checkPeptidePolymer(polymer);
     StringBuilder sb = new StringBuilder();
     List<Monomer> monomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers());

@@ -34,8 +34,10 @@ import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.MonomerParser;
 import org.helm.notation.tools.xHelmNotationExporter;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM1FormatException;
 import org.helm.notation2.exception.ValidationException;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
@@ -64,27 +66,27 @@ public final class XHELM {
   /**
    * method to get xhelm for the helm2 notation with the new functionality
    *
-   * @param containerhelm2, helm's notations objects
+   * @param helm2notation, HELM2Notation object
    * @return xhelm
    * @throws MonomerException
    * @throws JDOMException
    * @throws IOException
    */
-  protected static String getXHELM2(ContainerHELM2 containerhelm2) throws MonomerException, IOException, JDOMException {
+  protected static String getXHELM2(HELM2Notation helm2notation) throws MonomerException, IOException, JDOMException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
     Document doc = new Document(root);
 
     Element helmElement = new Element(xHelmNotationExporter.HELM_NOTATION_ELEMENT);
-    helmElement.setText(containerhelm2.getHELM2Notation().toHELM2());
+    helmElement.setText(helm2notation.toHELM2());
 
     root.addContent(helmElement);
 
     Element monomerListElement = new Element(xHelmNotationExporter.MONOMER_LIST_ELEMENT);
 
     /* save all adhocMonomers */
-    for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())) {
+    for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(helm2notation.getListOfPolymers())) {
       /* get all elements of an rna */
       if (monomernotation instanceof MonomerNotationUnitRNA) {
         for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomernotation).getContents()) {
@@ -113,7 +115,7 @@ public final class XHELM {
    * method to get xhelm for the helm notation, only if it was possible to
    * convert the helm in the old format
    *
-   * @param containerhelm2, helm's notations objects
+   * @param helm2notation, HELM2Notation object
    * @return xhelm
    * @throws MonomerException
    * @throws HELM1FormatException
@@ -122,23 +124,24 @@ public final class XHELM {
    * @throws NotationException
    * @throws CTKException
    * @throws ValidationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String getXHELM(ContainerHELM2 containerhelm2) throws MonomerException, HELM1FormatException,
-      IOException, JDOMException, NotationException, CTKException, ValidationException {
+  protected static String getXHELM(HELM2Notation helm2notation) throws MonomerException, HELM1FormatException,
+      IOException, JDOMException, NotationException, CTKException, ValidationException, ChemistryException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
     Document doc = new Document(root);
 
     Element helmElement = new Element(xHelmNotationExporter.HELM_NOTATION_ELEMENT);
-    helmElement.setText(HELM1Utils.getStandard(containerhelm2.getHELM2Notation()));
+    helmElement.setText(HELM1Utils.getStandard(helm2notation));
 
     root.addContent(helmElement);
 
     Element monomerListElement = new Element(xHelmNotationExporter.MONOMER_LIST_ELEMENT);
 
     /* save all adhocMonomers in the set */
-    for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(containerhelm2.getHELM2Notation().getListOfPolymers())) {
+    for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(helm2notation.getListOfPolymers())) {
       /* get all elements of an rna */
       if (monomernotation instanceof MonomerNotationUnitRNA) {
         for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomernotation).getContents()) {

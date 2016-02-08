@@ -39,6 +39,7 @@ import org.helm.notation.NotationException;
 import org.helm.notation.model.Attachment;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.DeepCopy;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
@@ -73,10 +74,11 @@ public final class MethodsForContainerHELM2 {
    * @param monomerNotations List of MonomerNotation
    * @return List of Monomer
    * @throws HELM2HandledException if the HELM2 features were there
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    * @throws NotationException
    */
   public static List<Monomer> getListOfHandledMonomers(List<MonomerNotation> monomerNotations)
-      throws HELM2HandledException {
+      throws HELM2HandledException, ChemistryException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (int i = 0; i < monomerNotations.size(); i++) {
       MonomerNotation monomerNotation = monomerNotations.get(i);
@@ -111,9 +113,10 @@ public final class MethodsForContainerHELM2 {
    * @return List of Monomer
    * @throws HELM2HandledException if HELM2 features are there
    * @throws NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   public static List<Monomer> getListOfHandledMonomersOnlyBase(List<MonomerNotation> monomerNotations)
-      throws HELM2HandledException, NotationException {
+      throws HELM2HandledException, NotationException, ChemistryException {
     LOG.debug("Get all bases of the rna");
     List<Monomer> items = new ArrayList<Monomer>();
 
@@ -167,9 +170,10 @@ public final class MethodsForContainerHELM2 {
    * @throws HELM2HandledException if HELM2 features are there
    * @throws CTKException
    * @throws NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   protected static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException,
-      IOException, JDOMException, HELM2HandledException, CTKException, NotationException {
+      IOException, JDOMException, HELM2HandledException, CTKException, NotationException, ChemistryException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (int i = 0; i < monomerNotations.size(); i++) {
       items.addAll(Validation.getAllMonomers(monomerNotations.get(i), i));
@@ -203,8 +207,9 @@ public final class MethodsForContainerHELM2 {
    * @return Monomer
    * @throws MonomerException if the desired monomer is not in the database
    * @throws NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static Monomer getMonomer(String type, String id, String info) throws MonomerException, NotationException {
+  protected static Monomer getMonomer(String type, String id, String info) throws MonomerException, NotationException, ChemistryException {
     try {
       MonomerFactory monomerFactory = MonomerFactory.getInstance();
       MonomerStore monomerStore = monomerFactory.getMonomerStore();

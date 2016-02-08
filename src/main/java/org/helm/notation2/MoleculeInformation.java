@@ -34,6 +34,7 @@ import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.slf4j.Logger;
@@ -59,8 +60,9 @@ public final class MoleculeInformation {
    * method to build from one notation one molecule
    *
    * @throws BuilderMoleculeException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  private static List<AbstractMolecule> buildMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
+  private static List<AbstractMolecule> buildMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, ChemistryException {
     return BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
   }
 
@@ -71,8 +73,9 @@ public final class MoleculeInformation {
    * @return MolecularWeight of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static double getMolecularWeight(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ChemistryException {
     /* First build one big molecule; List of molecules? */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     return calculateMolecularWeight(molecules);
@@ -86,8 +89,9 @@ public final class MoleculeInformation {
    * @return
    * @throws BuilderMoleculeException
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  private static double calculateMolecularWeight(List<AbstractMolecule> molecules) throws BuilderMoleculeException, CTKException {
+  private static double calculateMolecularWeight(List<AbstractMolecule> molecules) throws BuilderMoleculeException, CTKException, ChemistryException {
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
       molecule = BuilderMolecule.mergeRgroups(molecule);
@@ -103,8 +107,9 @@ public final class MoleculeInformation {
    * @return ExactMass of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static double getExactMass(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ChemistryException {
     /* First build one big molecule; List of molecules */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     return calculateExactMass(molecules);
@@ -116,8 +121,9 @@ public final class MoleculeInformation {
    * @param molecules
    * @return
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  private static double calculateExactMass(List<AbstractMolecule> molecules) throws CTKException {
+  private static double calculateExactMass(List<AbstractMolecule> molecules) throws CTKException, ChemistryException {
     Double result = 0.0;
     for (AbstractMolecule molecule : molecules) {
       result += Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getExactMass();
@@ -132,8 +138,9 @@ public final class MoleculeInformation {
    * @return MolecularFormular of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException {
+  protected static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ChemistryException {
     /* First build HELM molecule */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
     return calculateMolecularFormula(molecules);
@@ -146,8 +153,9 @@ public final class MoleculeInformation {
    * @return
    * @throws BuilderMoleculeException
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  private static String calculateMolecularFormula(List<AbstractMolecule> molecules) throws BuilderMoleculeException, CTKException {
+  private static String calculateMolecularFormula(List<AbstractMolecule> molecules) throws BuilderMoleculeException, CTKException, ChemistryException {
     Map<String, Integer> atomNumberMap = new TreeMap<String, Integer>();
     for (AbstractMolecule molecule : molecules) {
       atomNumberMap = generateAtomNumberMap(molecule, atomNumberMap);
@@ -175,8 +183,9 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException
    * @throws CTKException
    * @throws ExtinctionCoefficientException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static List<String> getMoleculeProperties(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ExtinctionCoefficientException {
+  protected static List<String> getMoleculeProperties(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ExtinctionCoefficientException, ChemistryException {
     List<String> result = new ArrayList<String>();
     /* First build HELM molecule */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
@@ -198,8 +207,9 @@ public final class MoleculeInformation {
    * @param helm2notation input HELM2Notation;
    * @return Molecule molecule of the whole HELM
    * @throws BuilderMoleculeException if the whole molecule can not be built
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException {
+  protected static List<AbstractMolecule> getMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, ChemistryException {
     return buildMolecule(helm2notation);
   }
 
@@ -212,8 +222,9 @@ public final class MoleculeInformation {
    * @throws BuilderMoleculeException if the Rgroups of the molecule can not be
    *           merged into it
    * @throws CTKException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws BuilderMoleculeException, CTKException {
+  private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws BuilderMoleculeException, CTKException, ChemistryException {
     molecule = BuilderMolecule.mergeRgroups(molecule);
     String formula = Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
     String atom = "";

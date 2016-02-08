@@ -36,17 +36,19 @@ import org.helm.notation.MonomerFactory;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
+import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.JDOMException;
 import org.testng.annotations.Test;
 
 public class ImagesTest {
 
   @Test
-  public void TestGenerationImageOfMonomer() throws BuilderMoleculeException, CTKException, FileNotFoundException, IOException {
+  public void TestGenerationImageOfMonomer() throws BuilderMoleculeException, CTKException, FileNotFoundException, IOException, ChemistryException {
     Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", "P");
     byte[] result = Images.generateImageofMonomer(monomer, false);
     if (!Files.exists(Paths.get("test-output"))) {
@@ -58,11 +60,11 @@ public class ImagesTest {
   }
 
   @Test
-  public void TestGenerationImageOfHELMNotation() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException {
+  public void TestGenerationImageOfHELMNotation() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException, ChemistryException {
     if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
       String notation = "RNA1{R(U)P}|RNA2{R(U)P.R(G)}|RNA3{R(C)P.R(A)}|CHEM1{[MCC]}$RNA1,CHEM1,3:R2-1:R1|RNA2,RNA3,5:pair-2:pair|RNA2,RNA3,2:pair-5:pair$$$";
-      ContainerHELM2 containerhelm2 = readNotation(notation);
-      byte[] result = Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+
+      byte[] result = Images.generateImageHELMMolecule(readNotation(notation));
       if (!Files.exists(Paths.get("test-output"))) {
         Files.createDirectories(Paths.get("test-output"));
       }
@@ -73,12 +75,12 @@ public class ImagesTest {
   }
 
   @Test
-  public void TestGenerationImageOfHELMNotationPEPTIDEComplex() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException {
+  public void TestGenerationImageOfHELMNotationPEPTIDEComplex() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException, ChemistryException {
     String notation = "PEPTIDE1{D.F.D}|PEPTIDE2{C}|PEPTIDE3{E.D}$PEPTIDE3,PEPTIDE1,2:R3-1:R3|PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
     // String notation =
     // "PEPTIDE1{D.F.D}|PEPTIDE2{C}$PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
-    ContainerHELM2 containerhelm2 = readNotation(notation);
-    byte[] result = Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+
+    byte[] result = Images.generateImageHELMMolecule(readNotation(notation));
     if (!Files.exists(Paths.get("test-output"))) {
       Files.createDirectories(Paths.get("test-output"));
     }
@@ -88,10 +90,9 @@ public class ImagesTest {
   }
 
   @Test
-  public void TestGenerationImageOfHELMNotationProblemCase() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException {
+  public void TestGenerationImageOfHELMNotationProblemCase() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException, ChemistryException {
     String notation = "RNA1{R(A)P.R(G)}$$$$";
-    ContainerHELM2 containerhelm2 = readNotation(notation);
-    byte[] result = Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+    byte[] result = Images.generateImageHELMMolecule(readNotation(notation));
     if (!Files.exists(Paths.get("test-output"))) {
       Files.createDirectories(Paths.get("test-output"));
     }
@@ -102,10 +103,9 @@ public class ImagesTest {
   }
 
   @Test
-  public void TestGenerationImageOfHELMNotationSimpleCase() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException {
+  public void TestGenerationImageOfHELMNotationSimpleCase() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, IOException, NotationException, ChemistryException {
     String notation = "PEPTIDE1{G.G.G}$$$$";
-    ContainerHELM2 containerhelm2 = readNotation(notation);
-    byte[] result = Images.generateImageHELMMolecule(containerhelm2.getHELM2Notation());
+    byte[] result = Images.generateImageHELMMolecule(readNotation(notation));
     if (!Files.exists(Paths.get("test-output"))) {
       Files.createDirectories(Paths.get("test-output"));
     }
@@ -114,7 +114,7 @@ public class ImagesTest {
     }
   }
 
-  private ContainerHELM2 readNotation(String notation) throws ParserException, JDOMException {
+  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
     if (!(notation.contains("V2.0"))) {
       notation = new ConverterHELM1ToHELM2().doConvert(notation);
@@ -126,7 +126,7 @@ public class ImagesTest {
     } catch (ExceptionState | IOException e) {
       throw new ParserException(e.getMessage());
     }
-    ContainerHELM2 containerhelm2 = new ContainerHELM2(parser.getHELM2Notation(), new InterConnections());
-    return containerhelm2;
+
+    return parser.getHELM2Notation();
   }
 }
