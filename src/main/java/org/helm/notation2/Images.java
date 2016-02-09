@@ -74,7 +74,7 @@ public final class Images {
    * @throws BuilderMoleculeException if the molecule can't be built
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static byte[] generateImageofMonomer(Monomer monomer, boolean rgroupsInformation) throws BuilderMoleculeException, CTKException, ChemistryException {
+  public static byte[] generateImageofMonomer(Monomer monomer, boolean rgroupsInformation) throws BuilderMoleculeException, CTKException, ChemistryException {
     LOG.info("Image generation process of monomer starts");
     /* First build one molecule */
     AbstractMolecule molecule;
@@ -101,7 +101,7 @@ public final class Images {
    * @throws IOException
    * @throws ChemistryException if the Chemistry Engine can not initialized
    */
-  protected static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException, ChemistryException {
+  public static byte[] generateImageHELMMolecule(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, IOException, ChemistryException {
     LOG.info("Image generation process of HELM molecule starts");
     /* get SMILES representation for the whole molecule */
     String smiles = SMILES.getSMILESForAll(helm2notation);

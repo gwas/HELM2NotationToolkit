@@ -62,7 +62,7 @@ public final class SMILES {
     /* Build Molecues */
     LOG.debug("Build single molecule(s)");
     List<AbstractMolecule> molecules =
-        BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), MethodsForContainerHELM2.getAllEdgeConnections(helm2notation.getListOfConnections()));
+        BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), HELM2NotationUtils.getAllEdgeConnections(helm2notation.getListOfConnections()));
     /* get for every molecule the smiles */
     LOG.debug("Built single molecule(s)");
     StringBuffer sb = new StringBuffer();
@@ -106,7 +106,7 @@ public final class SMILES {
 
   /**
    * method to generate smiles for one single PolymerNotation
-   * 
+   *
    * @param polymer PolymerNotation
    * @return smiles for the sinlge given PolymerNotation
    * @throws BuilderMoleculeException

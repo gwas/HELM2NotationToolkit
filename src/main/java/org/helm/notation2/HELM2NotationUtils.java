@@ -100,7 +100,13 @@ public class HELM2NotationUtils {
    * @return all edge connections
    */
   public final static List<ConnectionNotation> getAllEdgeConnections(List<ConnectionNotation> connections) {
-    return MethodsForContainerHELM2.getAllEdgeConnections(connections);
+    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
+    for (ConnectionNotation connection : connections) {
+      if (!(connection.getrGroupSource().equals("pair"))) {
+        listEdgeConnection.add(connection);
+      }
+    }
+    return listEdgeConnection;
   }
 
   /**
@@ -636,7 +642,7 @@ public class HELM2NotationUtils {
    * @param connection: list contains only selfcycle connections
    * @return list of ContainerHELM2 objects
    */
-  protected List<HELM2Notation> decompose(HELM2Notation helm2notation) {
+  public List<HELM2Notation> decompose(HELM2Notation helm2notation) {
     List<HELM2Notation> list = new ArrayList<HELM2Notation>();
     List<ConnectionNotation> allselfConnections = getAllSelfCycleConnections(helm2notation.getListOfConnections());
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
@@ -688,15 +694,24 @@ public class HELM2NotationUtils {
 
   public static HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
     /* HELM1-Format -> */
-    if (!(notation.contains("V2.0"))) {
-      notation = new ConverterHELM1ToHELM2().doConvert(notation);
+    if (!(notation.contains("V2.0") || notation.contains("v2.0"))) {
+      if (notation.endsWith("$")) {
+        LOG.info("Convert HELM1 into HELM2");
+        notation = new ConverterHELM1ToHELM2().doConvert(notation);
+        LOG.info("Conversion was successful: " + notation);
+      } else {
+        LOG.info("Wrong HELM Input");
+        throw new ParserException("HELMNotation is not valid");
+      }
     }
     /* parses the HELM notation and generates the necessary notation objects */
     ParserHELM2 parser = new ParserHELM2();
     try {
+      LOG.info("Parse HELM2");
       parser.parse(notation);
-    } catch (ExceptionState | IOException e) {
-      throw new ParserException(e.getMessage());
+      LOG.info("Parsing was successful");
+    } catch (ExceptionState | IOException | JDOMException e) {
+      throw new ParserException("HELMNotation is not valid");
     }
     return parser.getHELM2Notation();
   }

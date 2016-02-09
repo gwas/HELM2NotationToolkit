@@ -25,6 +25,8 @@ package org.helm.notation2;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.helm.chemtoolkit.CTKException;
@@ -127,27 +129,7 @@ public class WebService {
       updateMonomerStore(store);
 
     }
-    /* HELM1-Format -> */
-    if (!(notation.contains("V2.0") || notation.contains("v2.0"))) {
-      if (notation.endsWith("$")) {
-        LOG.info("Convert HELM1 into HELM2");
-        notation = new ConverterHELM1ToHELM2().doConvert(notation);
-        LOG.info("Conversion was successful: " + notation);
-      } else {
-        LOG.info("Wrong HELM Input");
-        throw new ParserException("HELMNotation is not valid");
-      }
-    }
-    /* parses the HELM notation and generates the necessary notation objects */
-    ParserHELM2 parser = new ParserHELM2();
-    try {
-      LOG.info("Parse HELM2");
-      parser.parse(notation);
-      LOG.info("Parsing was successful");
-    } catch (ExceptionState | IOException | JDOMException e) {
-      throw new ParserException("HELMNotation is not valid");
-    }
-    return parser.getHELM2Notation();
+    return HELM2NotationUtils.readNotation(notation);
   }
 
   /**
@@ -346,9 +328,11 @@ public class WebService {
    */
   public List<String> getMolecularProperties(String notation) throws BuilderMoleculeException, CTKException, ExtinctionCoefficientException, ValidationException, MonomerLoadingException,
       ChemistryException {
-    List<String> result = MoleculeInformation.getMoleculeProperties(validate(notation));
+    MoleculeInfo result = MoleculeInformation.getMoleculeProperties(validate(notation));
     setMonomerFactoryToDefault(notation);
-    return result;
+
+    return new LinkedList<String>(
+        Arrays.asList(result.getMolecularFormula(), Double.toString(result.getMolecularWeight()), Double.toString(result.getExactMass()), Double.toString(result.getExtinctionCoefficient())));
 
   }
 

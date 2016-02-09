@@ -23,25 +23,12 @@
  */
 package org.helm.notation2;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.CTKSmilesException;
-import org.helm.notation2.exception.BuilderMoleculeException;
-import org.helm.notation2.exception.HELM2HandledException;
-import org.helm.notation2.parser.exceptionparser.NotationException;
-import org.helm.notation2.parser.notation.HELM2Notation;
-import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
-import org.helm.notation2.parser.notation.polymer.MonomerNotationGroupElement;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnitRNA;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.helm.notation2.parser.notation.polymer.RNAEntity;
 
 /**
  * PolymerUtils, class to provide methods for polymer
@@ -56,23 +43,57 @@ public class PolymerUtils {
    * @param polymer PolymerNotation
    * @return monomer count
    */
-  protected static int getTotalMonomerCount(PolymerNotation polymer) {
-    if (polymer.getPolymerID() instanceof RNAEntity) {
-      int count = 0;
-      for (MonomerNotation unit : polymer.getPolymerElements().getListOfElements()) {
-        count += ((MonomerNotationUnitRNA) unit).getContents().size();
-      }
-      return count;
-    } else {
-      return polymer.getPolymerElements().getListOfElements().size();
+  public static int getTotalMonomerCount(PolymerNotation polymer) {
+    int count = 0;
+    for (MonomerNotation element : polymer.getPolymerElements().getListOfElements()) {
+      count += getMonomerCountFromMonomerNotation(element);
     }
+    return count;
+  }
+
+  /**
+   * method to get the number of all existing monomers from one MonomerNotation
+   *
+   * @param monomerNotation MonomerNotation
+   * @return number of monomers in the given MonomerNotation
+   */
+  private static int getMonomerCountFromMonomerNotation(MonomerNotation monomerNotation) {
+    int multiply;
+    try {
+      multiply = Integer.parseInt(monomerNotation.getCount());
+      if (multiply < 1) {
+        multiply = 1;
+      }
+    } catch (NumberFormatException e) {
+      multiply = 1;
+    }
+
+    if (monomerNotation instanceof MonomerNotationGroup) {
+      return 1 * multiply;
+    }
+    if (monomerNotation instanceof MonomerNotationList) {
+      int count = 0;
+      for (MonomerNotation unit : ((MonomerNotationList) monomerNotation).getListofMonomerUnits()) {
+        count += getMonomerCountFromMonomerNotation(unit);
+      }
+      return count * multiply;
+    }
+
+    if (monomerNotation instanceof MonomerNotationUnitRNA) {
+      int count = 0;
+      for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomerNotation).getContents()) {
+        count += getMonomerCountFromMonomerNotation(unit);
+      }
+      return count * multiply;
+    }
+    return 1 * multiply;
   }
 
   protected void getNotationByReplacingSMILES() {
 
   }
 
-  protected static void replaceSMILES(PolymerNotation polymer) {
+  public static void replaceSMILES(PolymerNotation polymer) {
     for (MonomerNotation monomerNotation : polymer.getPolymerElements().getListOfElements()) {
       replaceSMILESMonomerNotation(monomerNotation);
     }

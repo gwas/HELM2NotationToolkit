@@ -76,7 +76,7 @@ public final class BuilderMolecule {
    * @throws HELM2HandledException if the polymer contains HELM2 features
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static RgroupStructure buildMoleculefromSinglePolymer(final PolymerNotation polymernotation) throws BuilderMoleculeException, HELM2HandledException, ChemistryException {
+  public static RgroupStructure buildMoleculefromSinglePolymer(final PolymerNotation polymernotation) throws BuilderMoleculeException, HELM2HandledException, ChemistryException {
     LOG.info("Build molecule for single Polymer " + polymernotation.getPolymerID().getID());
     /* Case 1: BLOB -> throw exception */
     if (polymernotation.getPolymerID() instanceof BlobEntity) {
@@ -419,7 +419,7 @@ public final class BuilderMolecule {
    * @throws BuilderMoleculeException if the molecule can't be built
    * @throws ChemistryException if the Chemistry Engine ca not be initialized
    */
-  protected static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws BuilderMoleculeException, ChemistryException {
+  public static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws BuilderMoleculeException, ChemistryException {
     try {
       boolean flag = true;
       while (flag) {
@@ -447,7 +447,7 @@ public final class BuilderMolecule {
    * @throws BuilderMoleculeException if the monomer can't be built
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static AbstractMolecule getMoleculeForMonomer(final Monomer monomer) throws BuilderMoleculeException, ChemistryException {
+  public static AbstractMolecule getMoleculeForMonomer(final Monomer monomer) throws BuilderMoleculeException, ChemistryException {
     String smiles = monomer.getCanSMILES();
 
     List<Attachment> listAttachments = monomer.getAttachmentList();

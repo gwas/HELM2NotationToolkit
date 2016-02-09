@@ -149,7 +149,7 @@ public final class MethodsForContainerHELM2 {
    * @param polymers List of PolymerNotation
    * @return List of MonomerNotation
    */
-  protected static List<MonomerNotation> getListOfMonomerNotation(List<PolymerNotation> polymers) {
+  public static List<MonomerNotation> getListOfMonomerNotation(List<PolymerNotation> polymers) {
     List<MonomerNotation> items = new ArrayList<MonomerNotation>();
     for (PolymerNotation polymer : polymers) {
       items.addAll(polymer.getListMonomers());
@@ -172,7 +172,7 @@ public final class MethodsForContainerHELM2 {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException,
+  public static List<Monomer> getListOfMonomer(List<MonomerNotation> monomerNotations) throws MonomerException,
       IOException, JDOMException, HELM2HandledException, CTKException, NotationException, ChemistryException {
     List<Monomer> items = new ArrayList<Monomer>();
     for (int i = 0; i < monomerNotations.size(); i++) {
@@ -189,7 +189,7 @@ public final class MethodsForContainerHELM2 {
    * @param polymers List of PolymerNotation
    * @return List of PolymerNotation with the specific type
    */
-  protected static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
+  public static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
     List<PolymerNotation> list = new ArrayList<PolymerNotation>();
     for (PolymerNotation polymer : polymers) {
       if (polymer.getPolymerID().getType().equals(str)) {
@@ -209,7 +209,7 @@ public final class MethodsForContainerHELM2 {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static Monomer getMonomer(String type, String id, String info) throws MonomerException, NotationException, ChemistryException {
+  public static Monomer getMonomer(String type, String id, String info) throws MonomerException, NotationException, ChemistryException {
     try {
       MonomerFactory monomerFactory = MonomerFactory.getInstance();
       MonomerStore monomerStore = monomerFactory.getMonomerStore();
@@ -255,23 +255,7 @@ public final class MethodsForContainerHELM2 {
     }
   }
 
-  /**
-   * method to get all edge connections
-   *
-   * @param connections
-   * @return List of all edge ConnectionNotation
-   */
-  protected static List<ConnectionNotation> getAllEdgeConnections(List<ConnectionNotation> connections) {
-    List<ConnectionNotation> listEdgeConnection = new ArrayList<ConnectionNotation>();
-    for (ConnectionNotation connection : connections) {
-      if (!(connection.getrGroupSource().equals("pair"))) {
-        listEdgeConnection.add(connection);
-      }
-    }
-    return listEdgeConnection;
-  }
-
-  protected static Monomer generateTemporaryMonomer(String id, String polymerType, String naturalAnalog) throws NotationException, MonomerLoadingException {
+  public static Monomer generateTemporaryMonomer(String id, String polymerType, String naturalAnalog) throws NotationException, MonomerLoadingException {
     String uniqueSmiles = id;
 
     String alternateId = generateNextAdHocMonomerID(polymerType);

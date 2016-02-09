@@ -98,7 +98,7 @@ public final class FastaFormat {
    * @return HELM2Notation generated HELM2Notation
    * @throws FastaFormatException if the input is not correct
    */
-  protected static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
+  public static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
     helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Peptide Sequence must be specified");
@@ -153,7 +153,7 @@ public final class FastaFormat {
    * @throws IOException
    * @throws NotationException
    */
-  protected static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException, IOException, JDOMException, NotationException {
+  public static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException, IOException, JDOMException, NotationException {
     helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Nucleotide Sequence must be specified");
@@ -388,7 +388,7 @@ public final class FastaFormat {
    *           FASTA
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String generateFastaFromPeptidePolymer(List<PolymerNotation> polymers) throws FastaFormatException, ChemistryException {
+  public static String generateFastaFromPeptidePolymer(List<PolymerNotation> polymers) throws FastaFormatException, ChemistryException {
     initMapAminoAcid();
     StringBuilder fasta = new StringBuilder();
     for (PolymerNotation polymer : polymers) {
@@ -430,7 +430,7 @@ public final class FastaFormat {
    *           FASTA
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String generateFastaFromRNAPolymer(List<PolymerNotation> polymers) throws FastaFormatException, ChemistryException {
+  public static String generateFastaFromRNAPolymer(List<PolymerNotation> polymers) throws FastaFormatException, ChemistryException {
     StringBuilder fasta = new StringBuilder();
     for (PolymerNotation polymer : polymers) {
       String header = polymer.getPolymerID().getID();
@@ -476,7 +476,7 @@ public final class FastaFormat {
    *           FASTA
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String generateFasta(HELM2Notation helm2Notation2) throws FastaFormatException, ChemistryException {
+  public static String generateFasta(HELM2Notation helm2Notation2) throws FastaFormatException, ChemistryException {
     List<PolymerNotation> polymersPeptides = new ArrayList<PolymerNotation>();
     List<PolymerNotation> polymerNucleotides = new ArrayList<PolymerNotation>();
     StringBuilder fasta = new StringBuilder();
@@ -505,7 +505,7 @@ public final class FastaFormat {
    * @throws AnalogSequenceException if the natural analogue sequence can not be
    *           produced
    */
-  protected static HELM2Notation convertIntoAnalogSequence(HELM2Notation helm2Notation) throws FastaFormatException, AnalogSequenceException {
+  public static HELM2Notation convertIntoAnalogSequence(HELM2Notation helm2Notation) throws FastaFormatException, AnalogSequenceException {
     initMapAminoAcid();
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();
@@ -730,7 +730,7 @@ public final class FastaFormat {
    * @param sequence rna sequence
    * @return true, if the sequence is in normal direction, false otherwise
    */
-  protected static boolean isNormalDirection(String sequence) {
+  public static boolean isNormalDirection(String sequence) {
     if (sequence.startsWith("3")) {
       return false;
     } else {

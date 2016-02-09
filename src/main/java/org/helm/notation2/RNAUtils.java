@@ -67,6 +67,13 @@ public class RNAUtils {
   private static Map<String, String> complementMap = null;
 
   /**
+   * Default constructor.
+   */
+  private RNAUtils() {
+
+  }
+
+  /**
    * initialize Map to get the complement of each nucleotide
    */
   private static void initComplementMap() {
@@ -89,7 +96,7 @@ public class RNAUtils {
    * @throws org.helm.notation.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String getReverseSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException, ChemistryException {
+  public static String getReverseSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException, ChemistryException {
     StringBuilder sb = new StringBuilder(getNaturalAnalogSequence(polymer));
     return sb.reverse().toString();
   }
@@ -104,7 +111,7 @@ public class RNAUtils {
    * @throws RNAUtilsException if the polymer is not RNA or DNA
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException,
+  public static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException,
       RNAUtilsException, ChemistryException {
     checkRNA(polymer);
     return FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()));
@@ -124,7 +131,7 @@ public class RNAUtils {
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    * @throws org.helm.notation.NotationException
    */
-  protected static boolean areAntiparallel(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException, IOException, JDOMException, ChemistryException {
+  public static boolean areAntiparallel(PolymerNotation polymerOne, PolymerNotation polymerTwo) throws RNAUtilsException, HELM2HandledException, IOException, JDOMException, ChemistryException {
     checkRNA(polymerOne);
     checkRNA(polymerTwo);
     PolymerNotation antiparallel = getAntiparallel(polymerOne);
@@ -144,7 +151,7 @@ public class RNAUtils {
    * @return
    * @throws org.helm.notation.NotationException
    */
-  protected static String getMaxMatchFragment(String seq1, String seq2) throws org.helm.notation.NotationException {
+  public static String getMaxMatchFragment(String seq1, String seq2) throws org.helm.notation.NotationException {
     return NucleotideSequenceParser.getMaxMatchFragment(seq1, seq2);
   }
 
@@ -158,7 +165,7 @@ public class RNAUtils {
    *           generated
    * @throws HELM2HandledException if HELM2 features are involved
    */
-  protected static void removeLastP(PolymerNotation polymer) throws RNAUtilsException, NotationException, IOException, HELM2HandledException {
+  public static void removeLastP(PolymerNotation polymer) throws RNAUtilsException, NotationException, IOException, HELM2HandledException {
     checkRNA(polymer);
     /* Get last monomerNotation */
     MonomerNotation lastObject = polymer.getPolymerElements().getListOfElements().get(polymer.getPolymerElements().getListOfElements().size() - 1);
@@ -201,7 +208,7 @@ public class RNAUtils {
    * @throws IOException
    * @throws HELM2HandledException if HELM2 features are involved
    */
-  protected static void addLastP(PolymerNotation polymer) throws RNAUtilsException, NotationException, IOException, HELM2HandledException {
+  public static void addLastP(PolymerNotation polymer) throws RNAUtilsException, NotationException, IOException, HELM2HandledException {
     checkRNA(polymer);
     /* Get last monomerNotation */
     MonomerNotation lastObject = polymer.getPolymerElements().getListOfElements().get(polymer.getPolymerElements().getListOfElements().size() - 1);
@@ -230,7 +237,7 @@ public class RNAUtils {
    * @throws IOException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static PolymerNotation getAntiparallel(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, ChemistryException {
+  public static PolymerNotation getAntiparallel(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, ChemistryException {
     checkRNA(polymer);
     PolymerNotation reversePolymer;
     try {
@@ -270,7 +277,7 @@ public class RNAUtils {
    * @throws org.helm.notation.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static PolymerNotation getInverse(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException, ChemistryException {
+  public static PolymerNotation getInverse(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException, ChemistryException {
     checkRNA(polymer);
     PolymerNotation inverse;
     try {
@@ -298,7 +305,7 @@ public class RNAUtils {
    * @throws org.helm.notation.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static PolymerNotation getReverseComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException, ChemistryException {
+  public static PolymerNotation getReverseComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, org.helm.notation.NotationException, ChemistryException {
     checkRNA(polymer);
     PolymerNotation complementReversePolymer;
     try {
@@ -377,7 +384,7 @@ public class RNAUtils {
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    *
    */
-  protected static PolymerNotation getComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, ChemistryException {
+  public static PolymerNotation getComplement(PolymerNotation polymer) throws RNAUtilsException, IOException, JDOMException, ChemistryException {
     checkRNA(polymer);
     PolymerNotation complementPolymer;
     try {
@@ -400,7 +407,7 @@ public class RNAUtils {
    *         otherwise
    * @throws NotationException
    */
-  protected static boolean hasNucleotideModification(PolymerNotation polymer) throws NotationException {
+  public static boolean hasNucleotideModification(PolymerNotation polymer) throws NotationException {
     for (MonomerNotation current : polymer.getPolymerElements().getListOfElements()) {
       if (hasModification(current)) {
         return true;
@@ -468,7 +475,7 @@ public class RNAUtils {
    * @throws HELM2HandledException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static List<ConnectionNotation> hybridizeAntiparallel(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException,
+  public static List<ConnectionNotation> hybridizeAntiparallel(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, IOException, JDOMException,
       HELM2HandledException, ChemistryException {
     checkRNA(one);
     checkRNA(two);
@@ -500,7 +507,7 @@ public class RNAUtils {
    * @throws RNAUtilsException
    * @throws HELM2HandledException
    */
-  protected static String getSequence(PolymerNotation one) throws RNAUtilsException, HELM2HandledException {
+  public static String getSequence(PolymerNotation one) throws RNAUtilsException, HELM2HandledException {
     checkRNA(one);
 
     List<Nucleotide> nucleotideList = getNucleotideList(one);
@@ -520,7 +527,7 @@ public class RNAUtils {
    * @throws RNAUtilsException
    * @throws HELM2HandledException
    */
-  protected static String getModifiedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  public static String getModifiedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
     checkRNA(polymer);
     List<Nucleotide> nucleotides = getNucleotideList(polymer);
     StringBuilder sb = new StringBuilder();
@@ -544,7 +551,7 @@ public class RNAUtils {
    * @throws IOException
    * @throws org.helm.notation.NotationException
    */
-  protected static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, HELM2HandledException, JDOMException, IOException,
+  public static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, HELM2HandledException, JDOMException, IOException,
       org.helm.notation.NotationException {
     initComplementMap();
     checkRNA(one);
@@ -656,7 +663,7 @@ public class RNAUtils {
    * @throws HELM2HandledException
    * @throws NucleotideLoadingException
    */
-  protected static String getNucleotideSequence(PolymerNotation polymer) throws NotationException, RNAUtilsException, HELM2HandledException, NucleotideLoadingException {
+  public static String getNucleotideSequence(PolymerNotation polymer) throws NotationException, RNAUtilsException, HELM2HandledException, NucleotideLoadingException {
 
     List<Nucleotide> nucleotides = getNucleotideList(polymer);
     StringBuffer sb = new StringBuffer();
@@ -703,7 +710,7 @@ public class RNAUtils {
    * @throws HELM2HandledException if the polymer contains HELM2 features
    *
    */
-  protected static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  public static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
     checkRNA(polymer);
     List<Nucleotide> nucleotides = new ArrayList<Nucleotide>();
     /* check for HELM2Elements */
@@ -730,7 +737,7 @@ public class RNAUtils {
    * @throws RNAUtilsException
    * @throws HELM2HandledException
    */
-  protected static String getTrimmedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  public static String getTrimmedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
     checkRNA(polymer);
     List<Nucleotide> list = getNucleotideList(polymer);
 

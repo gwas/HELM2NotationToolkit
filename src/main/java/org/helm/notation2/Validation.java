@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
@@ -89,9 +90,10 @@ public final class Validation {
    * @throws ConnectionNotationException if the connection section is not valid
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws MonomerLoadingException
    */
   public static void validateNotationObjects(HELM2Notation helm2notation) throws PolymerIDsException,
-      MonomerException, GroupingNotationException, ConnectionNotationException, NotationException, ChemistryException {
+      MonomerException, GroupingNotationException, ConnectionNotationException, NotationException, ChemistryException, MonomerLoadingException {
     LOG.info("Validation process is starting");
     /* all polymer ids have to be unique */
     if (!validateUniquePolymerIDs(helm2notation)) {
@@ -121,8 +123,9 @@ public final class Validation {
    * @param mon List of MonomerNotation objects
    * @return true if all monomers are valid, false otherwise
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws MonomerLoadingException
    */
-  protected static boolean validateMonomers(List<MonomerNotation> mon) throws ChemistryException {
+  protected static boolean validateMonomers(List<MonomerNotation> mon) throws ChemistryException, MonomerLoadingException {
     List<MonomerNotation> monomerNotations = mon;
     for (MonomerNotation monomerNotation : monomerNotations) {
       if (!(isMonomerValid(monomerNotation.getID(), monomerNotation.getType()))) {
@@ -140,7 +143,7 @@ public final class Validation {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static boolean validateConnections(HELM2Notation helm2notation) throws NotationException, ChemistryException {
+  public static boolean validateConnections(HELM2Notation helm2notation) throws NotationException, ChemistryException {
     try {
       LOG.info("Validation of Connection section starts");
       List<ConnectionNotation> listConnections = helm2notation.getListOfConnections();
@@ -311,7 +314,7 @@ public final class Validation {
    * @param helm2notation HELM2Notation object
    * @return true if the grouping is valid, false otherwise
    */
-  protected static boolean validateGrouping(HELM2Notation helm2notation) {
+  public static boolean validateGrouping(HELM2Notation helm2notation) {
     List<GroupingNotation> listGroupings =
         helm2notation.getListOfGroupings();
     List<String> listPolymerIDs =
@@ -338,7 +341,7 @@ public final class Validation {
    * @param helm2notation HELM2Notation object
    * @return true if all polymers are unique, false otherwise
    */
-  protected static boolean validateUniquePolymerIDs(HELM2Notation helm2notation) {
+  public static boolean validateUniquePolymerIDs(HELM2Notation helm2notation) {
     List<String> listPolymerIDs =
         helm2notation.getPolymerAndGroupingIDs();
     Map<String, String> uniqueId = new HashMap<String, String>();
@@ -354,73 +357,6 @@ public final class Validation {
   }
 
   /**
-   * method to get the number of all existing monomers
-   *
-   * @param helm2notation HELM2Notation
-   * @return count of monomers
-   */
-  protected static int getMonomerCountAll(HELM2Notation helm2notation) {
-    List<PolymerNotation> listPolymers = helm2notation.getListOfPolymers();
-    int count = 0;
-    for (PolymerNotation polymer : listPolymers) {
-      count += getMonomerCount(polymer);
-    }
-    return count;
-  }
-
-  /**
-   * method to get the number of all existing monomers from one polmyer
-   *
-   * @param polymer PolymerNotation
-   * @return monomer count for one given polymer
-   */
-  private static int getMonomerCount(PolymerNotation polymer) {
-    int count = 0;
-    for (MonomerNotation element : polymer.getPolymerElements().getListOfElements()) {
-      count += getMonomerCountFromMonomerNotation(element);
-    }
-    return count;
-  }
-
-  /**
-   * method to get the number of all existing monomers from one MonomerNotation
-   *
-   * @param monomerNotation MonomerNotation
-   * @return number of monomers in the given MonomerNotation
-   */
-  private static int getMonomerCountFromMonomerNotation(MonomerNotation monomerNotation) {
-    int multiply;
-    try {
-      multiply = Integer.parseInt(monomerNotation.getCount());
-      if (multiply < 1) {
-        multiply = 1;
-      }
-    } catch (NumberFormatException e) {
-      multiply = 1;
-    }
-
-    if (monomerNotation instanceof MonomerNotationGroup) {
-      return 1 * multiply;
-    }
-    if (monomerNotation instanceof MonomerNotationList) {
-      int count = 0;
-      for (MonomerNotation unit : ((MonomerNotationList) monomerNotation).getListofMonomerUnits()) {
-        count += getMonomerCountFromMonomerNotation(unit);
-      }
-      return count * multiply;
-    }
-
-    if (monomerNotation instanceof MonomerNotationUnitRNA) {
-      int count = 0;
-      for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomerNotation).getContents()) {
-        count += getMonomerCountFromMonomerNotation(unit);
-      }
-      return count * multiply;
-    }
-    return 1 * multiply;
-  }
-
-  /**
    * method to check if the given polymer id exists in the given list of polymer
    * ids
    *
@@ -429,7 +365,7 @@ public final class Validation {
    * @return true if the polymer id exists, false otherwise
    * @throws PolymerIDsException if the polymer id does not exist
    */
-  protected static void checkExistenceOfPolymerID(String str, List<String> listPolymerIDs) throws PolymerIDsException {
+  private static void checkExistenceOfPolymerID(String str, List<String> listPolymerIDs) throws PolymerIDsException {
     if (!(listPolymerIDs.contains(str))) {
       LOG.info("Polymer Id does not exist");
       throw new PolymerIDsException("Polymer ID does not exist");
@@ -443,14 +379,12 @@ public final class Validation {
    * @param type type of monomer
    * @return true if the monomer is valid, false otherwise
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws MonomerLoadingException
    */
-  private static boolean isMonomerValid(String str, String type) throws ChemistryException {
+  private static boolean isMonomerValid(String str, String type) throws ChemistryException, MonomerLoadingException {
     MonomerFactory monomerFactory = null;
-    try {
-      monomerFactory = MonomerFactory.getInstance();
-    } catch (IOException e1) {
-      e1.printStackTrace();
-    }
+    monomerFactory = MonomerFactory.getInstance();
+
     /* Search in Database */
     MonomerStore monomerStore = monomerFactory.getMonomerStore();
     if (monomerStore.hasMonomer(type, str)) {
@@ -525,7 +459,7 @@ public final class Validation {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static List<Monomer> getAllMonomers(MonomerNotation not, int position) throws HELM2HandledException, MonomerException,
+  public static List<Monomer> getAllMonomers(MonomerNotation not, int position) throws HELM2HandledException, MonomerException,
       IOException, JDOMException, NotationException, ChemistryException {
     List<Monomer> monomers = new ArrayList<Monomer>();
 
@@ -580,7 +514,7 @@ public final class Validation {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static List<Monomer> getAllMonomersOnlyBase(MonomerNotation not) throws HELM2HandledException, MonomerException,
+  public static List<Monomer> getAllMonomersOnlyBase(MonomerNotation not) throws HELM2HandledException, MonomerException,
       IOException, JDOMException, NotationException, ChemistryException {
     LOG.debug("Get base for " + not);
     List<Monomer> monomers = new ArrayList<Monomer>();

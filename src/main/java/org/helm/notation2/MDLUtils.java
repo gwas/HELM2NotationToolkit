@@ -59,7 +59,7 @@ public final class MDLUtils {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String generateMDL(final HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, NotationException, ChemistryException {
+  public static String generateMDL(final HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     LOG.debug("Generate smiles representation for the whole HELM molecule");
     String smiles = SMILES.getSMILESForAll(helm2notation);
     LOG.debug("Convert smiles to mol");

@@ -62,7 +62,7 @@ public final class SequenceConverter {
    *           format
    * @throws NotationException if the notation object can not be built
    */
-  protected static HELM2Notation readPeptide(String notation) throws FastaFormatException, NotationException {
+  public static HELM2Notation readPeptide(String notation) throws FastaFormatException, NotationException {
     HELM2Notation helm2notation = new HELM2Notation();
     PolymerNotation polymer = new PolymerNotation("PEPTIDE1");
     helm2notation.addPolymer(new PolymerNotation(polymer.getPolymerID(), FastaFormat.generateElementsOfPeptide(notation, polymer.getPolymerID())));
@@ -80,7 +80,7 @@ public final class SequenceConverter {
    * @throws JDOMException
    * @throws IOException
    */
-  protected static HELM2Notation readRNA(String notation) throws FastaFormatException, NotationException, IOException, JDOMException {
+  public static HELM2Notation readRNA(String notation) throws FastaFormatException, NotationException, IOException, JDOMException {
     HELM2Notation helm2notation = new HELM2Notation();
     PolymerNotation polymer = new PolymerNotation("RNA1");
     if (!(FastaFormat.isNormalDirection(notation))) {
@@ -103,7 +103,7 @@ public final class SequenceConverter {
    * @throws NotationException
    * @throws HELM2HandledException if HELM2 features are involved
    */
-  protected static String getNucleotideSequenceFromNotation(HELM2Notation helm2notation) throws NotationException, NucleotideLoadingException, HELM2HandledException {
+  public static String getNucleotideSequenceFromNotation(HELM2Notation helm2notation) throws NotationException, NucleotideLoadingException, HELM2HandledException {
     List<PolymerNotation> polymers = helm2notation.getListOfPolymers();
     StringBuffer sb = new StringBuffer();
     for (PolymerNotation polymer : polymers) {
@@ -127,7 +127,7 @@ public final class SequenceConverter {
    * @throws org.helm.notation.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String getPeptideSequenceFromNotation(HELM2Notation helm2notation) throws HELM2HandledException, PeptideUtilsException, org.helm.notation.NotationException, ChemistryException {
+  public static String getPeptideSequenceFromNotation(HELM2Notation helm2notation) throws HELM2HandledException, PeptideUtilsException, org.helm.notation.NotationException, ChemistryException {
     List<PolymerNotation> polymers = helm2notation.getListOfPolymers();
     StringBuffer sb = new StringBuffer();
     for (PolymerNotation polymer : polymers) {

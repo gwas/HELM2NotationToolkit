@@ -92,9 +92,10 @@ public class xHELMNotationParserTest2 {
    * @throws org.jdom.JDOMException
    * @throws NotationException
    * @throws ChemistryException
+   * @throws MonomerLoadingException
    */
   public void validateHELM(String helm) throws ParserException,
-      ValidationException, JDOMException, NotationException, ChemistryException {
+      ValidationException, JDOMException, NotationException, ChemistryException, MonomerLoadingException {
 
     /* Read + Validate */
     try {

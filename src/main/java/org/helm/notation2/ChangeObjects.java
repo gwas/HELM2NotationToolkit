@@ -378,7 +378,7 @@ public final class ChangeObjects {
    * @throws IOException
    * @throws JDOMException
    */
-  private static MonomerNotation replaceMonomerNotation(MonomerNotation monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
+  public final static MonomerNotation replaceMonomerNotation(MonomerNotation monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
     /* Nucleotide */
     if (monomerNotation instanceof MonomerNotationUnitRNA) {
       List<String> result = generateIDForNucleotide(((MonomerNotationUnitRNA) monomerNotation), existingMonomerID, newMonomerID);
@@ -427,7 +427,7 @@ public final class ChangeObjects {
    * @throws IOException
    * @throws JDOMException
    */
-  private static MonomerNotationGroup replaceMonomerNotationGroup(MonomerNotationGroup monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException,
+  public final static MonomerNotationGroup replaceMonomerNotationGroup(MonomerNotationGroup monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException,
       JDOMException {
     MonomerNotationGroup newObject = null;
     boolean hasChanged = false;
@@ -468,7 +468,7 @@ public final class ChangeObjects {
    * @throws NotationException
    * @throws IOException
    */
-  private static MonomerNotationUnit produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation, String newID) throws NotationException, IOException {
+  public final static MonomerNotationUnit produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation, String newID) throws NotationException, IOException {
     MonomerNotationUnit result = new MonomerNotationUnit(newID, monomerNotation.getType());
     if (monomerNotation.isAnnotationTrue()) {
       result.setAnnotation(monomerNotation.getAnnotation());
@@ -489,7 +489,7 @@ public final class ChangeObjects {
    * @throws IOException
    * @throws JDOMException
    */
-  private static MonomerNotationList replaceMonomerNotationList(MonomerNotationList object, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
+  public final static MonomerNotationList replaceMonomerNotationList(MonomerNotationList object, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
     MonomerNotationList newObject = null;
     boolean hasChanged = false;
     StringBuilder sb = new StringBuilder();
@@ -534,7 +534,7 @@ public final class ChangeObjects {
    * @param annotation Annotation of the MonomerNotation
    * @return MonomerNotation in String format
    */
-  private static String generateIDMonomerNotation(String id, String count, String annotation) {
+  private final static String generateIDMonomerNotation(String id, String count, String annotation) {
     if (id.length() > 1) {
       id = "[" + id + "]";
     }
@@ -561,7 +561,7 @@ public final class ChangeObjects {
    * @return MonomerNotation in String format
    * @throws MonomerLoadingException
    */
-  private static String generateIDRNA(String id, String count, String annotation) throws MonomerLoadingException {
+  private final static String generateIDRNA(String id, String count, String annotation) throws MonomerLoadingException {
     String result = id;
     if (id.length() > 1) {
       result = "[" + id + "]";
@@ -594,7 +594,7 @@ public final class ChangeObjects {
    *         if the MonomerNotationUnitRNA has to be changed
    * @throws MonomerLoadingException
    */
-  private static List<String> generateIDForNucleotide(MonomerNotationUnitRNA object, String existingMonomerID, String newMonomerID) throws MonomerLoadingException {
+  private final static List<String> generateIDForNucleotide(MonomerNotationUnitRNA object, String existingMonomerID, String newMonomerID) throws MonomerLoadingException {
     List<String> result = new ArrayList<String>();
     String hasChanged = null;
     StringBuilder sb = new StringBuilder();

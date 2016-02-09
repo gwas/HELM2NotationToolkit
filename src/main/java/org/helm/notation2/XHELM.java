@@ -72,7 +72,7 @@ public final class XHELM {
    * @throws JDOMException
    * @throws IOException
    */
-  protected static String getXHELM2(HELM2Notation helm2notation) throws MonomerException, IOException, JDOMException {
+  public static String getXHELM2(HELM2Notation helm2notation) throws MonomerException, IOException, JDOMException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);
 
@@ -126,7 +126,7 @@ public final class XHELM {
    * @throws ValidationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  protected static String getXHELM(HELM2Notation helm2notation) throws MonomerException, HELM1FormatException,
+  public static String getXHELM(HELM2Notation helm2notation) throws MonomerException, HELM1FormatException,
       IOException, JDOMException, NotationException, CTKException, ValidationException, ChemistryException {
     set = new HashSet<Monomer>();
     Element root = new Element(xHelmNotationExporter.XHELM_ELEMENT);

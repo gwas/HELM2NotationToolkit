@@ -156,7 +156,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Validation.getMonomerCountAll(parser.notationContainer), 16);
+    Assert.assertEquals(HELM2NotationUtils.getTotalMonomerCount(parser.notationContainer), 16);
 
   }
 
@@ -176,7 +176,7 @@ public class TestValidation {
     }
     test += "V2.0";
 
-    Assert.assertEquals(Validation.getMonomerCountAll(parser.notationContainer), 27);
+    Assert.assertEquals(HELM2NotationUtils.getTotalMonomerCount(parser.notationContainer), 27);
   }
 
   @Test
@@ -397,6 +397,23 @@ public class TestValidation {
     }
 
     Assert.assertTrue(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
+
+  }
+
+  @Test
+  public void testMonomerValidationCHEM() throws ExceptionState, IOException, JDOMException, MonomerException,
+      org.jdom2.JDOMException, NotationException, CTKException, ChemistryException {
+    parser = new StateMachineParser();
+
+    String test =
+        "CHEM1{[AZE]}$$$$";
+    ;
+
+    for (int i = 0; i < test.length(); ++i) {
+      parser.doAction(test.charAt(i));
+    }
+
+    Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers()));
 
   }
 
