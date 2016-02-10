@@ -31,14 +31,14 @@ import java.util.TreeMap;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation2.BuilderMolecule;
 import org.helm.notation2.Chemistry;
-import org.helm.notation2.HELM2NotationUtils;
 import org.helm.notation2.MoleculeInfo;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.tools.BuilderMolecule;
+import org.helm.notation2.tools.HELM2NotationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -44,6 +44,7 @@ import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.tools.SequenceConverter;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;

@@ -38,12 +38,12 @@ import java.util.Set;
 import org.helm.notation.CalculationException;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
-import org.helm.notation2.MethodsMonomerUtils;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.helm.notation2.tools.MethodsMonomerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
