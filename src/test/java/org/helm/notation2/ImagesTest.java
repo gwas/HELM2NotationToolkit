@@ -32,8 +32,10 @@ import java.nio.file.Paths;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
+import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.NotationException;
+import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
@@ -97,6 +99,20 @@ public class ImagesTest {
       Files.createDirectories(Paths.get("test-output"));
     }
     try (FileOutputStream out = new FileOutputStream("test-output" + File.separator + "TestGenerationImageOfHELMNotationSimple.png")) {
+      out.write(result);
+    }
+
+  }
+
+  // @Test this test works with cdk but not with MARVIN
+  public void testChiralCenter() throws BuilderMoleculeException, CTKException, IOException, ChemistryException, ParserException, JDOMException {
+    // backbone and branch cyclic RNA
+    String notation = "RNA1{R(C)P.RP.R(A)P.RP.R(A)P.R(U)P}$RNA1,RNA1,4:R3-9:R3$$$";
+    byte[] result = Images.generateImageHELMMolecule(readNotation(notation));
+    if (!Files.exists(Paths.get("test-output"))) {
+      Files.createDirectories(Paths.get("test-output"));
+    }
+    try (FileOutputStream out = new FileOutputStream("test-output" + File.separator + "TestGenerationImageChiralRNA.png")) {
       out.write(result);
     }
 

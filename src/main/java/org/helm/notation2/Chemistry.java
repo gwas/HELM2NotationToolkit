@@ -25,16 +25,22 @@ package org.helm.notation2;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.ManipulatorFactory;
 import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
+import org.helm.notation.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
+
+import sun.misc.IOUtils;
 
 /**
  * Chemistry, singleton class to define which Chemistry-Plugin is used
@@ -60,11 +66,13 @@ public final class Chemistry {
    * @throws ChemistryException
    */
   private Chemistry() throws ChemistryException {
+    refresh();
     readConfigFile();
     setManipulatorType();
     try {
       manipulator = ManipulatorFactory.buildManipulator(type);
     } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+      e.printStackTrace();
       throw new ChemistryException("Chemistry Engine could not be initialized");
     }
   }
@@ -107,15 +115,6 @@ public final class Chemistry {
    */
   private void resetConfigToDefault() {
     chemistry = "MARVIN";
-    try {
-      PrintWriter writer = new PrintWriter(CONFIG_FILE_PATH, "UTF-8");
-      writer.println(CHEMISTRY_PLUGIN + "=" + chemistry);
-      writer.close();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   /**
@@ -125,10 +124,10 @@ public final class Chemistry {
    * @throws ChemistryException
    */
   public static Chemistry getInstance() throws ChemistryException {
-    if (Chemistry._instance == null) {
-      Chemistry._instance = new Chemistry();
+    if (_instance == null) {
+      _instance = new Chemistry();
     }
-    return Chemistry._instance;
+    return _instance;
   }
 
   /**
@@ -147,6 +146,33 @@ public final class Chemistry {
    */
   public ManipulatorType getManipulatorType() {
     return type;
+  }
+
+  public void refresh() {
+    File configFile = new File(CONFIG_FILE_PATH);
+    if (!configFile.exists()) {
+      InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation/resources/Chemistry.property");
+      try (FileOutputStream str = new FileOutputStream(CONFIG_FILE_PATH)) {
+        byte[] bytes = IOUtils.readFully(in, -1, true);
+        str.write(bytes);
+      } catch (FileNotFoundException e) {
+        resetConfigToDefault();
+        e.printStackTrace();
+      } catch (IOException e) {
+        resetConfigToDefault();
+        e.printStackTrace();
+      }
+    }
+
+    try {
+      PropertiesConfiguration conf = new PropertiesConfiguration(
+          CONFIG_FILE_PATH);
+      chemistry = conf.getString(CHEMISTRY_PLUGIN);
+
+    } catch (ConfigurationException | NoSuchElementException e) {
+      resetConfigToDefault();
+      e.printStackTrace();
+    }
   }
 
 }

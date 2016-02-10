@@ -83,12 +83,12 @@ public final class BuilderMolecule {
       LOG.error("Molecule can't be build for BLOB");
       throw new BuilderMoleculeException("Molecule can't be build for BLOB");
     } /* Case 2: CHEM */ else if (polymernotation.getPolymerID() instanceof ChemEntity) {
-      List<Monomer> validMonomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
+      List<Monomer> validMonomers = MethodsMonomerUtils.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
       return buildMoleculefromCHEM(polymernotation.getPolymerID().getID(), validMonomers);
     } /* Case 3: RNA or PEPTIDE */ else if (polymernotation.getPolymerID() instanceof RNAEntity
         || polymernotation.getPolymerID() instanceof PeptideEntity) {
       List<Monomer> validMonomers =
-          MethodsForContainerHELM2.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
+          MethodsMonomerUtils.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
       return buildMoleculefromPeptideOrRNA(polymernotation.getPolymerID().getID(), validMonomers);
     } else {
       LOG.error("Molecule can't be build for unknown polymer type");
@@ -261,7 +261,16 @@ public final class BuilderMolecule {
         if (validMonomers.get(0).getCanSMILES() != null) {
           /* Build monomer + Rgroup information! */
           Monomer monomer = validMonomers.get(0);
-          String smiles = monomer.getCanSMILES();
+
+          String input = null;
+          if (monomer.getMolfile() != null) {
+            LOG.info("Use molfile for monomer generation");
+            input = monomer.getMolfile();
+          }
+          if (input == null && monomer.getCanSMILES() != null) {
+            LOG.info("Use smiles for monomer generation");
+            input = monomer.getCanSMILES();
+          }
 
           List<Attachment> listAttachments = monomer.getAttachmentList();
           AttachmentList list = new AttachmentList();
@@ -269,7 +278,7 @@ public final class BuilderMolecule {
           for (Attachment attachment : listAttachments) {
             list.add(new org.helm.chemtoolkit.Attachment(attachment.getAlternateId(), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
           }
-          AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(smiles, list);
+          AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(input, list);
           RgroupStructure result = new RgroupStructure();
           result.setMolecule(molecule);
           result.setRgroupMap(generateRgroupMap(id + ":" + "1", molecule));

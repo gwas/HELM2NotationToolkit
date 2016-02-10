@@ -55,6 +55,7 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -65,7 +66,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class HELM2NotationUtils {
 
   /** The Logger for this class */
-  private static final Logger LOG =
+  static final Logger LOG =
       LoggerFactory.getLogger(HELM2NotationUtils.class);
 
   private static HELM2Notation helm2notation;
@@ -78,19 +79,13 @@ public class HELM2NotationUtils {
    *
    * @param helm2notation HELM2Notation object
    * @return NotationContainer in JSON-Format
+   * @throws JsonProcessingException
    */
-  public final static String toJSON(HELM2Notation helm2notation) {
+  public final static String toJSON(HELM2Notation helm2notation) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
-
-    try {
-      String jsonINString = mapper.writeValueAsString(helm2notation);
-      jsonINString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(helm2notation);
-
-      return jsonINString;
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
+    String jsonINString = mapper.writeValueAsString(helm2notation);
+    jsonINString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(helm2notation);
+    return jsonINString;
   }
 
   /**
@@ -363,16 +358,6 @@ public class HELM2NotationUtils {
   }
 
   /**
-   * This function replaces smiles in complex notation with temporary ids To Do
-   */
-  public static final void replaceSMILESWithTemporaryIds() {
-    for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
-      PolymerUtils.replaceSMILES(polymer);
-    }
-
-  }
-
-  /**
    * method to check if any of the rna polymers have a modified nucleotide
    *
    * @return true if at least one rna polymer has a modified nucleotide
@@ -385,27 +370,6 @@ public class HELM2NotationUtils {
       }
     }
     return false;
-  }
-
-  /**
-   * this method will automatically add base pair info into notation only if it
-   * contains two RNA polymer notations and there is no base pairing info
-   *
-   * @param helm2notation HELM2Notation object
-   * @throws NotationException
-   * @throws RNAUtilsException
-   * @throws IOException
-   * @throws JDOMException
-   * @throws HELM2HandledException
-   * @throws org.helm.notation.NotationException
-   */
-  public static void hybridize(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation.NotationException {
-    if (getAllBasePairConnections(helm2notation.getListOfConnections()).isEmpty() && getRNAPolymers(helm2notation.getListOfPolymers()).size() == 2) {
-      List<ConnectionNotation> connections = RNAUtils.hybridize(getRNAPolymers(helm2notation.getListOfPolymers()).get(0), getRNAPolymers(helm2notation.getListOfPolymers()).get(1));
-      for (ConnectionNotation connection : connections) {
-        ChangeObjects.addConnection(connection, helm2notation.getListOfConnections().size(), helm2notation);
-      }
-    }
   }
 
   /**
@@ -711,8 +675,26 @@ public class HELM2NotationUtils {
       parser.parse(notation);
       LOG.info("Parsing was successful");
     } catch (ExceptionState | IOException | JDOMException e) {
-      throw new ParserException("HELMNotation is not valid");
+      e.printStackTrace();
+      throw new ParserException("HELMNotation is not valid: " + notation);
     }
     return parser.getHELM2Notation();
+  }
+
+  /**
+   * method to get all polymers for one specific polymer type
+   *
+   * @param str specific polymer type
+   * @param polymers List of PolymerNotation
+   * @return List of PolymerNotation with the specific type
+   */
+  public static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
+    List<PolymerNotation> list = new ArrayList<PolymerNotation>();
+    for (PolymerNotation polymer : polymers) {
+      if (polymer.getPolymerID().getType().equals(str)) {
+        list.add(polymer);
+      }
+    }
+    return list;
   }
 }

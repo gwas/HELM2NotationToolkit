@@ -61,6 +61,8 @@ import org.jdom2.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 /**
  * WebService class containing all required methods for the web-service
  *
@@ -155,6 +157,7 @@ public class WebService {
       return helm2notation;
 
     } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException | ParserException | JDOMException | IOException | NotationException e) {
+      e.printStackTrace();
       LOG.info("Validation was not successful");
       LOG.error(e.getMessage());
       throw new ValidationException(e.getMessage());
@@ -406,8 +409,9 @@ public class WebService {
    * @throws ValidationException if the HELM input is not valid
    * @throws MonomerLoadingException if the MonomerFactory can not be refreshed
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws JsonProcessingException
    */
-  public String generateJSON(String helm) throws ValidationException, MonomerLoadingException, ChemistryException {
+  public String generateJSON(String helm) throws ValidationException, MonomerLoadingException, ChemistryException, JsonProcessingException {
     String result = HELM2NotationUtils.toJSON(validate(helm));
     setMonomerFactoryToDefault(helm);
     return result;

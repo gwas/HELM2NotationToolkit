@@ -31,8 +31,10 @@ import java.util.Map;
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.MonomerStore;
 import org.helm.notation.model.Monomer;
+import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
@@ -563,10 +565,13 @@ public final class ChangeObjects {
    */
   private final static String generateIDRNA(String id, String count, String annotation) throws MonomerLoadingException {
     String result = id;
-    if (id.length() > 1) {
-      result = "[" + id + "]";
+    if (result.startsWith("[") && result.endsWith("]")) {
+      result = id.substring(1, id.length() - 1);
     }
-    if (MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", id).getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
+    if (MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", result).getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
+      if (id.length() > 1) {
+        result = "[" + id + "]";
+      }
       result = "(" + result + ")";
     }
 
@@ -653,7 +658,7 @@ public final class ChangeObjects {
     return sb.toString();
   }
 
-  protected static boolean validateMonomerReplacement(String polymerType,
+  private static boolean validateMonomerReplacement(String polymerType,
       String existingMonomerID, String newMonomerID) throws MonomerException, IOException,
           JDOMException, NotationException {
 
@@ -721,4 +726,243 @@ public final class ChangeObjects {
 
     return true;
   }
+
+  /**
+   * This function replaces smiles in complex notation with temporary ids
+   *
+   * @throws IOException
+   * @throws NotationException
+   * @throws JDOMException
+   * @throws ChemistryException
+   * @throws HELM2HandledException
+   */
+  public static final void replaceSMILESWithTemporaryIds(HELM2Notation helm2notation) throws NotationException, IOException, JDOMException, HELM2HandledException, ChemistryException {
+    for (int i = 0; i < helm2notation.getListOfPolymers().size(); i++) {
+      /* First save intern smiles to the MonomerFactory */
+      MethodsMonomerUtils.getListOfHandledMonomers(helm2notation.getListOfPolymers().get(i).getListMonomers());
+
+      for (int j = 0; j < helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().size(); j++) {
+        MonomerNotation monomerNotation = ChangeObjects.replaceSMILESWithTemporaryIdsMonomerNotation(helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().get(j));
+        if (monomerNotation != null) {
+          helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().set(j, monomerNotation);
+        }
+      }
+    }
+
+  }
+
+  /**
+   * @param monomerNotation
+   * @return
+   * @throws NotationException
+   * @throws IOException
+   * @throws JDOMException
+   */
+  private static MonomerNotation replaceSMILESWithTemporaryIdsMonomerNotation(MonomerNotation monomerNotation) throws NotationException, IOException, JDOMException {
+    /* Nucleotide */
+    if (monomerNotation instanceof MonomerNotationUnitRNA) {
+      List<String> result = ChangeObjects.generateIDForNucleotide(((MonomerNotationUnitRNA) monomerNotation));
+      if (result.get(1) != null) {
+        MonomerNotationUnitRNA newObject = new MonomerNotationUnitRNA(result.get(0), monomerNotation.getType());
+        newObject.setCount(monomerNotation.getCount());
+        if (monomerNotation.isAnnotationTrue()) {
+          newObject.setAnnotation(monomerNotation.getAnnotation());
+        }
+        return newObject;
+      }
+    } else if (monomerNotation instanceof MonomerNotationUnit) {
+      /* Simple MonomerNotationUnit */
+      return ChangeObjects.produceMonomerNotationUnitWithOtherID(monomerNotation);
+    } else if (monomerNotation instanceof MonomerNotationList) {
+      /* MonomerNotationList */
+      monomerNotation = ChangeObjects.replaceMonomerNotationList(((MonomerNotationList) monomerNotation));
+      if (monomerNotation != null) {
+        return monomerNotation;
+      }
+    } else if (monomerNotation instanceof MonomerNotationGroup) {
+      /* MonomerNotatationGroup */
+      monomerNotation = ChangeObjects.replaceMonomerNotationGroup(((MonomerNotationGroup) monomerNotation));
+      if (monomerNotation != null) {
+        return monomerNotation;
+      }
+    } else {
+      throw new NotationException("Unknown MonomerNotation Type " + monomerNotation.getClass());
+    }
+
+    return null;
+  }
+
+  /**
+   * @param monomerNotationGroup
+   * @return
+   * @throws JDOMException
+   * @throws IOException
+   * @throws NotationException
+   */
+  private static MonomerNotation replaceMonomerNotationGroup(MonomerNotationGroup monomerNotationGroup) throws NotationException, IOException, JDOMException {
+    MonomerNotationGroup newObject = null;
+    boolean hasChanged = false;
+    StringBuilder sb = new StringBuilder();
+    String id = "";
+    for (MonomerNotationGroupElement object : monomerNotationGroup.getListOfElements()) {
+      String newID = ChangeObjects.produceID(object.getMonomerNotation().getID(), object.getMonomerNotation().getType());
+      if (newID != null) {
+        hasChanged = true;
+        id = generateGroupElement(newID, object.getValue());
+      } else {
+        id = generateGroupElement(object.getMonomerNotation().getID(), object.getValue());
+      }
+      if (monomerNotationGroup instanceof MonomerNotationGroupOr) {
+        sb.append(id + ",");
+      } else {
+        sb.append(id + "+");
+      }
+
+    }
+    if (hasChanged) {
+      sb.setLength(sb.length() - 1);
+      if (monomerNotationGroup instanceof MonomerNotationGroupOr) {
+        newObject = new MonomerNotationGroupOr(sb.toString(), monomerNotationGroup.getType());
+      } else {
+        newObject = new MonomerNotationGroupMixture(sb.toString(), monomerNotationGroup.getType());
+      }
+    }
+    return newObject;
+  }
+
+  /**
+   * @param monomerNotationList
+   * @return
+   * @throws JDOMException
+   * @throws IOException
+   * @throws NotationException
+   */
+  private static MonomerNotation replaceMonomerNotationList(MonomerNotationList monomerNotationList) throws NotationException, IOException, JDOMException {
+    MonomerNotationList newObject = null;
+    boolean hasChanged = false;
+    StringBuilder sb = new StringBuilder();
+    String id = "";
+    for (MonomerNotation element : monomerNotationList.getListofMonomerUnits()) {
+      if (element instanceof MonomerNotationUnitRNA) {
+        List<String> result = ChangeObjects.generateIDForNucleotide(((MonomerNotationUnitRNA) element));
+        id = result.get(0);
+        if (result.get(1) != null) {
+          hasChanged = true;
+        }
+      } else {
+        String newID = ChangeObjects.produceID(element.getID(), element.getType());
+        if (newID != null) {
+          hasChanged = true;
+          id = generateIDMonomerNotation(newID, element.getCount(), element.getAnnotation());
+        } else {
+          id = generateIDMonomerNotation(element.getID(), element.getCount(), element.getAnnotation());
+        }
+
+      }
+      sb.append(id + ".");
+    }
+    if (hasChanged) {
+      sb.setLength(sb.length() - 1);
+      newObject = new MonomerNotationList(sb.toString(), monomerNotationList.getType());
+      newObject.setCount(monomerNotationList.getCount());
+      if (monomerNotationList.isAnnotationTrue()) {
+        newObject.setAnnotation(monomerNotationList.getAnnotation());
+
+      }
+    }
+
+    return newObject;
+  }
+
+  /**
+   * @param monomerNotation
+   * @return
+   * @throws IOException
+   * @throws NotationException
+   */
+  private static MonomerNotation produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation) throws NotationException, IOException {
+    String newID = ChangeObjects.produceID(monomerNotation.getID(), monomerNotation.getType());
+    if (newID != null) {
+      MonomerNotationUnit result = new MonomerNotationUnit(newID, monomerNotation.getType());
+      if (monomerNotation.isAnnotationTrue()) {
+        result.setAnnotation(monomerNotation.getAnnotation());
+      }
+      result.setCount(monomerNotation.getCount());
+      return result;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * @param monomerNotationUnitRNA
+   * @return
+   * @throws MonomerLoadingException
+   */
+  private static List<String> generateIDForNucleotide(MonomerNotationUnitRNA monomerNotationUnitRNA) throws MonomerLoadingException {
+    List<String> result = new ArrayList<String>();
+    String hasChanged = null;
+    StringBuilder sb = new StringBuilder();
+    String id = "";
+    for (MonomerNotation element : monomerNotationUnitRNA.getContents()) {
+      String newID = ChangeObjects.produceID(element.getID(), element.getType());
+
+      if (newID != null) {
+        hasChanged = "";
+        id = generateIDRNA(newID, element.getCount(), element.getAnnotation());
+      } else {
+        id = generateIDRNA(element.getID(), element.getCount(), element.getAnnotation());
+      }
+      sb.append(id);
+    }
+    try {
+      if (!(Integer.parseInt(monomerNotationUnitRNA.getCount()) == 1)) {
+        sb.append("'" + monomerNotationUnitRNA.getCount() + "'");
+      }
+    } catch (NumberFormatException e) {
+      sb.append("'" + monomerNotationUnitRNA.getCount() + "'");
+    }
+    if (monomerNotationUnitRNA.getAnnotation() != null) {
+      sb.append("\"" + monomerNotationUnitRNA.getAnnotation() + "\"");
+    }
+    result.add(sb.toString());
+    result.add(hasChanged);
+    return result;
+  }
+
+  private static String produceID(String oldID, String polymerType) throws MonomerLoadingException {
+    HELM2NotationUtils.LOG.debug("SMILES string?: " + oldID);
+    if (oldID.startsWith("[") && oldID.endsWith("]")) {
+      oldID = oldID.substring(1, oldID.length() - 1);
+    }
+    System.out.println(oldID);
+    if (MonomerFactory.getInstance().getMonomerStore().getMonomer(polymerType, oldID) == null) {
+      return MonomerFactory.getInstance().getSmilesMonomerDB().get(oldID).getAlternateId();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * this method will automatically add base pair info into notation only if it
+   * contains two RNA polymer notations and there is no base pairing info
+   *
+   * @param helm2notation HELM2Notation object
+   * @throws NotationException
+   * @throws RNAUtilsException
+   * @throws IOException
+   * @throws JDOMException
+   * @throws HELM2HandledException
+   * @throws org.helm.notation.NotationException
+   */
+  public static void hybridize(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation.NotationException {
+    if (HELM2NotationUtils.getAllBasePairConnections(helm2notation.getListOfConnections()).isEmpty() && HELM2NotationUtils.getRNAPolymers(helm2notation.getListOfPolymers()).size() == 2) {
+      List<ConnectionNotation> connections =
+          RNAUtils.hybridize(HELM2NotationUtils.getRNAPolymers(helm2notation.getListOfPolymers()).get(0), HELM2NotationUtils.getRNAPolymers(helm2notation.getListOfPolymers()).get(1));
+      for (ConnectionNotation connection : connections) {
+        addConnection(connection, helm2notation.getListOfConnections().size(), helm2notation);
+      }
+    }
+  }
+
 }

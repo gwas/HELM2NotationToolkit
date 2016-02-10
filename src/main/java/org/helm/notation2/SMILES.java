@@ -23,18 +23,28 @@
  */
 package org.helm.notation2;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
+import org.helm.notation.MonomerException;
+import org.helm.notation.MonomerFactory;
+import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
+import org.helm.notation.model.Monomer;
+import org.helm.notation.model.PolymerNode;
+import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.HELM2Notation;
+import org.helm.notation2.parser.notation.polymer.ChemEntity;
+import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +110,53 @@ public final class SMILES {
     return sb.toString();
   }
 
-  /* cannot generate SMILEs */
-  protected void containsGenericStructure() {
+  /**
+   * method if the any of the given PolymerNotation contains generic structures
+   *
+   * @param polymers
+   * @return true, if it contains generic structure, false otherwise
+   * @throws HELM2HandledException
+   * @throws ChemistryException
+   * @throws IOException
+   */
+  public boolean containsGenericStructurePolymer(List<PolymerNotation> polymers) throws HELM2HandledException, ChemistryException, IOException {
+    for (PolymerNotation polymer : polymers) {
+      if (polymer.getPolymerID() instanceof ChemEntity) {
+        Monomer monomer = MethodsMonomerUtils.getListOfHandledMonomers(polymer.getPolymerElements().getListOfElements()).get(0);
+
+        if (null == monomer.getCanSMILES()
+            || monomer.getCanSMILES().length() == 0) {
+          return true;
+        }
+
+        if (monomer.containAnyAtom()) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+
+  }
+
+  /**
+   * method to generate canonical smiles for one single PolymerNotation
+   *
+   * @param polymer PolymerNotation
+   * @return smiles for the sinlge given PolymerNotation
+   * @throws BuilderMoleculeException
+   * @throws HELM2HandledException
+   * @throws CTKSmilesException
+   * @throws CTKException
+   * @throws NotationException
+   * @throws ChemistryException if the Chemistry Engine can not be initialized
+   */
+  public static String getCanonicalSMILESForPolymer(PolymerNotation polymer) throws BuilderMoleculeException, HELM2HandledException, CTKSmilesException, CTKException, NotationException,
+      ChemistryException {
+    AbstractMolecule molecule = BuilderMolecule.buildMoleculefromSinglePolymer(polymer).getMolecule();
+    molecule = BuilderMolecule.mergeRgroups(molecule);
+
+    return Chemistry.getInstance().getManipulator().canonicalize(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES));
   }
 
   /**
@@ -116,11 +171,11 @@ public final class SMILES {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public static String getSMILESForPolymer(PolymerNotation polymer) throws BuilderMoleculeException, HELM2HandledException, CTKSmilesException, CTKException, NotationException, ChemistryException {
+  public static String getSMILESforPolymer(PolymerNotation polymer) throws BuilderMoleculeException, HELM2HandledException, CTKSmilesException, CTKException, NotationException, ChemistryException {
     AbstractMolecule molecule = BuilderMolecule.buildMoleculefromSinglePolymer(polymer).getMolecule();
     molecule = BuilderMolecule.mergeRgroups(molecule);
 
-    return Chemistry.getInstance().getManipulator().canonicalize(Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES));
+    return Chemistry.getInstance().getManipulator().convertMolecule(molecule, AbstractChemistryManipulator.StType.SMILES);
   }
 
 }

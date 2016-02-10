@@ -114,7 +114,7 @@ public class RNAUtils {
   public static String getNaturalAnalogSequence(PolymerNotation polymer) throws HELM2HandledException,
       RNAUtilsException, ChemistryException {
     checkRNA(polymer);
-    return FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()));
+    return FastaFormat.generateFastaFromRNA(MethodsMonomerUtils.getListOfHandledMonomers(polymer.getListMonomers()));
   }
 
   /**
@@ -136,9 +136,9 @@ public class RNAUtils {
     checkRNA(polymerTwo);
     PolymerNotation antiparallel = getAntiparallel(polymerOne);
     String sequenceOne =
-        FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(antiparallel.getListMonomers()));
+        FastaFormat.generateFastaFromRNA(MethodsMonomerUtils.getListOfHandledMonomers(antiparallel.getListMonomers()));
     String sequenceTwo =
-        FastaFormat.generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymerTwo.getListMonomers()));
+        FastaFormat.generateFastaFromRNA(MethodsMonomerUtils.getListOfHandledMonomers(polymerTwo.getListMonomers()));
     return sequenceOne.equals(sequenceTwo);
   }
 
@@ -247,6 +247,7 @@ public class RNAUtils {
               + polymer.getPolymerID().getID());
       return reversePolymer;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
+      e.printStackTrace();
       throw new RNAUtilsException("The reverse polymer can not be built");
     }
 
@@ -287,6 +288,7 @@ public class RNAUtils {
               + polymer.getPolymerID().getID());
       return inverse;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
+      e.printStackTrace();
       throw new RNAUtilsException("The inverse strand can not be built");
     }
 
@@ -315,6 +317,7 @@ public class RNAUtils {
               "ReverseComplement to " + polymer.getPolymerID().getID());
       return complementReversePolymer;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
+      e.printStackTrace();
       throw new RNAUtilsException("Complement polymer can not be built");
     }
 
@@ -394,6 +397,7 @@ public class RNAUtils {
               "NormalComplement to " + polymer.getPolymerID().getID());
       return complementPolymer;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
+      e.printStackTrace();
       throw new RNAUtilsException("Complement polymer can not be built");
     }
 
@@ -723,6 +727,7 @@ public class RNAUtils {
       try {
         nucleotides.add(SimpleNotationParser.getNucleotideList(monomerNotation.getID()).get(0));
       } catch (org.helm.notation.NotationException | MonomerException | IOException | JDOMException | StructureException e) {
+        e.printStackTrace();
         throw new RNAUtilsException("Nucleotide can not be read " + e.getMessage());
       }
     }

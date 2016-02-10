@@ -135,12 +135,12 @@ public class MoleculeInformationTest {
     // AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getExactMass(),
     // MoleculeInformation.getExactMass(readNotation(newNotation).getHELM2Notation()));
     AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(newNotation)));
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(newNotation)), 0.001);
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(newNotation)), 0.1);
 
     // conjugate
     oldNotation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularFormula(), MoleculeInformation.getMolecularFormular(readNotation(oldNotation)));
-    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(oldNotation)), 0.001);
+    AssertJUnit.assertEquals(ComplexNotationParser.getMoleculeInfo(oldNotation).getMolecularWeight(), MoleculeInformation.getMolecularWeight(readNotation(oldNotation)), 0.1);
 
   }
 

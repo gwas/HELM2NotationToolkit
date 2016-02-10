@@ -113,6 +113,7 @@ public final class FastaFormat {
     try {
       polymer = new PolymerNotation("PEPTIDE" + "1");
     } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
+      e.printStackTrace();
       throw new FastaFormatException(e.getMessage());
     }
     String annotation = "";
@@ -126,6 +127,7 @@ public final class FastaFormat {
           try {
             polymer = new PolymerNotation("PEPTIDE" + counter);
           } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
+            e.printStackTrace();
             throw new FastaFormatException(e.getMessage());
           }
         }
@@ -169,6 +171,7 @@ public final class FastaFormat {
     try {
       polymer = new PolymerNotation("RNA" + "1");
     } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
+      e.printStackTrace();
       throw new FastaFormatException(e.getMessage());
     }
     String annotation = "";
@@ -185,6 +188,7 @@ public final class FastaFormat {
           try {
             polymer = new PolymerNotation("RNA" + counter);
           } catch (org.helm.notation2.parser.exceptionparser.NotationException e) {
+            e.printStackTrace();
             throw new FastaFormatException(e.getMessage());
           }
 
@@ -215,6 +219,7 @@ public final class FastaFormat {
     try {
       nucleotides = NucleotideFactory.getInstance().getNucleotideTemplates().get("HELM Notation");
     } catch (IOException e) {
+      e.printStackTrace();
       LOG.error("NucleotideFactory can not be initialized");
       throw new FastaFormatException(e.getMessage());
     }
@@ -241,6 +246,7 @@ public final class FastaFormat {
     try {
       nucleotidesNaturalAnalog = MonomerFactory.getInstance().getMonomerDB().get("RNA");
     } catch (IOException e) {
+      e.printStackTrace();
       LOG.error("Nucleotides can not be initialized");
       throw new FastaFormatException(e.getMessage());
     }
@@ -255,6 +261,7 @@ public final class FastaFormat {
     try {
       aminoacids = MonomerFactory.getInstance().getMonomerDB().get("PEPTIDE");
     } catch (IOException e) {
+      e.printStackTrace();
       LOG.error("AminoAcids can not be initialized");
       throw new FastaFormatException(e.getMessage());
     }
@@ -284,6 +291,7 @@ public final class FastaFormat {
       }
       return elements;
     } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | MonomerException | org.helm.notation.NotationException e) {
+      e.printStackTrace();
       LOG.error("PolymerListElements can not be initialized");
       throw new FastaFormatException("PolymerListElements can not be initialized " + e.getMessage());
     }
@@ -317,6 +325,7 @@ public final class FastaFormat {
     try {
       elements.changeMonomerNotation(new MonomerNotationUnitRNA(id.substring(0, id.length() - 1), "RNA"));
     } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException e) {
+      e.printStackTrace();
       throw new FastaFormatException("PolymerListElements can not be initialized " + e.getMessage());
     }
 
@@ -398,9 +407,10 @@ public final class FastaFormat {
       }
       fasta.append(">" + header + "\n");
       try {
-        fasta.append(generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()))
+        fasta.append(generateFastaFromPeptide(MethodsMonomerUtils.getListOfHandledMonomers(polymer.getListMonomers()))
             + "\n");
       } catch (HELM2HandledException e) {
+        e.printStackTrace();
         throw new FastaFormatException(e.getMessage());
       }
     }
@@ -440,9 +450,10 @@ public final class FastaFormat {
 
       fasta.append(">" + header + "\n");
       try {
-        fasta.append(generateFastaFromRNA(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()))
+        fasta.append(generateFastaFromRNA(MethodsMonomerUtils.getListOfHandledMonomers(polymer.getListMonomers()))
             + "\n");
       } catch (HELM2HandledException e) {
+        e.printStackTrace();
         throw new FastaFormatException(e.getMessage());
       }
     }
@@ -607,6 +618,7 @@ public final class FastaFormat {
 
       return change;
     } catch (NotationException | IOException | JDOMException e) {
+      e.printStackTrace();
       throw new AnalogSequenceException("MonomerNotation can not be converted to its natural analogue sequence " + e.getMessage());
 
     }
@@ -671,6 +683,7 @@ public final class FastaFormat {
       return change;
 
     } catch (JDOMException | NotationException | IOException e) {
+      e.printStackTrace();
       throw new AnalogSequenceException("Notation object can not be built");
     }
 

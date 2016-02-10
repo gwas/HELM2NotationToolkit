@@ -38,7 +38,7 @@ import java.util.Set;
 import org.helm.notation.CalculationException;
 import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
-import org.helm.notation2.MethodsForContainerHELM2;
+import org.helm.notation2.MethodsMonomerUtils;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -187,7 +187,7 @@ public final class ExtinctionCoefficient {
       not.add(polymerNode);
       if (polymerType.equals(Monomer.NUCLIEC_ACID_POLYMER_TYPE)) {
         try {
-          ext = calculateExtinctionFromRNA(MethodsForContainerHELM2.getListOfHandledMonomersOnlyBase(polymerNode.getPolymerElements().getListOfElements()));
+          ext = calculateExtinctionFromRNA(MethodsMonomerUtils.getListOfHandledMonomersOnlyBase(polymerNode.getPolymerElements().getListOfElements()));
         } catch (CalculationException | IOException | HELM2HandledException | NotationException e) {
           throw new ExtinctionCoefficientException(e.getMessage());
         }
@@ -196,7 +196,7 @@ public final class ExtinctionCoefficient {
         }
       } else if (polymerType.equals(Monomer.PEPTIDE_POLYMER_TYPE)) {
         try {
-          ext = calculateExtinctionFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
+          ext = calculateExtinctionFromPeptide(MethodsMonomerUtils.getListOfHandledMonomers(polymerNode.getPolymerElements().getListOfElements()));
         } catch (IOException | HELM2HandledException e) {
           throw new ExtinctionCoefficientException(e.getMessage());
         }

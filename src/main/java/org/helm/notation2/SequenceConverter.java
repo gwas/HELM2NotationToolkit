@@ -110,6 +110,7 @@ public final class SequenceConverter {
       try {
         sb.append(RNAUtils.getNucleotideSequence(polymer) + " ");
       } catch (RNAUtilsException e) {
+        e.printStackTrace();
         throw new NotationException("Input complex notation contains non-nucleic acid polymer");
       }
     }
@@ -155,6 +156,7 @@ public final class SequenceConverter {
       try {
         sb.append(RNAUtils.getNaturalAnalogSequence(polymer) + " ");
       } catch (RNAUtilsException e) {
+        e.printStackTrace();
         throw new NotationException("Input complex notation contains non-nucleid acid polymer");
       }
     }

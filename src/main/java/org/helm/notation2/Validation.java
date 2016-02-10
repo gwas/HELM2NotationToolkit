@@ -101,7 +101,7 @@ public final class Validation {
       throw new PolymerIDsException("Polymer IDs have to be unique");
     }
     /* Validation of Monomers */
-    if (!validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(helm2notation.getListOfPolymers()))) {
+    if (!validateMonomers(MethodsMonomerUtils.getListOfMonomerNotation(helm2notation.getListOfPolymers()))) {
       LOG.info("Monomers have to be valid");
       throw new MonomerException("Monomers have to be valid");
     }
@@ -225,6 +225,7 @@ public final class Validation {
       return true;
     } catch (PolymerIDsException | AttachmentException | HELM2HandledException | MonomerException | IOException
         | JDOMException | org.helm.notation2.parser.exceptionparser.NotationException e) {
+      e.printStackTrace();
       LOG.info(e.getMessage());
       return false;
     }
@@ -418,6 +419,7 @@ public final class Validation {
         LOG.info("Nucleotide type for RNA: " + str);
         return true;
       } catch (NotationException e) {
+        e.printStackTrace();
         return false;
       }
 
@@ -473,14 +475,14 @@ public final class Validation {
       if (id.startsWith("[") && id.endsWith("]")) {
         id = id.substring(1, id.length() - 1);
       }
-      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
+      monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
     } else if (not instanceof MonomerNotationGroup) {
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
         String id = groupElement.getMonomerNotation().getID();
         if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
-        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
+        monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
       }
     } else if (not instanceof MonomerNotationList) {
       for (MonomerNotation listElement : ((MonomerNotationList) not).getListofMonomerUnits()) {
@@ -491,7 +493,7 @@ public final class Validation {
           if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
           }
-          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
+          monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
         }
       }
 
@@ -531,7 +533,7 @@ public final class Validation {
       if (id.startsWith("[") && id.endsWith("]")) {
         id = id.substring(1, id.length() - 1);
       }
-      monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
+      monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
     } else if (not instanceof MonomerNotationGroup) {
       LOG.debug("MonomerNotationGroup");
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
@@ -539,7 +541,7 @@ public final class Validation {
         if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
-        monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
+        monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
       }
     } else if (not instanceof MonomerNotationList) {
       LOG.debug("MonomerNotationList");
@@ -551,7 +553,7 @@ public final class Validation {
           if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
           }
-          monomers.add(MethodsForContainerHELM2.getMonomer(not.getType(), id, ""));
+          monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
         }
       }
 
@@ -729,19 +731,16 @@ public final class Validation {
         }
         /* Special case */
         if (rna.getContents().size() == 1 && position == 0) {
-          monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id, "P"));
+          monomers.add(MethodsMonomerUtils.getMonomer(rna.getType(), id, "P"));
 
         } else {
 
-          monomers.add(MethodsForContainerHELM2.getMonomer(rna.getType(), id, rna.getInformation().get(index)));
+          monomers.add(MethodsMonomerUtils.getMonomer(rna.getType(), id, rna.getInformation().get(index)));
         }
       }
       return monomers;
-    } catch (
-
-    Exception e)
-
-    {
+    } catch (Exception e) {
+      e.printStackTrace();
       throw new HELM2HandledException(e.getMessage());
     }
 
@@ -762,7 +761,7 @@ public final class Validation {
       for (MonomerNotationUnit unit : rna.getContents()) {
         String id = unit.getID().replace("[", "");
         id = id.replace("]", "");
-        Monomer mon = MethodsForContainerHELM2.getMonomer(rna.getType(), id, "");
+        Monomer mon = MethodsMonomerUtils.getMonomer(rna.getType(), id, "");
 
         if (mon.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
           monomers.add(mon);
@@ -770,6 +769,7 @@ public final class Validation {
       }
       return monomers;
     } catch (Exception e) {
+      e.printStackTrace();
       throw new HELM2HandledException(e.getMessage());
     }
 

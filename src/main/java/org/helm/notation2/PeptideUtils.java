@@ -58,7 +58,7 @@ public final class PeptideUtils {
    */
   public static String getNaturalAnalogueSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException, ChemistryException {
     checkPeptidePolymer(polymer);
-    return FastaFormat.generateFastaFromPeptide(MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers()));
+    return FastaFormat.generateFastaFromPeptide(MethodsMonomerUtils.getListOfHandledMonomers(polymer.getListMonomers()));
   }
 
   /**
@@ -73,7 +73,7 @@ public final class PeptideUtils {
   public static String getSequence(PolymerNotation polymer) throws HELM2HandledException, PeptideUtilsException, ChemistryException {
     checkPeptidePolymer(polymer);
     StringBuilder sb = new StringBuilder();
-    List<Monomer> monomers = MethodsForContainerHELM2.getListOfHandledMonomers(polymer.getListMonomers());
+    List<Monomer> monomers = MethodsMonomerUtils.getListOfHandledMonomers(polymer.getListMonomers());
 
     for (Monomer monomer : monomers) {
       String id = monomer.getAlternateId();

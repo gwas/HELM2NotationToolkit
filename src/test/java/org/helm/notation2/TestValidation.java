@@ -396,7 +396,7 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
 
-    Assert.assertTrue(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
+    Assert.assertTrue(Validation.validateMonomers(MethodsMonomerUtils.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
 
   }
 
@@ -413,7 +413,7 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
 
-    Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers()));
+    Validation.validateMonomers(MethodsMonomerUtils.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers()));
 
   }
 
@@ -430,7 +430,7 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
 
-    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
+    Assert.assertFalse(Validation.validateMonomers(MethodsMonomerUtils.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
 
   }
 
@@ -447,7 +447,7 @@ public class TestValidation {
       parser.doAction(test.charAt(i));
     }
 
-    Assert.assertFalse(Validation.validateMonomers(MethodsForContainerHELM2.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
+    Assert.assertFalse(Validation.validateMonomers(MethodsMonomerUtils.getListOfMonomerNotation(parser.notationContainer.getListOfPolymers())));
 
   }
 

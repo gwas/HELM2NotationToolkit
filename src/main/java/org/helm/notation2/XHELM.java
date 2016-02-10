@@ -86,7 +86,7 @@ public final class XHELM {
     Element monomerListElement = new Element(xHelmNotationExporter.MONOMER_LIST_ELEMENT);
 
     /* save all adhocMonomers */
-    for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(helm2notation.getListOfPolymers())) {
+    for (MonomerNotation monomernotation : MethodsMonomerUtils.getListOfMonomerNotation(helm2notation.getListOfPolymers())) {
       /* get all elements of an rna */
       if (monomernotation instanceof MonomerNotationUnitRNA) {
         for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomernotation).getContents()) {
@@ -141,7 +141,7 @@ public final class XHELM {
     Element monomerListElement = new Element(xHelmNotationExporter.MONOMER_LIST_ELEMENT);
 
     /* save all adhocMonomers in the set */
-    for (MonomerNotation monomernotation : MethodsForContainerHELM2.getListOfMonomerNotation(helm2notation.getListOfPolymers())) {
+    for (MonomerNotation monomernotation : MethodsMonomerUtils.getListOfMonomerNotation(helm2notation.getListOfPolymers())) {
       /* get all elements of an rna */
       if (monomernotation instanceof MonomerNotationUnitRNA) {
         for (MonomerNotationUnit unit : ((MonomerNotationUnitRNA) monomernotation).getContents()) {

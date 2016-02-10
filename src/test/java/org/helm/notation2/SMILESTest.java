@@ -162,19 +162,19 @@ public class SMILESTest {
 
   @Test
   public void testGetSmilesPolymer() throws CTKSmilesException, BuilderMoleculeException, HELM2HandledException, CTKException, ParserException, JDOMException, NotationException, ChemistryException {
-    SMILES.getSMILESForPolymer(getSimpleRNANotation());
+    SMILES.getCanonicalSMILESForPolymer(getSimpleRNANotation());
 
-    SMILES.getSMILESForPolymer(getInlineSmilesModAdenine());
+    SMILES.getCanonicalSMILESForPolymer(getInlineSmilesModAdenine());
 
-    SMILES.getSMILESForPolymer(getSimplePeptideNotation());
+    SMILES.getCanonicalSMILESForPolymer(getSimplePeptideNotation());
 
-    SMILES.getSMILESForPolymer(getInlineSmilesPeptideNotation());
+    SMILES.getCanonicalSMILESForPolymer(getInlineSmilesPeptideNotation());
 
-    SMILES.getSMILESForPolymer(getSimpleChemNotation());
+    SMILES.getCanonicalSMILESForPolymer(getSimpleChemNotation());
 
-    SMILES.getSMILESForPolymer(getSmilesNotation());
+    SMILES.getCanonicalSMILESForPolymer(getSmilesNotation());
     if (Chemistry.getInstance().getManipulatorType().equals(ManipulatorType.MARVIN)) {
-      SMILES.getSMILESForPolymer(getRNANotationWithSalt());
+      SMILES.getCanonicalSMILESForPolymer(getRNANotationWithSalt());
     }
 
   }

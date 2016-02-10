@@ -24,6 +24,7 @@
 package org.helm.notation2;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
@@ -33,8 +34,11 @@ import org.helm.notation.StructureException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.ComplexNotationParser;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.ConnectionNotationException;
+import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
+import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
@@ -46,7 +50,7 @@ import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 
-public class TestContainerHELM2 {
+public class HELM2NotationUtilsTest {
 
   @Test
   public void testaddNotation() throws ParserException, JDOMException, org.helm.notation2.parser.exceptionparser.NotationException {
@@ -100,7 +104,7 @@ public class TestContainerHELM2 {
     String hybridizedNotation = ComplexNotationParser.hybridize(notation);
     System.out.println(hybridizedNotation);
     helm2notation = readNotation(notation);
-    HELM2NotationUtils.hybridize(helm2notation);
+    ChangeObjects.hybridize(helm2notation);
     System.out.println(helm2notation.toHELM2());
 
     notation =
@@ -138,6 +142,18 @@ public class TestContainerHELM2 {
       throw new ParserException(e.getMessage());
     }
     return parser.getHELM2Notation();
+  }
+
+  @Test
+  public void replaceSMILESIntoAlternatdeID() throws ParserException, JDOMException, PolymerIDsException, MonomerException, GroupingNotationException,
+      ConnectionNotationException, NotationException, ChemistryException, org.helm.notation2.parser.exceptionparser.NotationException, IOException, HELM2HandledException {
+    System.out.println(MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", "NM#1"));
+
+    String notation =
+        "PEPTIDE1{([C[C@H](N[*])C([*])=O |$;;;_R1;;_R2;$|]+G:?).G.G.G.C.C.K.K.K.K}|CHEM1{MCC}|RNA1{R(C)P.R([C[N]1=CN=C(N)C2=C1N([*])C=N2 |$;;;;;;;;;_R1;;$,c:6,11,t:1,3|])[sP].RP.R(G)P.[LR]([5meC])P}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
+    ChangeObjects.replaceSMILESWithTemporaryIds(helm2notation);
+    System.out.println(helm2notation.toHELM2());
   }
 
 }

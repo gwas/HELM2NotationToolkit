@@ -89,20 +89,4 @@ public class PolymerUtils {
     return 1 * multiply;
   }
 
-  protected void getNotationByReplacingSMILES() {
-
-  }
-
-  public static void replaceSMILES(PolymerNotation polymer) {
-    for (MonomerNotation monomerNotation : polymer.getPolymerElements().getListOfElements()) {
-      replaceSMILESMonomerNotation(monomerNotation);
-    }
-  }
-
-  private static void replaceSMILESMonomerNotation(MonomerNotation monomerNotation) {
-    if (monomerNotation instanceof MonomerNotationUnit) {
-
-    }
-  }
-
 }

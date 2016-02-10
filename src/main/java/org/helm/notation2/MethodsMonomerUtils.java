@@ -41,7 +41,6 @@ import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.DeepCopy;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
-import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationGroup;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationList;
@@ -51,19 +50,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * MethodsForContainerHELM2
+ * MethodsMonomerUtils
  *
  * @author hecht
  */
-public final class MethodsForContainerHELM2 {
+public final class MethodsMonomerUtils {
 
   private static final Logger LOG =
-      LoggerFactory.getLogger(MethodsForContainerHELM2.class);
+      LoggerFactory.getLogger(MethodsMonomerUtils.class);
 
   /**
    * Default constructor.
    */
-  private MethodsForContainerHELM2() {
+  private MethodsMonomerUtils() {
 
   }
 
@@ -97,6 +96,7 @@ public final class MethodsForContainerHELM2 {
           items.addAll(Validation.getAllMonomers(monomerNotation, i));
           // }
         } catch (NumberFormatException | JDOMException | MonomerException | IOException | NotationException e) {
+          e.printStackTrace();
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
         }
 
@@ -135,6 +135,7 @@ public final class MethodsForContainerHELM2 {
             items.addAll(Validation.getAllMonomersOnlyBase(monomerNotation));
           }
         } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
+          e.printStackTrace();
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
         }
 
@@ -183,23 +184,6 @@ public final class MethodsForContainerHELM2 {
   }
 
   /**
-   * method to get all polymers for one specific polymer type
-   *
-   * @param str specific polymer type
-   * @param polymers List of PolymerNotation
-   * @return List of PolymerNotation with the specific type
-   */
-  public static List<PolymerNotation> getListOfPolymersSpecificType(String str, List<PolymerNotation> polymers) {
-    List<PolymerNotation> list = new ArrayList<PolymerNotation>();
-    for (PolymerNotation polymer : polymers) {
-      if (polymer.getPolymerID().getType().equals(str)) {
-        list.add(polymer);
-      }
-    }
-    return list;
-  }
-
-  /**
    * method to get the monomer from the database!
    *
    * @param type Type of the Monomer
@@ -242,11 +226,19 @@ public final class MethodsForContainerHELM2 {
             } else {
               throw new MonomerException("Defined Monomer is not in the database and also not valid SMILES " + id);
             }
+
+            /* Add new monomer to the database */
+            MonomerFactory.getInstance().getMonomerStore().addNewMonomer(monomer);
+            MonomerFactory.getInstance().getSmilesMonomerDB().put(monomer.getCanSMILES(), monomer);
+            // save monomer db to local file after successful update //
+            MonomerFactory.getInstance().saveMonomerCache();
+            LOG.info("Monomer was added to the database");
           }
         }
       }
       return monomer;
     } catch (IOException e) {
+      e.printStackTrace();
       /*
        * monomer is not in the database and also not a valid SMILES -> throw
        * exception
@@ -306,6 +298,7 @@ public final class MethodsForContainerHELM2 {
         tmpAtt.setCapGroupSMILES(newSmi);
         al.add(tmpAtt);
       } catch (Exception ex) {
+        ex.printStackTrace();
         throw new NotationException(
             "Unable to create attachment by copying from attachment database",
             ex);
@@ -320,6 +313,7 @@ public final class MethodsForContainerHELM2 {
     try {
       MonomerFactory.getInstance().getMonomerStore().addNewMonomer(m);
     } catch (Exception ex) {
+      ex.printStackTrace();
       throw new NotationException(
           "Unable to add adhoc new monomer into monomer databse",
           ex);
@@ -343,13 +337,9 @@ public final class MethodsForContainerHELM2 {
     }
   }
 
-  public static String generateNextAdHocMonomerID(String polymerType) throws MonomerLoadingException {
+  private static String generateNextAdHocMonomerID(String polymerType) throws MonomerLoadingException {
     Map<String, Monomer> internalMonomers = null;
-    try {
-      internalMonomers = MonomerFactory.getInstance().getMonomerDB().get(polymerType);
-    } catch (Exception e) {
-
-    }
+    internalMonomers = MonomerFactory.getInstance().getMonomerDB().get(polymerType);
 
     Map<String, Monomer> monomers = MonomerFactory.getInstance().getMonomerStore().getMonomers(polymerType);
 

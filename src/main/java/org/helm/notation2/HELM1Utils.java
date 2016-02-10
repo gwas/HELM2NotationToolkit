@@ -34,8 +34,6 @@ import java.util.TreeMap;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.chemtoolkit.CTKSmilesException;
-import org.helm.notation.MonomerException;
 import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.NotationException;
@@ -50,7 +48,6 @@ import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.annotation.AnnotationNotation;
 import org.helm.notation2.parser.notation.connection.ConnectionNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +88,7 @@ public final class HELM1Utils {
       String fourthSection = setStandardHELMFourthSection(helm2notation.getListOfAnnotations());
       return firstSection + "$" + ListOfSecondAndThirdSection.get(0) + "$" + ListOfSecondAndThirdSection.get(1) + "$" + fourthSection + "$V2.0";
     } catch (HELM1ConverterException | NotationException e) {
+      e.printStackTrace();
       throw new HELM1FormatException(e.getMessage());
     }
   }
@@ -199,6 +197,7 @@ public final class HELM1Utils {
       LOG.info("Second Section of canonical HELM was generated");
       return firstSection + "$" + secondSection + "$" + "" + "$" + "" + "$V2.0";
     } catch (ClassNotFoundException | IOException | HELM1ConverterException | ValidationException e) {
+      e.printStackTrace();
       LOG.error("Canonical HELM 1 can not be generated due to HELM2 features");
       throw new HELM1FormatException("Canonical HELM 1 can not be generated due to HELM2 features " + e.getMessage() + e.getCause());
     }
@@ -341,6 +340,7 @@ public final class HELM1Utils {
       test = test.replace("two", convertIds.get(target));
       return test;
     } catch (NullPointerException ex) {
+      ex.printStackTrace();
       LOG.error("Connection can't be downgraded to HELM1-Format");
       throw new HELM1ConverterException("Connection can't be downgraded to HELM1-Format");
     }
@@ -391,7 +391,8 @@ public final class HELM1Utils {
             }
           } catch (NullPointerException e) {
             if (!(Chemistry.getInstance().getManipulator().validateSMILES(element.substring(1, element.length() - 1)))) {
-              throw new ValidationException("SMILES as Monomer is not valid");
+              e.printStackTrace();
+              throw new ValidationException("SMILES as Monomer is not valid :" + element);
             }
           }
         }
@@ -399,6 +400,7 @@ public final class HELM1Utils {
 
       return listMatches;
     } catch (MonomerLoadingException | NotationException e) {
+      e.printStackTrace();
       throw new HELM1FormatException(e.getMessage());
     }
   }
@@ -428,7 +430,8 @@ public final class HELM1Utils {
       }
       return convert;
     } catch (MonomerLoadingException | CTKException e) {
-      throw new HELM1FormatException("SMILES for Monomer can not be found");
+      e.printStackTrace();
+      throw new HELM1FormatException("SMILES for Monomer can not be found: ");
     }
   }
 
