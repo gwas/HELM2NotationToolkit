@@ -203,7 +203,7 @@ public class SMILESTest {
     testHELM1AgainstHELM2(notation);
   }
 
-  // @Test(expectedExceptions = BuilderMoleculeException.class)
+  @Test(expectedExceptions = BuilderMoleculeException.class)
   public void testChiralCenter() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, MonomerException, StructureException,
       ChemistryException {
     // backbone and branch cyclic RNA

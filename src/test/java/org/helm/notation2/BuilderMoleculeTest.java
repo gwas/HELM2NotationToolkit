@@ -130,7 +130,7 @@ public class BuilderMoleculeTest {
         ""));
   }
 
-  // @Test
+  @Test(expectedExceptions = BuilderMoleculeException.class)
   /* chiral centers test */
   public void testBuildMoleculeComplexPeptide() throws ParserException, JDOMException, BuilderMoleculeException, NotationException, ChemistryException {
     // String notation =
