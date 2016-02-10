@@ -33,6 +33,7 @@ import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.NotationException;
 import org.helm.notation.StructureException;
 import org.helm.notation.tools.ComplexNotationParser;
+import org.helm.notation2.calculation.MoleculeInformation;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;

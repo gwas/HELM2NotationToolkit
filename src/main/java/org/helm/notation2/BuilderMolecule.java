@@ -136,6 +136,7 @@ public final class BuilderMolecule {
     /* Build interconnections between single molecules */
     LOG.info("Connect the single molecules together");
     for (ConnectionNotation connection : connections) {
+      LOG.info("Connection: " + connection.toString());
       /* Group Id -> throw exception */
       if (connection.getSourceId() instanceof GroupEntity || connection.getTargetId() instanceof GroupEntity) {
         LOG.error("Molecule can't be build for group connection");
@@ -204,12 +205,13 @@ public final class BuilderMolecule {
         }
       } else {
         try {
+          LOG.info("MERGE");
           molecule =
               Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
                   + rgroupOne), two.getMolecule(), two.getRgroupMap().get(connection.getTargetId().getID() + ":"
                       + target + ":"
                       + rgroupTwo));
-
+          LOG.info("Merge completed");
           RgroupStructure actual = new RgroupStructure();
           actual.setMolecule(molecule);
           Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
@@ -223,6 +225,7 @@ public final class BuilderMolecule {
           throw new BuilderMoleculeException(e.getMessage());
         }
 
+        LOG.info("jkj");
         mapConnections.put(connection.getSourceId().getID(), idFirst + idSecond);
         mapConnections.put(connection.getTargetId().getID(), idFirst + idSecond);
 
@@ -237,10 +240,11 @@ public final class BuilderMolecule {
 
     }
 
+    LOG.info("kjkjllll");
     for (Map.Entry<String, RgroupStructure> e : mapMolecules.entrySet()) {
       listMolecules.add(e.getValue().getMolecule());
     }
-
+    LOG.info("completed");
     return listMolecules;
   }
 
@@ -263,10 +267,10 @@ public final class BuilderMolecule {
           Monomer monomer = validMonomers.get(0);
 
           String input = null;
-          if (monomer.getMolfile() != null) {
-            LOG.info("Use molfile for monomer generation");
-            input = monomer.getMolfile();
-          }
+          // if (monomer.getMolfile() != null) {
+          // LOG.info("Use molfile for monomer generation");
+          // input = monomer.getMolfile();
+          // }
           if (input == null && monomer.getCanSMILES() != null) {
             LOG.info("Use smiles for monomer generation");
             input = monomer.getCanSMILES();
@@ -431,17 +435,19 @@ public final class BuilderMolecule {
   public static AbstractMolecule mergeRgroups(AbstractMolecule molecule) throws BuilderMoleculeException, ChemistryException {
     try {
       boolean flag = true;
-      while (flag) {
-        if (molecule.getAttachments().size() > 0) {
-          org.helm.chemtoolkit.Attachment attachment = molecule.getAttachments().get(0);
-          int groupId = AbstractMolecule.getIdFromLabel(attachment.getLabel());
+      // while (flag) {
+      // if (molecule.getAttachments().size() > 0) {
+      for (int i = molecule.getAttachments().size() - 1; i > -1; i--) {
 
-          AbstractMolecule rMol = Chemistry.getInstance().getManipulator().getMolecule(attachment.getSmiles(), null);
-          molecule = Chemistry.getInstance().getManipulator().merge(molecule, molecule.getRGroupAtom(groupId, true), rMol, rMol.getRGroupAtom(groupId, true));
-        } else {
-          flag = false;
-        }
-      }
+        org.helm.chemtoolkit.Attachment attachment = molecule.getAttachments().get(i);
+        int groupId = AbstractMolecule.getIdFromLabel(attachment.getLabel());
+
+        AbstractMolecule rMol = Chemistry.getInstance().getManipulator().getMolecule(attachment.getSmiles(), null);
+        molecule = Chemistry.getInstance().getManipulator().merge(molecule, molecule.getRGroupAtom(groupId, true), rMol, rMol.getRGroupAtom(groupId, true));
+      } // else {
+        // flag = false;
+      // }
+      // }
       return molecule;
     } catch (NullPointerException | IOException | CTKException e) {
       throw new BuilderMoleculeException("Unused rgroups can't be merged into the molecule" + e.getMessage());

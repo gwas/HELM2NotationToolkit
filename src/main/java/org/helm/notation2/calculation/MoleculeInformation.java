@@ -21,7 +21,7 @@
  * SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation2;
+package org.helm.notation2.calculation;
 
 import java.util.Iterator;
 import java.util.List;
@@ -31,8 +31,10 @@ import java.util.TreeMap;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-
-import org.helm.notation2.calculation.ExtinctionCoefficient;
+import org.helm.notation2.BuilderMolecule;
+import org.helm.notation2.Chemistry;
+import org.helm.notation2.HELM2NotationUtils;
+import org.helm.notation2.MoleculeInfo;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
@@ -142,6 +144,7 @@ public final class MoleculeInformation {
   public static String getMolecularFormular(HELM2Notation helm2notation) throws BuilderMoleculeException, CTKException, ChemistryException {
     /* First build HELM molecule */
     List<AbstractMolecule> molecules = buildMolecule(helm2notation);
+    LOG.info("Build process is finished");
     return calculateMolecularFormula(molecules);
   }
 
@@ -157,8 +160,10 @@ public final class MoleculeInformation {
   private static String calculateMolecularFormula(List<AbstractMolecule> molecules) throws BuilderMoleculeException, CTKException, ChemistryException {
     Map<String, Integer> atomNumberMap = new TreeMap<String, Integer>();
     for (AbstractMolecule molecule : molecules) {
+      LOG.info(molecule.getMolecule().toString());
       atomNumberMap = generateAtomNumberMap(molecule, atomNumberMap);
     }
+    LOG.info("GET map");
     StringBuilder sb = new StringBuilder();
     Set<String> atoms = atomNumberMap.keySet();
     for (Iterator<String> i = atoms.iterator(); i.hasNext();) {
@@ -213,6 +218,7 @@ public final class MoleculeInformation {
    */
   private static Map<String, Integer> generateAtomNumberMap(AbstractMolecule molecule, Map<String, Integer> mapAtoms) throws BuilderMoleculeException, CTKException, ChemistryException {
     molecule = BuilderMolecule.mergeRgroups(molecule);
+    LOG.info("Merge group is finished");
     String formula = Chemistry.getInstance().getManipulator().getMoleculeInfo(molecule).getMolecularFormula();
     String atom = "";
     String number = "";

@@ -29,6 +29,7 @@ import java.util.List;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.NotationException;
+import org.helm.notation2.calculation.MoleculeInformation;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -93,8 +94,10 @@ public class BuilderMoleculeTest {
   public void testBuildMoleculeFourChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     String notation = "CHEM1{[MCC]}|CHEM2{[PEG2]}|CHEM3{[EG]}|CHEM4{[MCC]}$CHEM3,CHEM4,1:R1-1:R1|CHEM2,CHEM1,1:R1-1:R1|CHEM2,CHEM3,1:R2-1:R2$$$";
     HELM2Notation helm2notation = readNotation(notation);
-    BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
+    // BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(),
+    // helm2notation.getListOfConnections());
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2notation), "C30H40N2O10");
+    System.out.println(MDLUtils.generateMDL(helm2notation));
   }
 
   @Test

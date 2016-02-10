@@ -38,6 +38,7 @@ import org.helm.notation.NotationException;
 import org.helm.notation.model.Monomer;
 import org.helm.notation.tools.xHelmNotationParser;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
+import org.helm.notation2.calculation.MoleculeInformation;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ConnectionNotationException;
