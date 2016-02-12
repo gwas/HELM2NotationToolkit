@@ -28,7 +28,11 @@ There are two new configuration files in .helm.
 
 The Chemistry.property contains the information which Chemistry plugin you want to use. The default one is MARVIN.
 
-chemistry.plugin=MARVIN
+chemistry=org.helm.chemtoolkit.chemaxon.ChemaxonManipulator
+
+or 
+
+chemistry=org.helm.chemtoolkit.cdk.CDKManipulator
 
 The MonomerStoreConfig.properties contains the information if you want to use a webservice to do monomer management actions.
 
