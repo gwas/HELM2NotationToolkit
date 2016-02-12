@@ -23,11 +23,14 @@
  */
 package org.helm.notation2;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;
 
@@ -37,15 +40,13 @@ import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.ManipulatorFactory;
 import org.helm.notation2.exception.ChemistryException;
 
-import sun.misc.IOUtils;
-
 /**
  * Chemistry, singleton class to define which Chemistry-Plugin is used
  *
  * @author hecht
  */
 public final class Chemistry {
-  private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + "/.helm/Chemistry.property";
+  private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + System.getProperty("file.separator") + ".helm" + System.getProperty("file.separator") + "Chemistry.property";
 
   private static final String CHEMISTRY_PLUGIN = "chemistry";
 
@@ -127,16 +128,36 @@ public final class Chemistry {
   public void refresh() {
     File configFile = new File(CONFIG_FILE_PATH);
     if (!configFile.exists()) {
-      InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation2/resources/Chemistry.property");
-      try (FileOutputStream str = new FileOutputStream(CONFIG_FILE_PATH)) {
-        byte[] bytes = IOUtils.readFully(in, -1, true);
-        str.write(bytes);
-      } catch (FileNotFoundException e) {
+      BufferedWriter writer = null;
+      BufferedReader reader = null;
+      try {
+        configFile.createNewFile();
+        InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation2/resources/Chemistry.property");
+        reader = new BufferedReader(new InputStreamReader(in));
+        System.out.println("");
+
+        writer = new BufferedWriter(new FileWriter(configFile));
+        String line;
+        while ((line = reader.readLine()) != null) {
+          writer.write(line + System.getProperty("line.separator"));
+        }
+
+      } catch (Exception e) {
         resetConfigToDefault();
         e.printStackTrace();
-      } catch (IOException e) {
-        resetConfigToDefault();
-        e.printStackTrace();
+
+      } finally {
+        try {
+          if (writer != null) {
+            writer.close();
+          }
+          if (reader != null) {
+            reader.close();
+          }
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
     }
 

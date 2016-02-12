@@ -23,18 +23,20 @@
  */
 package org.helm.notation.wsadapter;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.helm.notation2.MonomerFactory;
-
-import sun.misc.IOUtils;
+import org.helm.notation2.Chemistry;
 
 /**
  *
@@ -46,7 +48,8 @@ import sun.misc.IOUtils;
  */
 public class MonomerStoreConfiguration {
   /** Path to local config file containing monomer store configuration. */
-  private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + "/.helm/MonomerStoreConfig.properties";
+  private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + System.getProperty("file.separator") + ".helm" + System.getProperty("file.separator")
+      + "MonomerStoreConfig.properties";
 
   private static final String USE_WEBSERVICE = "use.webservice";
 
@@ -259,21 +262,44 @@ public class MonomerStoreConfiguration {
    */
   public void refresh() {
     File configFile = new File(CONFIG_FILE_PATH);
+
     if (!configFile.exists()) {
-      InputStream in = MonomerFactory.class.getResourceAsStream("/org/helm/notation/resources/MonomerStoreConfig.properties");
-      try (FileOutputStream str = new FileOutputStream(CONFIG_FILE_PATH)) {
-        byte[] bytes = IOUtils.readFully(in, -1, true);
-        str.write(bytes);
-      } catch (FileNotFoundException e) {
+      BufferedWriter writer = null;
+      BufferedReader reader = null;
+      try {
+        configFile.createNewFile();
+        InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation2/resources/MonomerStoreConfig.properties");
+        reader = new BufferedReader(new InputStreamReader(in));
+        System.out.println("");
+
+        writer = new BufferedWriter(new FileWriter(configFile));
+        String line;
+        while ((line = reader.readLine()) != null) {
+          writer.write(line + System.getProperty("line.separator"));
+        }
+
+      } catch (Exception e) {
         resetConfigToDefault();
         e.printStackTrace();
-      } catch (IOException e) {
-        resetConfigToDefault();
-        e.printStackTrace();
+
+      } finally {
+        try {
+          if (writer != null) {
+            writer.close();
+          }
+          if (reader != null) {
+            reader.close();
+          }
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
     }
 
-    try {
+    try
+
+    {
       PropertiesConfiguration conf = new PropertiesConfiguration(
           CONFIG_FILE_PATH);
       isUseWebservice = conf.getBoolean(USE_WEBSERVICE);
@@ -287,10 +313,15 @@ public class MonomerStoreConfiguration {
       webserviceEditorCategorizationURL = conf.getString(WEBSERVICE_EDITOR_CATEGORIZATION_URL);
       webserviceEditorCategorizationPath = conf.getString(WEBSERVICE_EDITOR_CATEGORIZATION_PATH);
 
-    } catch (ConfigurationException | NoSuchElementException e) {
+    } catch (ConfigurationException |
+
+    NoSuchElementException e)
+
+    {
       resetConfigToDefault();
       e.printStackTrace();
     }
+
   }
 
   /**
