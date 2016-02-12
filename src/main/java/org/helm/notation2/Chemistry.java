@@ -48,7 +48,7 @@ import sun.misc.IOUtils;
 public final class Chemistry {
   private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + "/.helm/Chemistry.property";
 
-  private static final String CHEMISTRY_PLUGIN = "chemistry.plugin";
+  private static final String CHEMISTRY_PLUGIN = "chemistry";
 
   private static Chemistry _instance;
 
