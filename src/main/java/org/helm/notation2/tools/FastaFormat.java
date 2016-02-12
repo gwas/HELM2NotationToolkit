@@ -31,14 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
-import org.helm.notation.NotationConstant;
-import org.helm.notation.NucleotideFactory;
 import org.helm.notation.NucleotideLoadingException;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.model.Nucleotide;
-import org.helm.notation.tools.PeptideSequenceParser;
+import org.helm.notation2.Monomer;
+import org.helm.notation2.MonomerFactory;
+import org.helm.notation2.NotationConstant;
+import org.helm.notation2.Nucleotide;
+import org.helm.notation2.NucleotideFactory;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
@@ -97,8 +97,9 @@ public final class FastaFormat {
    * @param fasta FastaFile in string format
    * @return HELM2Notation generated HELM2Notation
    * @throws FastaFormatException if the input is not correct
+   * @throws ChemistryException
    */
-  public static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException {
+  public static HELM2Notation generatePeptidePolymersFromFASTAFormatHELM1(String fasta) throws FastaFormatException, ChemistryException {
     helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Peptide Sequence must be specified");
@@ -154,8 +155,9 @@ public final class FastaFormat {
    * @throws JDOMException
    * @throws IOException
    * @throws NotationException
+   * @throws ChemistryException
    */
-  public static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException, IOException, JDOMException, NotationException {
+  public static HELM2Notation generateRNAPolymersFromFastaFormatHELM1(String fasta) throws FastaFormatException, IOException, JDOMException, NotationException, ChemistryException {
     helm2notation = new HELM2Notation();
     if (null == fasta) {
       LOG.error("Nucleotide Sequence must be specified");
@@ -241,8 +243,9 @@ public final class FastaFormat {
    *
    * @throws FastaFormatException if the NucleotideFactory can not be
    *           initialized
+   * @throws ChemistryException
    */
-  private static void initMapNucleotidesNaturalAnalog() throws FastaFormatException {
+  private static void initMapNucleotidesNaturalAnalog() throws FastaFormatException, ChemistryException {
     try {
       nucleotidesNaturalAnalog = MonomerFactory.getInstance().getMonomerDB().get("RNA");
     } catch (IOException e) {
@@ -256,8 +259,10 @@ public final class FastaFormat {
    * method to initialize map of existing amino acids in the database
    *
    * @throws FastaFormatException AminoAcids can not be initialized
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private static void initMapAminoAcid() throws FastaFormatException {
+  private static void initMapAminoAcid() throws FastaFormatException, ChemistryException {
     try {
       aminoacids = MonomerFactory.getInstance().getMonomerDB().get("PEPTIDE");
     } catch (IOException e) {
@@ -274,14 +279,16 @@ public final class FastaFormat {
    * @param entity HELMEntity
    * @return PolymerListElements
    * @throws FastaFormatException if the input sequence is not correct
+   * @throws ChemistryException
+   * @throws CTKException
    */
   protected static PolymerListElements generateElementsOfPeptide(String sequence, HELMEntity entity)
-      throws FastaFormatException {
+      throws FastaFormatException, ChemistryException {
     initMapAminoAcid();
     sequence = cleanup(sequence);
     try {
       PolymerListElements elements = new PolymerListElements(entity);
-      List<String> aaList = PeptideSequenceParser.getAminoAcidList(sequence);
+      List<String> aaList = AminoAcidParser.getAminoAcidList(sequence);
       for (String aa : aaList) {
         if (aa.length() > 1) {
           aa = "[" + aa + "]";
@@ -308,9 +315,11 @@ public final class FastaFormat {
    * @throws NotationException
    * @throws JDOMException
    * @throws IOException
+   * @throws ChemistryException
+   * @throws CTKException
    */
   protected static PolymerListElements generateElementsforRNA(String sequence, HELMEntity entity)
-      throws FastaFormatException, IOException, JDOMException, NotationException {
+      throws FastaFormatException, IOException, JDOMException, NotationException, ChemistryException {
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();
     PolymerListElements elements = new PolymerListElements(entity);
@@ -486,6 +495,7 @@ public final class FastaFormat {
    * @throws FastaFormatException if the HELM2Notation can not be transformed to
    *           FASTA
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws CTKException
    */
   public static String generateFasta(HELM2Notation helm2Notation2) throws FastaFormatException, ChemistryException {
     List<PolymerNotation> polymersPeptides = new ArrayList<PolymerNotation>();
@@ -515,8 +525,10 @@ public final class FastaFormat {
    * @throws FastaFormatException
    * @throws AnalogSequenceException if the natural analogue sequence can not be
    *           produced
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  public static HELM2Notation convertIntoAnalogSequence(HELM2Notation helm2Notation) throws FastaFormatException, AnalogSequenceException {
+  public static HELM2Notation convertIntoAnalogSequence(HELM2Notation helm2Notation) throws FastaFormatException, AnalogSequenceException, ChemistryException, CTKException {
     initMapAminoAcid();
     initMapNucleotides();
     initMapNucleotidesNaturalAnalog();

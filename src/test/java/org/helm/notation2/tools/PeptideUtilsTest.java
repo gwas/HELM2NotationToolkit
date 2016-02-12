@@ -23,17 +23,11 @@
  */
 package org.helm.notation2.tools;
 
-import java.io.IOException;
-
 import org.helm.notation.NotationException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.PeptideUtilsException;
-import org.helm.notation2.parser.ConverterHELM1ToHELM2;
-import org.helm.notation2.parser.ParserHELM2;
-import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.tools.PeptideUtils;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
@@ -44,7 +38,7 @@ public class PeptideUtilsTest {
   public void getNaturalAnalogSequence() throws ParserException, JDOMException, HELM2HandledException, PeptideUtilsException, NotationException, ChemistryException {
     String notation = "PEPTIDE1{K.C.C.C.W.K.[seC]}$$$$V2.0";
 
-    Assert.assertEquals(PeptideUtils.getNaturalAnalogueSequence(readNotation(notation).getListOfPolymers().get(0)), "KCCCWKC");
+    Assert.assertEquals(PeptideUtils.getNaturalAnalogueSequence(HELM2NotationUtils.readNotation(notation).getListOfPolymers().get(0)), "KCCCWKC");
 
   }
 
@@ -52,23 +46,8 @@ public class PeptideUtilsTest {
   public void getSequence() throws ParserException, JDOMException, HELM2HandledException, PeptideUtilsException, NotationException, ChemistryException {
     String notation = "PEPTIDE1{K.C.C.C.W.K.[seC]}$$$$V2.0";
 
-    Assert.assertEquals(PeptideUtils.getSequence(readNotation(notation).getListOfPolymers().get(0)), "KCCCWK[seC]");
+    Assert.assertEquals(PeptideUtils.getSequence(HELM2NotationUtils.readNotation(notation).getListOfPolymers().get(0)), "KCCCWK[seC]");
 
   }
 
-  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
-    /* HELM1-Format -> */
-    if (!(notation.contains("V2.0"))) {
-      notation = new ConverterHELM1ToHELM2().doConvert(notation);
-    }
-    /* parses the HELM notation and generates the necessary notation objects */
-    ParserHELM2 parser = new ParserHELM2();
-    try {
-      parser.parse(notation);
-    } catch (ExceptionState | IOException e) {
-      throw new ParserException(e.getMessage());
-    }
-    return parser.getHELM2Notation();
-
-  }
 }

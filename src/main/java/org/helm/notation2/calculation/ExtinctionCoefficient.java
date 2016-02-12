@@ -37,7 +37,7 @@ import java.util.Set;
 
 import org.helm.notation.CalculationException;
 import org.helm.notation.NotationException;
-import org.helm.notation.model.Monomer;
+import org.helm.notation2.Monomer;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -62,9 +62,9 @@ public final class ExtinctionCoefficient {
   private static final Logger LOG =
       LoggerFactory.getLogger(ExtinctionCoefficient.class);
 
-  private static final int RNA_UNIT_TYPE = 1;
+  public static final int RNA_UNIT_TYPE = 1;
 
-  private static final int PEPTIDE_UNIT_TYPE = 2;
+  public static final int PEPTIDE_UNIT_TYPE = 2;
 
   private static Map<String, Float> monoNucleotideMap = new HashMap<String, Float>();
 
@@ -72,9 +72,9 @@ public final class ExtinctionCoefficient {
 
   private static Map<String, Float> aminoAcidMap = new HashMap<String, Float>();
 
-  private static String rnaPropertyFile = "/org/helm/notation/resources/RNAExtinctionCoefficient.properties";
+  private static String rnaPropertyFile = "/org/helm/notation2/resources/RNAExtinctionCoefficient.properties";
 
-  private static String peptidePropertyFile = "/org/helm/notation/resources/PEPTIDEExtinctionCoefficient.properties";
+  private static String peptidePropertyFile = "/org/helm/notation2/resources/PEPTIDEExtinctionCoefficient.properties";
 
   private static ExtinctionCoefficient instance;
 

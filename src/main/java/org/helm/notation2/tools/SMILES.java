@@ -30,22 +30,15 @@ import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
-import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.model.PolymerNode;
-import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.Chemistry;
+import org.helm.notation2.Monomer;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.ChemEntity;
-import org.helm.notation2.parser.notation.polymer.MonomerNotation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,8 +112,9 @@ public final class SMILES {
    * @throws HELM2HandledException
    * @throws ChemistryException
    * @throws IOException
+   * @throws CTKException
    */
-  public boolean containsGenericStructurePolymer(List<PolymerNotation> polymers) throws HELM2HandledException, ChemistryException, IOException {
+  public static boolean containsGenericStructurePolymer(List<PolymerNotation> polymers) throws HELM2HandledException, ChemistryException, IOException, CTKException {
     for (PolymerNotation polymer : polymers) {
       if (polymer.getPolymerID() instanceof ChemEntity) {
         Monomer monomer = MethodsMonomerUtils.getListOfHandledMonomers(polymer.getPolymerElements().getListOfElements()).get(0);
@@ -138,6 +132,15 @@ public final class SMILES {
 
     return false;
 
+  }
+
+  /**
+   * @param smiles
+   * @return
+   */
+  public static String getUniqueExtendedSMILES(String smiles) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   /**

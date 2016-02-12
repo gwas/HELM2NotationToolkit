@@ -36,9 +36,6 @@ import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
-import org.helm.notation2.parser.ConverterHELM1ToHELM2;
-import org.helm.notation2.parser.ParserHELM2;
-import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
@@ -83,14 +80,14 @@ public class BuilderMoleculeTest {
   @Test
   public void testBuildMoleculeTwoChems() throws ParserException, JDOMException, BuilderMoleculeException, NotationException, ChemistryException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
-    HELM2Notation helm2notation = readNotation(notation);
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
   }
 
   @Test
   public void testBuildMoleculeThreeChemsWithoutConnection() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}|CHEM3{[hxy]}$CHEM1,CHEM2,1:R1-1:R1$$$";
-    HELM2Notation helm2notation = readNotation(notation);
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     List<AbstractMolecule> molecule = BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), helm2notation.getListOfConnections());
     Assert.assertEquals(molecule.size(), 2);
   }
@@ -98,9 +95,7 @@ public class BuilderMoleculeTest {
   @Test
   public void testBuildMoleculeFourChems() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     String notation = "CHEM1{[MCC]}|CHEM2{[PEG2]}|CHEM3{[EG]}|CHEM4{[MCC]}$CHEM3,CHEM4,1:R1-1:R1|CHEM2,CHEM1,1:R1-1:R1|CHEM2,CHEM3,1:R2-1:R2$$$";
-    HELM2Notation helm2notation = readNotation(notation);
-    // BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(),
-    // helm2notation.getListOfConnections());
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2notation), "C30H40N2O10");
     System.out.println(MDLUtils.generateMDL(helm2notation));
   }
@@ -108,21 +103,21 @@ public class BuilderMoleculeTest {
   @Test
   public void testBuildMoleculePeptide() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     String notation = "PEPTIDE1{L.P}$$$$";
-    HELM2Notation helm2notation = readNotation(notation);
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2notation), "C11H20N2O3");
   }
 
   @Test
   public void testBuildMoleculeRNA() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     String notation = "RNA1{R(A)P}$$$$";
-    HELM2Notation helm2notation = readNotation(notation);
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2notation), "C10H14N5O7P");
   }
 
   @Test
   public void testBuildMoleculeRNAExtended() throws ParserException, JDOMException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     String notation = "RNA1{R(A)P.R(G)}$$$$";
-    HELM2Notation helm2notation = readNotation(notation);
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     Assert.assertEquals(MoleculeInformation.getMolecularFormular(helm2notation), "C20H25N10O11P");
   }
 
@@ -141,10 +136,8 @@ public class BuilderMoleculeTest {
   @Test(expectedExceptions = BuilderMoleculeException.class)
   /* chiral centers test */
   public void testBuildMoleculeComplexPeptide() throws ParserException, JDOMException, BuilderMoleculeException, NotationException, ChemistryException {
-    // String notation =
-    // "PEPTIDE1{D.F.D}|PEPTIDE2{C}|PEPTIDE3{E.D}$PEPTIDE3,PEPTIDE1,2:R3-1:R3|PEPTIDE2,PEPTIDE1,1:R3-3:R3$$$";
     String notation = "RNA1{R(C)P.RP.R(A)P.RP.R(A)P.R(U)P}$RNA1,RNA1,4:R3-9:R3|RNA1,RNA1,1:R1-16:R2$$$";
-    HELM2Notation helm2notation = readNotation(notation);
+    HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     BuilderMolecule.buildMoleculefromPolymers(helm2notation.getListOfPolymers(), HELM2NotationUtils.getAllEdgeConnections(helm2notation.getListOfConnections()));
 
   }
@@ -159,22 +152,6 @@ public class BuilderMoleculeTest {
     node.getPolymerElements().getListOfElements().add(mon);
     BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(),
         ""));
-  }
-
-  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException {
-    /* HELM1-Format -> */
-    if (!(notation.contains("V2.0"))) {
-      notation = new ConverterHELM1ToHELM2().doConvert(notation);
-    }
-    /* parses the HELM notation and generates the necessary notation objects */
-    ParserHELM2 parser = new ParserHELM2();
-    try {
-      parser.parse(notation);
-    } catch (ExceptionState | IOException e) {
-      throw new ParserException(e.getMessage());
-    }
-
-    return parser.getHELM2Notation();
   }
 
 }

@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.helm.notation.tools.ComplexNotationParser;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.ParserException;
@@ -64,6 +63,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author hecht
  */
 public class HELM2NotationUtils {
+
+  public static final String DEFAULT_PADDING_CHAR = " ";
+
+  public static final String DEFAULT_BASE_PAIR_CHAR = "|";
 
   /** The Logger for this class */
   static final Logger LOG =
@@ -386,7 +389,7 @@ public class HELM2NotationUtils {
    */
   public static String[] getFormatedSirnaSequences(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException,
       ChemistryException {
-    return getFormatedSirnaSequences(helm2notation, ComplexNotationParser.DEFAULT_PADDING_CHAR, ComplexNotationParser.DEFAULT_BASE_PAIR_CHAR);
+    return getFormatedSirnaSequences(helm2notation, DEFAULT_PADDING_CHAR, DEFAULT_BASE_PAIR_CHAR);
   }
 
   /**

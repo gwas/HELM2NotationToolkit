@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.helm.notation.MonomerFactory;
+import org.helm.notation2.MonomerFactory;
 
 import sun.misc.IOUtils;
 

@@ -34,9 +34,9 @@ import org.helm.chemtoolkit.AttachmentList;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.IAtomBase;
-import org.helm.notation.model.Attachment;
-import org.helm.notation.model.Monomer;
+import org.helm.notation2.Attachment;
 import org.helm.notation2.Chemistry;
+import org.helm.notation2.Monomer;
 import org.helm.notation2.RgroupStructure;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
@@ -50,6 +50,8 @@ import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.parser.notation.polymer.RNAEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import chemaxon.struc.Molecule;
 
 /**
  * class to build molecules for the HELMNotation
@@ -479,5 +481,16 @@ public final class BuilderMolecule {
       throw new BuilderMoleculeException("Molecule can't be built for the given monomer");
     }
 
+  }
+
+  /**
+   * @param smiles
+   * @return
+   * @throws ChemistryException
+   * @throws CTKException
+   * @throws IOException
+   */
+  public static AbstractMolecule getMolecule(String smiles) throws IOException, CTKException, ChemistryException {
+    return Chemistry.getInstance().getManipulator().getMolecule(smiles, null);
   }
 }

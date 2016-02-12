@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.helm.notation.model.Monomer;
+import org.helm.notation2.Monomer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

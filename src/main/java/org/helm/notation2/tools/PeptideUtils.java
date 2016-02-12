@@ -25,7 +25,7 @@ package org.helm.notation2.tools;
 
 import java.util.List;
 
-import org.helm.notation.model.Monomer;
+import org.helm.notation2.Monomer;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.PeptideUtilsException;

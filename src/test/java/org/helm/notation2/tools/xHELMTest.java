@@ -36,12 +36,13 @@ import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
-import org.helm.notation2.tools.XHELM;
+import org.helm.notation2.tools.xHelmNotationExporter;
 import org.jdom2.JDOMException;
 import org.testng.annotations.Test;
 
 public class xHELMTest {
 
+  @Test
   public void testxHELMExamples() throws ExceptionState, IOException, JDOMException, FastaFormatException,
       AnalogSequenceException, MonomerException, HELM1FormatException, org.jdom2.JDOMException, NotationException, CTKException, ValidationException, ChemistryException {
     String notation = "RNA1{R(U)P.R(T)P.R(G)P.R(C)}$$$$";
@@ -66,13 +67,13 @@ public class xHELMTest {
   }
 
   private void testxHELM2(String notation) throws ExceptionState, IOException, JDOMException, MonomerException,
-      org.jdom2.JDOMException {
+      org.jdom2.JDOMException, ChemistryException {
     ConverterHELM1ToHELM2 converter = new ConverterHELM1ToHELM2();
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    System.out.println(XHELM.getXHELM2(parserHELM2.getHELM2Notation()));
+    System.out.println(xHelmNotationExporter.getXHELM2(parserHELM2.getHELM2Notation()));
   }
 
   private void testxHELM1(String notation) throws ExceptionState, IOException, JDOMException, MonomerException,
@@ -82,6 +83,6 @@ public class xHELMTest {
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
 
-    System.out.println(XHELM.getXHELM(parserHELM2.getHELM2Notation()));
+    System.out.println(xHelmNotationExporter.getXHELM(parserHELM2.getHELM2Notation()));
   }
 }

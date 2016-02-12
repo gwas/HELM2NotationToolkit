@@ -32,14 +32,14 @@ import java.util.Map;
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
-import org.helm.notation.model.Attachment;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.DeepCopy;
+import org.helm.notation2.Attachment;
 import org.helm.notation2.Chemistry;
+import org.helm.notation2.DeepCopy;
+import org.helm.notation2.Monomer;
+import org.helm.notation2.MonomerFactory;
+import org.helm.notation2.MonomerStore;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;
@@ -128,13 +128,13 @@ public final class MethodsMonomerUtils {
       } else {
         try {
           int count = Integer.parseInt(monomerNotation.getCount());
-          if (count == 0) {
+          if (count != 1) {
             throw new HELM2HandledException("Functions can't be called for HELM2 objects");
           }
 
-          for (int j = 0; j < count; j++) {
-            items.addAll(Validation.getAllMonomersOnlyBase(monomerNotation));
-          }
+          // for (int j = 0; j < count; j++) {
+          items.addAll(Validation.getAllMonomersOnlyBase(monomerNotation));
+          // }
         } catch (NumberFormatException | JDOMException | MonomerException | IOException e) {
           e.printStackTrace();
           throw new HELM2HandledException("Functions can't be called for HELM2 objects");
@@ -196,6 +196,9 @@ public final class MethodsMonomerUtils {
    */
   public static Monomer getMonomer(String type, String id, String info) throws MonomerException, NotationException, ChemistryException {
     try {
+      if (id.startsWith("[") && id.endsWith("]")) {
+        id = id.substring(1, id.length() - 1);
+      }
       MonomerFactory monomerFactory = MonomerFactory.getInstance();
       MonomerStore monomerStore = monomerFactory.getMonomerStore();
       Monomer monomer;
@@ -248,7 +251,7 @@ public final class MethodsMonomerUtils {
     }
   }
 
-  public static Monomer generateTemporaryMonomer(String id, String polymerType, String naturalAnalog) throws NotationException, MonomerLoadingException {
+  public static Monomer generateTemporaryMonomer(String id, String polymerType, String naturalAnalog) throws NotationException, MonomerLoadingException, ChemistryException {
     String uniqueSmiles = id;
 
     String alternateId = generateNextAdHocMonomerID(polymerType);
@@ -338,7 +341,7 @@ public final class MethodsMonomerUtils {
     }
   }
 
-  private static String generateNextAdHocMonomerID(String polymerType) throws MonomerLoadingException {
+  private static String generateNextAdHocMonomerID(String polymerType) throws MonomerLoadingException, ChemistryException {
     Map<String, Monomer> internalMonomers = null;
     internalMonomers = MonomerFactory.getInstance().getMonomerDB().get(polymerType);
 

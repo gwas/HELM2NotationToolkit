@@ -28,10 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.model.Monomer;
+import org.helm.notation2.Monomer;
+import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
 import org.helm.notation2.exception.RNAUtilsException;
@@ -351,9 +352,11 @@ public final class ChangeObjects {
    * @throws IOException
    * @throws JDOMException
    * @throws MonomerException
+   * @throws ChemistryException
+   * @throws CTKException
    */
   public final static void replaceMonomer(HELM2Notation helm2notation, String polymerType, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException,
-      MonomerException {
+      MonomerException, ChemistryException, CTKException {
     validateMonomerReplacement(polymerType, existingMonomerID, newMonomerID);
     for (int i = 0; i < helm2notation.getListOfPolymers().size(); i++) {
       if (helm2notation.getListOfPolymers().get(i).getPolymerID().getType().equals(polymerType)) {
@@ -379,8 +382,11 @@ public final class ChangeObjects {
    * @throws NotationException
    * @throws IOException
    * @throws JDOMException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  public final static MonomerNotation replaceMonomerNotation(MonomerNotation monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
+  public final static MonomerNotation replaceMonomerNotation(MonomerNotation monomerNotation, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException,
+      ChemistryException, CTKException {
     /* Nucleotide */
     if (monomerNotation instanceof MonomerNotationUnitRNA) {
       List<String> result = generateIDForNucleotide(((MonomerNotationUnitRNA) monomerNotation), existingMonomerID, newMonomerID);
@@ -490,8 +496,11 @@ public final class ChangeObjects {
    * @throws NotationException
    * @throws IOException
    * @throws JDOMException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  public final static MonomerNotationList replaceMonomerNotationList(MonomerNotationList object, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException {
+  public final static MonomerNotationList replaceMonomerNotationList(MonomerNotationList object, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException,
+      ChemistryException, CTKException {
     MonomerNotationList newObject = null;
     boolean hasChanged = false;
     StringBuilder sb = new StringBuilder();
@@ -562,8 +571,10 @@ public final class ChangeObjects {
    * @param annotation Annotation of the MonomerNotation
    * @return MonomerNotation in String format
    * @throws MonomerLoadingException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private final static String generateIDRNA(String id, String count, String annotation) throws MonomerLoadingException {
+  private final static String generateIDRNA(String id, String count, String annotation) throws MonomerLoadingException, ChemistryException, CTKException {
     String result = id;
     if (result.startsWith("[") && result.endsWith("]")) {
       result = id.substring(1, id.length() - 1);
@@ -573,6 +584,10 @@ public final class ChangeObjects {
         result = "[" + id + "]";
       }
       result = "(" + result + ")";
+    } else {
+      if (id.length() > 1) {
+        result = "[" + id + "]";
+      }
     }
 
     try {
@@ -598,8 +613,11 @@ public final class ChangeObjects {
    * @return List of MonomerNotationUnitRNA in String format and the information
    *         if the MonomerNotationUnitRNA has to be changed
    * @throws MonomerLoadingException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private final static List<String> generateIDForNucleotide(MonomerNotationUnitRNA object, String existingMonomerID, String newMonomerID) throws MonomerLoadingException {
+  private final static List<String> generateIDForNucleotide(MonomerNotationUnitRNA object, String existingMonomerID, String newMonomerID) throws MonomerLoadingException, ChemistryException,
+      CTKException {
     List<String> result = new ArrayList<String>();
     String hasChanged = null;
     StringBuilder sb = new StringBuilder();
@@ -660,7 +678,7 @@ public final class ChangeObjects {
 
   private static boolean validateMonomerReplacement(String polymerType,
       String existingMonomerID, String newMonomerID) throws MonomerException, IOException,
-          JDOMException, NotationException {
+          JDOMException, NotationException, ChemistryException, CTKException {
 
     if (null == polymerType || polymerType.length() == 0) {
       throw new NotationException(
@@ -735,14 +753,15 @@ public final class ChangeObjects {
    * @throws JDOMException
    * @throws ChemistryException
    * @throws HELM2HandledException
+   * @throws CTKException
    */
-  public static final void replaceSMILESWithTemporaryIds(HELM2Notation helm2notation) throws NotationException, IOException, JDOMException, HELM2HandledException, ChemistryException {
+  public static final void replaceSMILESWithTemporaryIds(HELM2Notation helm2notation) throws NotationException, IOException, JDOMException, HELM2HandledException, ChemistryException, CTKException {
     for (int i = 0; i < helm2notation.getListOfPolymers().size(); i++) {
       /* First save intern smiles to the MonomerFactory */
       MethodsMonomerUtils.getListOfHandledMonomers(helm2notation.getListOfPolymers().get(i).getListMonomers());
 
       for (int j = 0; j < helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().size(); j++) {
-        MonomerNotation monomerNotation = ChangeObjects.replaceSMILESWithTemporaryIdsMonomerNotation(helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().get(j));
+        MonomerNotation monomerNotation = replaceSMILESWithTemporaryIdsMonomerNotation(helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().get(j));
         if (monomerNotation != null) {
           helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().set(j, monomerNotation);
         }
@@ -757,8 +776,10 @@ public final class ChangeObjects {
    * @throws NotationException
    * @throws IOException
    * @throws JDOMException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private static MonomerNotation replaceSMILESWithTemporaryIdsMonomerNotation(MonomerNotation monomerNotation) throws NotationException, IOException, JDOMException {
+  private static MonomerNotation replaceSMILESWithTemporaryIdsMonomerNotation(MonomerNotation monomerNotation) throws NotationException, IOException, JDOMException, ChemistryException, CTKException {
     /* Nucleotide */
     if (monomerNotation instanceof MonomerNotationUnitRNA) {
       List<String> result = ChangeObjects.generateIDForNucleotide(((MonomerNotationUnitRNA) monomerNotation));
@@ -775,7 +796,7 @@ public final class ChangeObjects {
       return ChangeObjects.produceMonomerNotationUnitWithOtherID(monomerNotation);
     } else if (monomerNotation instanceof MonomerNotationList) {
       /* MonomerNotationList */
-      monomerNotation = ChangeObjects.replaceMonomerNotationList(((MonomerNotationList) monomerNotation));
+      monomerNotation = replaceMonomerNotationList(((MonomerNotationList) monomerNotation));
       if (monomerNotation != null) {
         return monomerNotation;
       }
@@ -798,8 +819,10 @@ public final class ChangeObjects {
    * @throws JDOMException
    * @throws IOException
    * @throws NotationException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private static MonomerNotation replaceMonomerNotationGroup(MonomerNotationGroup monomerNotationGroup) throws NotationException, IOException, JDOMException {
+  private static MonomerNotation replaceMonomerNotationGroup(MonomerNotationGroup monomerNotationGroup) throws NotationException, IOException, JDOMException, ChemistryException, CTKException {
     MonomerNotationGroup newObject = null;
     boolean hasChanged = false;
     StringBuilder sb = new StringBuilder();
@@ -836,8 +859,10 @@ public final class ChangeObjects {
    * @throws JDOMException
    * @throws IOException
    * @throws NotationException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private static MonomerNotation replaceMonomerNotationList(MonomerNotationList monomerNotationList) throws NotationException, IOException, JDOMException {
+  private static MonomerNotation replaceMonomerNotationList(MonomerNotationList monomerNotationList) throws NotationException, IOException, JDOMException, ChemistryException, CTKException {
     MonomerNotationList newObject = null;
     boolean hasChanged = false;
     StringBuilder sb = new StringBuilder();
@@ -879,8 +904,10 @@ public final class ChangeObjects {
    * @return
    * @throws IOException
    * @throws NotationException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private static MonomerNotation produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation) throws NotationException, IOException {
+  private static MonomerNotation produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation) throws NotationException, IOException, ChemistryException, CTKException {
     String newID = ChangeObjects.produceID(monomerNotation.getID(), monomerNotation.getType());
     if (newID != null) {
       MonomerNotationUnit result = new MonomerNotationUnit(newID, monomerNotation.getType());
@@ -898,8 +925,10 @@ public final class ChangeObjects {
    * @param monomerNotationUnitRNA
    * @return
    * @throws MonomerLoadingException
+   * @throws ChemistryException
+   * @throws CTKException
    */
-  private static List<String> generateIDForNucleotide(MonomerNotationUnitRNA monomerNotationUnitRNA) throws MonomerLoadingException {
+  private static List<String> generateIDForNucleotide(MonomerNotationUnitRNA monomerNotationUnitRNA) throws MonomerLoadingException, ChemistryException, CTKException {
     List<String> result = new ArrayList<String>();
     String hasChanged = null;
     StringBuilder sb = new StringBuilder();
@@ -930,12 +959,11 @@ public final class ChangeObjects {
     return result;
   }
 
-  private static String produceID(String oldID, String polymerType) throws MonomerLoadingException {
+  private static String produceID(String oldID, String polymerType) throws MonomerLoadingException, ChemistryException, CTKException {
     HELM2NotationUtils.LOG.debug("SMILES string?: " + oldID);
     if (oldID.startsWith("[") && oldID.endsWith("]")) {
       oldID = oldID.substring(1, oldID.length() - 1);
     }
-    System.out.println(oldID);
     if (MonomerFactory.getInstance().getMonomerStore().getMonomer(polymerType, oldID) == null) {
       return MonomerFactory.getInstance().getSmilesMonomerDB().get(oldID).getAlternateId();
     } else {
@@ -954,8 +982,10 @@ public final class ChangeObjects {
    * @throws JDOMException
    * @throws HELM2HandledException
    * @throws org.helm.notation.NotationException
+   * @throws ChemistryException
    */
-  public static void hybridize(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation.NotationException {
+  public static void hybridize(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation.NotationException,
+      ChemistryException {
     if (HELM2NotationUtils.getAllBasePairConnections(helm2notation.getListOfConnections()).isEmpty() && HELM2NotationUtils.getRNAPolymers(helm2notation.getListOfPolymers()).size() == 2) {
       List<ConnectionNotation> connections =
           RNAUtils.hybridize(HELM2NotationUtils.getRNAPolymers(helm2notation.getListOfPolymers()).get(0), HELM2NotationUtils.getRNAPolymers(helm2notation.getListOfPolymers()).get(1));

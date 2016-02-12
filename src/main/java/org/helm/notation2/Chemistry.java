@@ -36,8 +36,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.ManipulatorFactory;
-import org.helm.chemtoolkit.ManipulatorFactory.ManipulatorType;
-import org.helm.notation.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
 
 import sun.misc.IOUtils;
@@ -54,9 +52,7 @@ public final class Chemistry {
 
   private static Chemistry _instance;
 
-  private static ManipulatorFactory.ManipulatorType type;
-
-  private static String chemistry;
+  public static String chemistry;
 
   private static AbstractChemistryManipulator manipulator;
 
@@ -68,26 +64,16 @@ public final class Chemistry {
   private Chemistry() throws ChemistryException {
     refresh();
     readConfigFile();
-    setManipulatorType();
     try {
-      manipulator = ManipulatorFactory.buildManipulator(type);
+      manipulator = ManipulatorFactory.buildManipulator(chemistry);
     } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       e.printStackTrace();
       throw new ChemistryException("Chemistry Engine could not be initialized");
     }
   }
 
-  /**
-   * method to define the ManipulatorType default type is CDK
-   */
-  private void setManipulatorType() {
-    if (chemistry.equals("MARVIN")) {
-      type = ManipulatorFactory.ManipulatorType.MARVIN;
-    } else if (chemistry.equals("CDK")) {
-      type = ManipulatorFactory.ManipulatorType.CDK;
-    } else {
-      type = ManipulatorFactory.ManipulatorType.CDK;
-    }
+  public String getChemistry() {
+    return chemistry;
   }
 
   /**
@@ -114,7 +100,7 @@ public final class Chemistry {
    * method to set the chemistry-plugin to the default one (MARVIN)
    */
   private void resetConfigToDefault() {
-    chemistry = "MARVIN";
+    chemistry = "org.helm.chemtoolkit.chemaxon.ChemaxonManipulator";
   }
 
   /**
@@ -137,15 +123,6 @@ public final class Chemistry {
    */
   public synchronized AbstractChemistryManipulator getManipulator() {
     return manipulator;
-  }
-
-  /**
-   * method to get the ManipulatorType
-   *
-   * @return ManipulatorType
-   */
-  public ManipulatorType getManipulatorType() {
-    return type;
   }
 
   public void refresh() {

@@ -31,13 +31,12 @@ import java.util.List;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.xHelmNotationParser;
 import org.helm.notation2.MoleculeInfo;
+import org.helm.notation2.Monomer;
+import org.helm.notation2.MonomerFactory;
+import org.helm.notation2.MonomerStore;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.calculation.MoleculeInformation;
 import org.helm.notation2.exception.BuilderMoleculeException;
@@ -52,9 +51,6 @@ import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.PeptideUtilsException;
 import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.exception.ValidationException;
-import org.helm.notation2.parser.ConverterHELM1ToHELM2;
-import org.helm.notation2.parser.ParserHELM2;
-import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -101,8 +97,9 @@ public class WebService {
    * @throws MonomerLoadingException
    * @throws IOException
    * @throws MonomerException
+   * @throws ChemistryException
    */
-  private void updateMonomerStore(MonomerStore monomerStore) throws MonomerLoadingException, IOException, MonomerException {
+  private void updateMonomerStore(MonomerStore monomerStore) throws MonomerLoadingException, IOException, MonomerException, ChemistryException {
     for (Monomer monomer : monomerStore.getAllMonomersList()) {
       MonomerFactory.getInstance().getMonomerStore().addNewMonomer(monomer);
       // save monomer db to local file after successful update //
@@ -120,8 +117,9 @@ public class WebService {
    * @throws IOException
    * @throws JDOMException
    * @throws MonomerException
+   * @throws ChemistryException
    */
-  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException, IOException, MonomerException {
+  private HELM2Notation readNotation(String notation) throws ParserException, JDOMException, IOException, MonomerException, ChemistryException {
     /* xhelm notation */
     if (notation.contains("<Xhelm>")) {
       LOG.info("xhelm is used as input");
@@ -158,7 +156,8 @@ public class WebService {
 
       return helm2notation;
 
-    } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException | ParserException | JDOMException | IOException | NotationException e) {
+    } catch (MonomerException | GroupingNotationException | ConnectionNotationException | PolymerIDsException | ParserException | JDOMException | IOException | NotationException
+        | org.helm.notation2.parser.exceptionparser.NotationException e) {
       e.printStackTrace();
       LOG.info("Validation was not successful");
       LOG.error(e.getMessage());
@@ -260,8 +259,10 @@ public class WebService {
    * @throws JDOMException
    * @throws IOException
    * @throws org.helm.notation2.parser.exceptionparser.NotationException
+   * @throws ChemistryException
    */
-  public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException, IOException, JDOMException, org.helm.notation2.parser.exceptionparser.NotationException {
+  public String generateHELMFromFastaNucleotide(String notation) throws FastaFormatException, IOException, JDOMException, org.helm.notation2.parser.exceptionparser.NotationException,
+      ChemistryException {
     String result = FastaFormat.generateRNAPolymersFromFastaFormatHELM1(notation).toHELM2();
     setMonomerFactoryToDefault(notation);
     return result;
@@ -274,8 +275,9 @@ public class WebService {
    * @return HELM
    * @throws FastaFormatException if the FASTA input is not valid
    * @throws MonomerLoadingException if the MonomerFactory can not be loaded
+   * @throws ChemistryException
    */
-  public String generateHELMFromFastaPeptide(String notation) throws FastaFormatException, MonomerLoadingException {
+  public String generateHELMFromFastaPeptide(String notation) throws FastaFormatException, MonomerLoadingException, ChemistryException {
     String result = FastaFormat.generatePeptidePolymersFromFASTAFormatHELM1(notation).toHELM2();
     setMonomerFactoryToDefault(notation);
     return result;
@@ -350,8 +352,9 @@ public class WebService {
    *           notation object can not be built
    * @throws FastaFormatException if the peptide sequence is not in the right
    *           format
+   * @throws ChemistryException
    */
-  public String readPeptide(String peptide) throws FastaFormatException, org.helm.notation2.parser.exceptionparser.NotationException {
+  public String readPeptide(String peptide) throws FastaFormatException, org.helm.notation2.parser.exceptionparser.NotationException, ChemistryException {
     return SequenceConverter.readPeptide(peptide).toHELM2();
   }
 
@@ -366,8 +369,9 @@ public class WebService {
    *           HELM
    * @throws JDOMException
    * @throws IOException
+   * @throws ChemistryException
    */
-  public String readRNA(String rna) throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, IOException, JDOMException {
+  public String readRNA(String rna) throws org.helm.notation2.parser.exceptionparser.NotationException, FastaFormatException, IOException, JDOMException, ChemistryException {
     return SequenceConverter.readRNA(rna).toHELM2();
   }
 
@@ -425,8 +429,9 @@ public class WebService {
    *
    * @param helm input HELM
    * @throws MonomerLoadingException if the MonomerFactory can not be loaded
+   * @throws ChemistryException
    */
-  private void setMonomerFactoryToDefault(String helm) throws MonomerLoadingException {
+  private void setMonomerFactoryToDefault(String helm) throws MonomerLoadingException, ChemistryException {
     if (helm.contains("<Xhelm>")) {
       LOG.info("Refresh local Monomer Store in case of Xhelm");
       MonomerFactory.refreshMonomerCache();

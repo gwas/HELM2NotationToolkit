@@ -29,15 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.helm.chemtoolkit.CTKException;
 import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.MonomerStore;
 import org.helm.notation.NotationException;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.Chemistry;
 import org.helm.notation2.InterConnections;
+import org.helm.notation2.Monomer;
+import org.helm.notation2.MonomerFactory;
+import org.helm.notation2.MonomerStore;
 import org.helm.notation2.exception.AttachmentException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ConnectionNotationException;
@@ -93,9 +93,11 @@ public final class Validation {
    * @throws NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    * @throws MonomerLoadingException
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
    */
   public static void validateNotationObjects(HELM2Notation helm2notation) throws PolymerIDsException,
-      MonomerException, GroupingNotationException, ConnectionNotationException, NotationException, ChemistryException, MonomerLoadingException {
+      MonomerException, GroupingNotationException, ConnectionNotationException, NotationException, ChemistryException, MonomerLoadingException,
+      org.helm.notation2.parser.exceptionparser.NotationException {
     LOG.info("Validation process is starting");
     /* all polymer ids have to be unique */
     if (!validateUniquePolymerIDs(helm2notation)) {
@@ -126,10 +128,11 @@ public final class Validation {
    * @return true if all monomers are valid, false otherwise
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    * @throws MonomerLoadingException
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
+   * @throws CTKException
    */
-  protected static boolean validateMonomers(List<MonomerNotation> mon) throws ChemistryException, MonomerLoadingException {
-    List<MonomerNotation> monomerNotations = mon;
-    for (MonomerNotation monomerNotation : monomerNotations) {
+  protected static boolean validateMonomers(List<MonomerNotation> mon) throws ChemistryException, MonomerLoadingException, org.helm.notation2.parser.exceptionparser.NotationException {
+    for (MonomerNotation monomerNotation : mon) {
       if (!(isMonomerValid(monomerNotation.getID(), monomerNotation.getType()))) {
         return false;
       }
@@ -383,8 +386,10 @@ public final class Validation {
    * @return true if the monomer is valid, false otherwise
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    * @throws MonomerLoadingException
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
    */
-  private static boolean isMonomerValid(String str, String type) throws ChemistryException, MonomerLoadingException {
+  private static boolean isMonomerValid(String str, String type) throws ChemistryException, MonomerLoadingException, org.helm.notation2.parser.exceptionparser.NotationException {
+    LOG.info("Is Monomer valid: " + str);
     MonomerFactory monomerFactory = null;
     monomerFactory = MonomerFactory.getInstance();
 
@@ -410,20 +415,20 @@ public final class Validation {
       LOG.info("Unknown types: " + str);
       return true;
     } /* nucleotide */ else if (type.equals("RNA")) {
-      /* change */
-      try {
-        List<String> elements = SimpleNotationParser.getMonomerIDList(str, type, monomerStore);
-        for (String element : elements) {
-          if (!(monomerStore.hasMonomer(type, element))) {
+      List<String> elements = NucleotideParser.getMonomerIDListFromNucleotide(str);
+      for (String element : elements) {
+        if (!(monomerStore.hasMonomer(type, element))) {
+          /* SMILES Check */
+          if (element.startsWith("[") && element.endsWith("]")) {
+            element = element.substring(1, element.length() - 1);
+          }
+          if (!Chemistry.getInstance().getManipulator().validateSMILES(element)) {
             return false;
           }
         }
-        LOG.info("Nucleotide type for RNA: " + str);
-        return true;
-      } catch (NotationException e) {
-        e.printStackTrace();
-        return false;
       }
+      LOG.info("Nucleotide type for RNA: " + str);
+      return true;
 
     }
 

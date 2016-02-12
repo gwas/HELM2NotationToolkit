@@ -34,13 +34,11 @@ import java.util.TreeMap;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerFactory;
 import org.helm.notation.MonomerLoadingException;
 import org.helm.notation.NotationException;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.tools.PermutationAndExpansion;
-import org.helm.notation.tools.SimpleNotationParser;
 import org.helm.notation2.Chemistry;
+import org.helm.notation2.Monomer;
+import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM1FormatException;
 import org.helm.notation2.exception.ValidationException;
@@ -88,7 +86,7 @@ public final class HELM1Utils {
       List<String> ListOfSecondAndThirdSection = setStandardHELMSecondSectionAndThirdSection(helm2notation.getListOfConnections());
       String fourthSection = setStandardHELMFourthSection(helm2notation.getListOfAnnotations());
       return firstSection + "$" + ListOfSecondAndThirdSection.get(0) + "$" + ListOfSecondAndThirdSection.get(1) + "$" + fourthSection + "$V2.0";
-    } catch (HELM1ConverterException | NotationException e) {
+    } catch (HELM1ConverterException | NotationException | org.helm.notation2.parser.exceptionparser.NotationException e) {
       e.printStackTrace();
       throw new HELM1FormatException(e.getMessage());
     }
@@ -106,9 +104,10 @@ public final class HELM1Utils {
    * @throws ValidationException
    * @throws HELM1FormatException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
    */
   private static String setStandardHELMFirstSection(HELM2Notation helm2notation) throws HELM1ConverterException, MonomerLoadingException, NotationException, CTKException, HELM1FormatException,
-      ValidationException, ChemistryException {
+      ValidationException, ChemistryException, org.helm.notation2.parser.exceptionparser.NotationException {
     StringBuilder notation = new StringBuilder();
 
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
@@ -197,7 +196,7 @@ public final class HELM1Utils {
       String secondSection = setCanonicalHELMSecondSection(convertsortedIdstoIds, helm2notation.getListOfConnections());
       LOG.info("Second Section of canonical HELM was generated");
       return firstSection + "$" + secondSection + "$" + "" + "$" + "" + "$V2.0";
-    } catch (ClassNotFoundException | IOException | HELM1ConverterException | ValidationException e) {
+    } catch (ClassNotFoundException | IOException | HELM1ConverterException | ValidationException | org.helm.notation2.parser.exceptionparser.NotationException e) {
       e.printStackTrace();
       LOG.error("Canonical HELM 1 can not be generated due to HELM2 features");
       throw new HELM1FormatException("Canonical HELM 1 can not be generated due to HELM2 features " + e.getMessage() + e.getCause());
@@ -217,9 +216,10 @@ public final class HELM1Utils {
    * @throws ClassNotFoundException
    * @throws ValidationException if a smiles as monomer is not valid
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
    */
   private static Object[] setCanonicalHELMFirstSection(HELM2Notation helm2notation) throws HELM1ConverterException, HELM1FormatException, ClassNotFoundException, IOException, ValidationException,
-      ChemistryException {
+      ChemistryException, org.helm.notation2.parser.exceptionparser.NotationException {
     Map<String, String> idLabelMap = new HashMap<String, String>();
     Map<String, List<String>> labelIdMap = new TreeMap<String, List<String>>();
 
@@ -358,12 +358,14 @@ public final class HELM1Utils {
    * @throws ValidationException if the smiles representation of a monomer is
    *           not valid
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws org.helm.notation2.parser.exceptionparser.NotationException
    */
   /*
    * method has to be changed !!! including smiles -> to generate canonical
    * representation; this method has to be tested in further detail
    */
-  private static Map<String, String> findAdHocMonomers(String elements, String type) throws HELM1FormatException, ValidationException, ChemistryException {
+  private static Map<String, String> findAdHocMonomers(String elements, String type) throws HELM1FormatException, ValidationException, ChemistryException,
+      org.helm.notation2.parser.exceptionparser.NotationException {
     /* find adHocMonomers */
     try {
       Map<String, String> listMatches = new HashMap<String, String>();
@@ -371,7 +373,7 @@ public final class HELM1Utils {
       if (type == "RNA") {
         for (String element : listelements) {
           List<String> monomerIds;
-          monomerIds = SimpleNotationParser.getMonomerIDList(element, type, MonomerFactory.getInstance().getMonomerStore());
+          monomerIds = NucleotideParser.getMonomerIDListFromNucleotide(element);
 
           for (String id : monomerIds) {
 
@@ -400,7 +402,7 @@ public final class HELM1Utils {
       }
 
       return listMatches;
-    } catch (MonomerLoadingException | NotationException e) {
+    } catch (MonomerLoadingException e) {
       e.printStackTrace();
       throw new HELM1FormatException(e.getMessage());
     }

@@ -22,7 +22,7 @@ import java.io.IOException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 // import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.util.EntityUtils;
-import org.helm.notation.model.Nucleotide;
+import org.helm.notation2.Nucleotide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

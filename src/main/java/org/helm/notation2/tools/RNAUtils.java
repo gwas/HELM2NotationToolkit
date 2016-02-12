@@ -30,13 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.helm.notation.MonomerException;
-import org.helm.notation.NucleotideFactory;
 import org.helm.notation.NucleotideLoadingException;
-import org.helm.notation.StructureException;
-import org.helm.notation.model.Monomer;
-import org.helm.notation.model.Nucleotide;
-import org.helm.notation.tools.NucleotideSequenceParser;
-import org.helm.notation.tools.SimpleNotationParser;
+import org.helm.notation2.Monomer;
+import org.helm.notation2.Nucleotide;
+import org.helm.notation2.NucleotideFactory;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -65,6 +62,8 @@ public class RNAUtils {
   private static final Logger LOG = LoggerFactory.getLogger(RNAUtils.class);
 
   private static Map<String, String> complementMap = null;
+
+  public static final int MINUMUM_MATCH_FRAGMENT_LENGTH = 2;
 
   /**
    * Default constructor.
@@ -149,10 +148,62 @@ public class RNAUtils {
    * @param seq1 single letter, all upper case nucleotide sequence
    * @param seq2 single letter, all upper case nucleotide sequence
    * @return
-   * @throws org.helm.notation.NotationException
+   * @throws NotationException
    */
-  public static String getMaxMatchFragment(String seq1, String seq2) throws org.helm.notation.NotationException {
-    return NucleotideSequenceParser.getMaxMatchFragment(seq1, seq2);
+  public static String getMaxMatchFragment(String seq1, String seq2) throws NotationException {
+    return getMaxMatchFragment(seq1, seq2, MINUMUM_MATCH_FRAGMENT_LENGTH);
+  }
+
+  /**
+   * This method returns the largest matched fragment between two sequences,
+   * replace T with U before match
+   *
+   * @param seq1 single letter, all upper case nucleotide sequence
+   * @param seq2 single letter, all upper case nucleotide sequence
+   * @param minLength - minimum fragment length
+   * @return largest match fragment
+   */
+  public static String getMaxMatchFragment(String seq1, String seq2,
+      int minLength) throws NotationException {
+    if (null == seq1 || null == seq2) {
+      throw new NotationException("Both sequences must not be null ");
+    }
+
+    if (!seq1.equals(seq1.toUpperCase())
+        || !seq2.equals(seq2.toUpperCase())) {
+      throw new NotationException(
+          "Both sequences must be natural nucleotide sequence in upper case ");
+    }
+
+    String longSeq, shortSeq;
+
+    if (seq1.length() > seq2.length()) {
+      longSeq = seq1;
+      shortSeq = seq2;
+    } else {
+      longSeq = seq2;
+      shortSeq = seq1;
+    }
+    // replace T with U
+    longSeq = longSeq.replaceAll("T", "U");
+    shortSeq = shortSeq.replaceAll("T", "U");
+
+    int min = MINUMUM_MATCH_FRAGMENT_LENGTH;
+    if (minLength > min) {
+      min = minLength;
+    }
+
+    for (int len = shortSeq.length(); len > min; len--) {
+      for (int i = 0; i <= shortSeq.length() - len; i++) {
+        String tmp = shortSeq.substring(i, i + len);
+
+        if (longSeq.contains(tmp)) {
+          return tmp;
+        }
+      }
+    }
+
+    return "";
   }
 
   /**
@@ -510,8 +561,9 @@ public class RNAUtils {
    * @return sequence
    * @throws RNAUtilsException
    * @throws HELM2HandledException
+   * @throws ChemistryException
    */
-  public static String getSequence(PolymerNotation one) throws RNAUtilsException, HELM2HandledException {
+  public static String getSequence(PolymerNotation one) throws RNAUtilsException, HELM2HandledException, ChemistryException {
     checkRNA(one);
 
     List<Nucleotide> nucleotideList = getNucleotideList(one);
@@ -530,8 +582,9 @@ public class RNAUtils {
    * @return modified nucleotide sequence
    * @throws RNAUtilsException
    * @throws HELM2HandledException
+   * @throws ChemistryException
    */
-  public static String getModifiedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  public static String getModifiedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException, ChemistryException {
     checkRNA(polymer);
     List<Nucleotide> nucleotides = getNucleotideList(polymer);
     StringBuilder sb = new StringBuilder();
@@ -554,9 +607,10 @@ public class RNAUtils {
    * @throws JDOMException
    * @throws IOException
    * @throws org.helm.notation.NotationException
+   * @throws ChemistryException
    */
   public static List<ConnectionNotation> hybridize(PolymerNotation one, PolymerNotation two) throws RNAUtilsException, NotationException, HELM2HandledException, JDOMException, IOException,
-      org.helm.notation.NotationException {
+      org.helm.notation.NotationException, ChemistryException {
     initComplementMap();
     checkRNA(one);
     checkRNA(two);
@@ -589,7 +643,7 @@ public class RNAUtils {
       seq1NucStart = seq1.indexOf(maxSeqMatch);
       for (int i = 0; i < seq1NucStart; i++) {
         Nucleotide nuc = seq1NucList.get(i);
-        int monomerCount = SimpleNotationParser.getMonomerCountForRNA(nuc.getNotation());
+        int monomerCount = NucleotideParser.getMonomerCountForRNA(nuc.getNotation());
         seq1MonomerStart = seq1MonomerStart + monomerCount;
       }
 
@@ -598,7 +652,7 @@ public class RNAUtils {
       seq2NucStart = seq2.length() - seqMatchLength - compSeq2NucStart;
       for (int i = 0; i < seq2NucStart; i++) {
         Nucleotide nuc = seq2NucList.get(i);
-        int monomerCount = SimpleNotationParser.getMonomerCountForRNA(nuc.getNotation());
+        int monomerCount = NucleotideParser.getMonomerCountForRNA(nuc.getNotation());
         seq2MonomerStart = seq2MonomerStart + monomerCount;
       }
 
@@ -666,8 +720,9 @@ public class RNAUtils {
    * @throws RNAUtilsException
    * @throws HELM2HandledException
    * @throws NucleotideLoadingException
+   * @throws ChemistryException
    */
-  public static String getNucleotideSequence(PolymerNotation polymer) throws NotationException, RNAUtilsException, HELM2HandledException, NucleotideLoadingException {
+  public static String getNucleotideSequence(PolymerNotation polymer) throws NotationException, RNAUtilsException, HELM2HandledException, NucleotideLoadingException, ChemistryException {
 
     List<Nucleotide> nucleotides = getNucleotideList(polymer);
     StringBuffer sb = new StringBuffer();
@@ -712,21 +767,27 @@ public class RNAUtils {
    * @throws RNAUtilsException if the polymer is not rna or dna or the
    *           nucleotide can not be read
    * @throws HELM2HandledException if the polymer contains HELM2 features
+   * @throws ChemistryException
    *
    */
-  public static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  public static List<Nucleotide> getNucleotideList(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException, ChemistryException {
     checkRNA(polymer);
     List<Nucleotide> nucleotides = new ArrayList<Nucleotide>();
     /* check for HELM2Elements */
     List<MonomerNotation> monomerNotations = polymer.getPolymerElements().getListOfElements();
-    for (MonomerNotation monomerNotation : monomerNotations) {
+    for (int i = 0; i < monomerNotations.size(); i++) {
+      MonomerNotation monomerNotation = monomerNotations.get(i);
       if ((!(monomerNotation instanceof MonomerNotationUnitRNA)) || Integer.parseInt(monomerNotation.getCount()) != 1) {
         LOG.info("MonomerNotation contains HELM2 Elements " + monomerNotation);
         throw new HELM2HandledException("HELM2 Elements are involved");
       }
       try {
-        nucleotides.add(SimpleNotationParser.getNucleotideList(monomerNotation.getID()).get(0));
-      } catch (org.helm.notation.NotationException | MonomerException | IOException | JDOMException | StructureException e) {
+        boolean last = false;
+        if (i == monomerNotations.size() - 1) {
+          last = true;
+        }
+        nucleotides.add(NucleotideParser.convertToNucleotide(monomerNotation.getID(), last));
+      } catch (MonomerException | NucleotideLoadingException | NotationException | org.helm.notation.NotationException e) {
         e.printStackTrace();
         throw new RNAUtilsException("Nucleotide can not be read " + e.getMessage());
       }
@@ -741,8 +802,9 @@ public class RNAUtils {
    * @return trimmed nucleotide sequence
    * @throws RNAUtilsException
    * @throws HELM2HandledException
+   * @throws ChemistryException
    */
-  public static String getTrimmedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException {
+  public static String getTrimmedNucleotideSequence(PolymerNotation polymer) throws RNAUtilsException, HELM2HandledException, ChemistryException {
     checkRNA(polymer);
     List<Nucleotide> list = getNucleotideList(polymer);
 

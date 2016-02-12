@@ -26,14 +26,11 @@ package org.helm.notation2.tools;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.helm.notation.NucleotideFactory;
-import org.helm.notation.model.Nucleotide;
-import org.helm.notation.tools.NucleotideSequenceParser;
+import org.helm.chemtoolkit.CTKException;
+import org.helm.notation2.Nucleotide;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
@@ -82,10 +79,11 @@ public class SiRNANotation {
    * @throws RNAUtilsException
    * @throws org.helm.notation.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws CTKException
    */
   public static HELM2Notation getSiRNANotation(String senseSeq, String antiSenseSeq) throws NotationException, FastaFormatException, IOException, JDOMException, HELM2HandledException,
-      RNAUtilsException, org.helm.notation.NotationException, ChemistryException {
-    return getSirnaNotation(senseSeq, antiSenseSeq, NucleotideSequenceParser.RNA_DESIGN_NONE);
+      RNAUtilsException, org.helm.notation.NotationException, ChemistryException, CTKException {
+    return getSirnaNotation(senseSeq, antiSenseSeq, NucleotideParser.RNA_DESIGN_NONE);
   }
 
   /**
@@ -104,9 +102,10 @@ public class SiRNANotation {
    * @throws RNAUtilsException
    * @throws org.helm.notation.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
+   * @throws CTKException
    */
   public static HELM2Notation getSirnaNotation(String senseSeq, String antiSenseSeq, String rnaDesignType) throws NotationException, FastaFormatException, IOException, JDOMException,
-      HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException, ChemistryException {
+      HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException, ChemistryException, CTKException {
     HELM2Notation helm2notation = null;
     if (senseSeq != null && senseSeq.length() > 0) {
       helm2notation = SequenceConverter.readRNA(senseSeq);
@@ -148,7 +147,7 @@ public class SiRNANotation {
       String analogSeqSS = RNAUtils.getNaturalAnalogSequence(one).replaceAll("T", "U");
       String analogSeqAS = new StringBuilder(RNAUtils.getNaturalAnalogSequence(two).replaceAll("T", "U")).toString();
 
-      if (NucleotideSequenceParser.RNA_DESIGN_NONE.equalsIgnoreCase(rnaDesignType)) {
+      if (NucleotideParser.RNA_DESIGN_NONE.equalsIgnoreCase(rnaDesignType)) {
         String normalCompAS = RNAUtils.getNaturalAnalogSequence(RNAUtils.getComplement(two)).replace("T", "U");
         String maxMatch = RNAUtils.getMaxMatchFragment(analogSeqSS, new StringBuilder(normalCompAS).reverse().toString());
         if (maxMatch.length() > 0) {
@@ -165,13 +164,13 @@ public class SiRNANotation {
             connections.add(connection);
           }
         }
-      } else if (NucleotideSequenceParser.RNA_DESIGN_TUSCHL_19_PLUS_2.equalsIgnoreCase(rnaDesignType)) {
+      } else if (NucleotideParser.RNA_DESIGN_TUSCHL_19_PLUS_2.equalsIgnoreCase(rnaDesignType)) {
         int matchLength = 19;
         connections = hybridizationWithLengthFromStart(one, two, analogSeqSS, analogSeqAS, matchLength);
-      } else if (NucleotideSequenceParser.RNA_DESIGN_DICER_27_R.equalsIgnoreCase(rnaDesignType)) {
+      } else if (NucleotideParser.RNA_DESIGN_DICER_27_R.equalsIgnoreCase(rnaDesignType)) {
         int matchLength = 25;
         connections = hybridizationWithLengthFromStart(one, two, analogSeqSS, analogSeqAS, matchLength);
-      } else if (NucleotideSequenceParser.RNA_DESIGN_DICER_27_L.equalsIgnoreCase(rnaDesignType)) {
+      } else if (NucleotideParser.RNA_DESIGN_DICER_27_L.equalsIgnoreCase(rnaDesignType)) {
         int matchLength = 25;
         connections = hybridizationWithLengthFromStart(one, two, analogSeqSS, analogSeqAS, matchLength);
       } else {
@@ -225,13 +224,14 @@ public class SiRNANotation {
    * @throws HELM2HandledException
    * @throws RNAUtilsException
    * @throws NotationException
+   * @throws ChemistryException
    */
-  private static boolean validateSiRNADesign(PolymerNotation one, PolymerNotation two, String rnaDesignType) throws RNAUtilsException, HELM2HandledException, NotationException {
-    if (NucleotideSequenceParser.RNA_DESIGN_NONE.equalsIgnoreCase(rnaDesignType)) {
+  private static boolean validateSiRNADesign(PolymerNotation one, PolymerNotation two, String rnaDesignType) throws RNAUtilsException, HELM2HandledException, NotationException, ChemistryException {
+    if (NucleotideParser.RNA_DESIGN_NONE.equalsIgnoreCase(rnaDesignType)) {
       return true;
     }
 
-    if (!NucleotideSequenceParser.SUPPORTED_DESIGN_LIST.contains(rnaDesignType)) {
+    if (!NucleotideParser.SUPPORTED_DESIGN_LIST.contains(rnaDesignType)) {
       throw new NotationException("Unsupported RNA Design Type '"
           + rnaDesignType + "'");
     }
@@ -239,7 +239,7 @@ public class SiRNANotation {
     List<Nucleotide> senseNucList = RNAUtils.getNucleotideList(one);
     List<Nucleotide> antisenseNucList = RNAUtils.getNucleotideList(two);
 
-    if (rnaDesignType.equals(NucleotideSequenceParser.RNA_DESIGN_TUSCHL_19_PLUS_2)) {
+    if (rnaDesignType.equals(NucleotideParser.RNA_DESIGN_TUSCHL_19_PLUS_2)) {
       if (senseNucList.size() != 21) {
         throw new NotationException(
             "Sense strand for Tuschl 19+2 design must have 21 nucleotides");
@@ -248,7 +248,7 @@ public class SiRNANotation {
         throw new NotationException(
             "Antisense strand for Tuschl 19+2 design must have 21 nucleotides");
       }
-    } else if (rnaDesignType.equals(NucleotideSequenceParser.RNA_DESIGN_DICER_27_R)) {
+    } else if (rnaDesignType.equals(NucleotideParser.RNA_DESIGN_DICER_27_R)) {
       if (senseNucList.size() != 25) {
         throw new NotationException(
             "Sense strand for Dicer 27R design must have 25 nucleotides");
@@ -257,7 +257,7 @@ public class SiRNANotation {
         throw new NotationException(
             "Antisense strand for Dicer 27R design must have 27 nucleotides");
       }
-    } else if (rnaDesignType.equals(NucleotideSequenceParser.RNA_DESIGN_DICER_27_L)) {
+    } else if (rnaDesignType.equals(NucleotideParser.RNA_DESIGN_DICER_27_L)) {
       if (senseNucList.size() != 27) {
         throw new NotationException(
             "Sense strand for Dicer 27L design must have 27 nucleotides");
