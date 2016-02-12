@@ -28,7 +28,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;
 
@@ -89,7 +88,7 @@ public final class Chemistry {
     try {
       PropertiesConfiguration conf = new PropertiesConfiguration(CONFIG_FILE_PATH);
       chemistry = conf.getString(CHEMISTRY_PLUGIN);
-
+      System.out.println(chemistry);
     } catch (ConfigurationException e) {
       resetConfigToDefault();
       e.printStackTrace();
@@ -128,7 +127,7 @@ public final class Chemistry {
   public void refresh() {
     File configFile = new File(CONFIG_FILE_PATH);
     if (!configFile.exists()) {
-      InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation/resources/Chemistry.property");
+      InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation2/resources/Chemistry.property");
       try (FileOutputStream str = new FileOutputStream(CONFIG_FILE_PATH)) {
         byte[] bytes = IOUtils.readFully(in, -1, true);
         str.write(bytes);
