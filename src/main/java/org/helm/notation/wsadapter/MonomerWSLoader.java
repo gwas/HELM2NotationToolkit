@@ -1,18 +1,24 @@
 /**
- * ***************************************************************************** Copyright C 2015, The Pistoia Alliance
+ * *****************************************************************************
+ * Copyright C 2015, The Pistoia Alliance
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- * Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *****************************************************************************
  */
 package org.helm.notation.wsadapter;
@@ -34,6 +40,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 // import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.util.EntityUtils;
+import org.helm.notation.MonomerLoadingException;
 import org.helm.notation2.Attachment;
 import org.helm.notation2.Monomer;
 import org.slf4j.Logger;
@@ -47,9 +54,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 /**
- * 
- * {@code MonomerWSLoader} loads monomers from the webservice configured in {@code MonomerStoreConfiguration}.
- * 
+ *
+ * {@code MonomerWSLoader} loads monomers from the webservice configured in
+ * {@code MonomerStoreConfiguration}.
+ *
  * @author <a href="mailto:lanig@quattro-research.com">Marco Lanig</a>
  * @version $Id$
  */
@@ -65,8 +73,9 @@ public class MonomerWSLoader {
   private String polymerType;
 
   /**
-   * Constructor using polymerType as parameter. This will be one of PEPTIDE, RNA, or CHEM.
-   * 
+   * Constructor using polymerType as parameter. This will be one of PEPTIDE,
+   * RNA, or CHEM.
+   *
    * @param polymerType
    * @throws IOException
    */
@@ -79,19 +88,20 @@ public class MonomerWSLoader {
   }
 
   /**
-   * Loads the monomer store using the URL configured in {@code MonomerStoreConfiguration} and the polymerType that was
-   * given to constructor.
-   * 
+   * Loads the monomer store using the URL configured in
+   * {@code MonomerStoreConfiguration} and the polymerType that was given to
+   * constructor.
+   *
    * @param attachmentDB the attachments stored in Toolkit.
-   * 
+   *
    * @return Map containing monomers
-   * 
+   *
    * @throws IOException
    * @throws URISyntaxException
    */
   public Map<String, Monomer> loadMonomerStore(
       Map<String, Attachment> attachmentDB) throws IOException,
-      URISyntaxException {
+          URISyntaxException {
     Map<String, Monomer> monomers = new HashMap<String, Monomer>();
 
     CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -101,9 +111,7 @@ public class MonomerWSLoader {
     CloseableHttpResponse response = null;
     try {
       HttpGet httpget = new HttpGet(
-          new URIBuilder(MonomerStoreConfiguration.getInstance()
-              .getWebserviceMonomersFullURL() + polymerType)
-              .build());
+          new URIBuilder(MonomerStoreConfiguration.getInstance().getWebserviceMonomersFullURL() + polymerType).build());
 
       LOG.debug("Executing request " + httpget.getRequestLine());
       response = httpclient.execute(httpget);
@@ -111,7 +119,9 @@ public class MonomerWSLoader {
 
       JsonFactory jsonf = new JsonFactory();
       InputStream instream = response.getEntity().getContent();
-
+      if (response.getStatusLine().getStatusCode() != 200) {
+        throw new MonomerLoadingException("Response from the Webservice throws an error");
+      }
       JsonParser jsonParser = jsonf.createJsonParser(instream);
       monomers = deserializeMonomerStore(jsonParser, attachmentDB);
       LOG.debug(monomers.size() + " " + polymerType
@@ -132,10 +142,11 @@ public class MonomerWSLoader {
   }
 
   /**
-   * Loads the monomer categories using the URL configured in {@code MonomerStoreConfiguration}.
-   * 
+   * Loads the monomer categories using the URL configured in
+   * {@code MonomerStoreConfiguration}.
+   *
    * @return List containing monomer categories
-   * 
+   *
    * @throws IOException
    * @throws URISyntaxException
    */
@@ -150,8 +161,7 @@ public class MonomerWSLoader {
     // through Windows platform specific methods via JNI.
     CloseableHttpResponse response = null;
     try {
-      response = WSAdapterUtils.getResource(MonomerStoreConfiguration.getInstance()
-          .getWebserviceEditorCategorizationFullURL());
+      response = WSAdapterUtils.getResource(MonomerStoreConfiguration.getInstance().getWebserviceEditorCategorizationFullURL());
 
       LOG.debug(response.getStatusLine().toString());
 
@@ -178,19 +188,19 @@ public class MonomerWSLoader {
   }
 
   /**
-   * Private routine to deserialize monomer Store JSON. This is done manually to give more freedom regarding data
-   * returned by the webservice.
-   * 
+   * Private routine to deserialize monomer Store JSON. This is done manually to
+   * give more freedom regarding data returned by the webservice.
+   *
    * @param parser the JSONParser containing JSONData.
    * @param attachmentDB the attachments stored in the Toolkit
    * @return Map containing monomers
-   * 
+   *
    * @throws JsonParseException
    * @throws IOException
    */
   private Map<String, Monomer> deserializeMonomerStore(JsonParser parser,
       Map<String, Attachment> attachmentDB) throws JsonParseException,
-      IOException {
+          IOException {
     Map<String, Monomer> monomers = new HashMap<String, Monomer>();
     Monomer currentMonomer = null;
 
@@ -230,8 +240,7 @@ public class MonomerWSLoader {
           break;
         case "molfile":
           parser.nextToken();
-          currentMonomer.setMolfile(Base64.decodeToString(parser
-              .getText()));
+          currentMonomer.setMolfile(Base64.decodeToString(parser.getText()));
           break;
         case "monomerType":
           parser.nextToken();
@@ -242,18 +251,15 @@ public class MonomerWSLoader {
           currentMonomer.setPolymerType(parser.getText());
           break;
         case "attachmentList":
-          currentMonomer.setAttachmentList(deserializeAttachmentList(
-              parser, attachmentDB));
+          currentMonomer.setAttachmentList(deserializeAttachmentList(parser, attachmentDB));
           break;
         case "newMonomer":
           parser.nextToken();
-          currentMonomer.setNewMonomer(Boolean.parseBoolean(parser
-              .getText()));
+          currentMonomer.setNewMonomer(Boolean.parseBoolean(parser.getText()));
           break;
         case "adHocMonomer":
           parser.nextToken();
-          currentMonomer.setAdHocMonomer(Boolean.parseBoolean(parser
-              .getText()));
+          currentMonomer.setAdHocMonomer(Boolean.parseBoolean(parser.getText()));
           break;
         default:
           break;
@@ -266,19 +272,20 @@ public class MonomerWSLoader {
   }
 
   /**
-   * Private routine to deserialize a JSON containing attachment data. This is done manually to give more freedom
-   * regarding data returned by the webservice.
-   * 
+   * Private routine to deserialize a JSON containing attachment data. This is
+   * done manually to give more freedom regarding data returned by the
+   * webservice.
+   *
    * @param parser the JSONParser containing JSONData.
    * @param attachmentDB the attachments stored in the Toolkit
    * @return List containing attachments
-   * 
+   *
    * @throws JsonParseException
    * @throws IOException
    */
   private List<Attachment> deserializeAttachmentList(JsonParser parser,
       Map<String, Attachment> attachmentDB) throws JsonParseException,
-      IOException {
+          IOException {
     List<Attachment> attachments = new ArrayList<Attachment>();
     Attachment currentAttachment = null;
 
@@ -290,10 +297,7 @@ public class MonomerWSLoader {
       if (JsonToken.START_OBJECT.equals(token)) {
         currentAttachment = new Attachment();
       } else if (JsonToken.END_OBJECT.equals(token)) {
-        currentAttachment
-            .setCapGroupSMILES(attachmentDB.get(
-                currentAttachment.getAlternateId())
-                .getCapGroupSMILES());
+        currentAttachment.setCapGroupSMILES(attachmentDB.get(currentAttachment.getAlternateId()).getCapGroupSMILES());
         attachments.add(currentAttachment);
       }
 
@@ -330,12 +334,13 @@ public class MonomerWSLoader {
   }
 
   /**
-   * Private routine to deserialize JSON containing monomer categorization data. This is done manually to give more
-   * freedom regarding data returned by the webservice.
-   * 
+   * Private routine to deserialize JSON containing monomer categorization data.
+   * This is done manually to give more freedom regarding data returned by the
+   * webservice.
+   *
    * @param parser the JSONParser containing JSONData.
    * @return List containing the monomer categorization
-   * 
+   *
    * @throws JsonParseException
    * @throws IOException
    */
