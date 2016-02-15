@@ -4324,29 +4324,6 @@
                 </Attachments>
             </Monomer>
             <Monomer>
-                <MonomerID>nasP</MonomerID>
-                <MonomerSmiles>[Na+].[S-]P([*])([*])=O |$;;;_R1;_R2;$|</MonomerSmiles>
-                <MonomerMolFile>H4sIAAAAAAAAAJ2RTQvCMAyG7/0VAb1uJP1cz07mZXNM8L6jFw8e/P02LWgtBYehLWne9CFJBcC4Pp63OwBqJEL0ZGUPbxMCwALooGfrY957uEpEFHzDlsj55DllbfKCijDDN6K+mNKEt+ioSll2WylZLdQaSznlvLmW8MJrWe/on1pCb9h1OqNcUi1mE0Uq4xLF6k5mlGmNeeonJYxVxrOMqiiUUV3NNWV0BDichkhgseHP41ERK8swJ4U3K9y+ZOU49ULsg4kXLsMq84gCAAA=</MonomerMolFile>
-                <MonomerType>Backbone</MonomerType>
-                <PolymerType>RNA</PolymerType>
-                <NaturalAnalog>P</NaturalAnalog>
-                <MonomerName>Sodium Phosporothioate</MonomerName>
-                <Attachments>
-                    <Attachment>
-                        <AttachmentID>R1-OH</AttachmentID>
-                        <AttachmentLabel>R1</AttachmentLabel>
-                        <CapGroupName>OH</CapGroupName>
-                        <CapGroupSmiles>O[*] |$;_R1$|</CapGroupSmiles>
-                    </Attachment>
-                    <Attachment>
-                        <AttachmentID>R2-OH</AttachmentID>
-                        <AttachmentLabel>R2</AttachmentLabel>
-                        <CapGroupName>OH</CapGroupName>
-                        <CapGroupSmiles>O[*] |$;_R2$|</CapGroupSmiles>
-                    </Attachment>
-                </Attachments>
-            </Monomer>
-            <Monomer>
                 <MonomerID>am6</MonomerID>
                 <MonomerSmiles>[*]NCCCCCCO[*] |$_R1;;;;;;;;;_R2$|</MonomerSmiles>
                 <MonomerMolFile>H4sIAAAAAAAAAKWTPW8CMQyG9/wKS3StZTsfF88FdTpaMXRnZGFg4PfjpAiOS4ZDZ0VR8jh59TofDmA8Xq6nMwB5Uib2PssWHuEcMAGo5SftGaoKf0JErsw8MqnY4JMwxMyFEVqWYA+vEv12V8ni078KhZgmKl/LVQS9hqGrctgsVgkYfa2jregNLxElyuqKImoaVntJmDLHtV4GO91Ea71kZKa+l593VLIE7XpZfNO2ydf+hdpTDi01FFtqKLXU0NBSQ7mluf6zOdX6ATvOeE5HgMP3b82VYuqCckVSMrv91rkPC3cD/lciavQDAAA=</MonomerMolFile>
