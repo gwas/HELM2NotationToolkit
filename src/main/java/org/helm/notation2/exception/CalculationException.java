@@ -21,7 +21,7 @@
  * SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation;
+package org.helm.notation2.exception;
 
 /**
  * This is the exception thrown for Invalid Structures

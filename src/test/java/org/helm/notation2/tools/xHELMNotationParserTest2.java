@@ -27,10 +27,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.MonomerStore;
@@ -38,6 +34,9 @@ import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.exception.ValidationException;
@@ -94,7 +93,7 @@ public class xHELMNotationParserTest2 {
 
   @Test
   public void testParseXHelmNotation() throws JDOMException, IOException,
-      MonomerException, NotationException, StructureException,
+      MonomerException, NotationException,
       ClassNotFoundException, PluginException, ParserException,
       ValidationException, HELM1FormatException, JDOMException, ChemistryException, org.helm.notation2.parser.exceptionparser.NotationException {
 
@@ -146,7 +145,7 @@ public class xHELMNotationParserTest2 {
 
   @Test
   public void testQRPeptide() throws JDOMException, IOException,
-      MonomerException, NotationException, StructureException,
+      MonomerException, NotationException,
       ClassNotFoundException, ParserException, ValidationException, JDOMException, ChemistryException, org.helm.notation2.parser.exceptionparser.NotationException {
     Element xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation2/tools/resources/qr_peptide.xhelm");
     String helmString = xHelmNotationParser.getComplexNotationString(xHELMRootElement);

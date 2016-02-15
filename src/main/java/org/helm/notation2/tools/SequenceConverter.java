@@ -25,10 +25,11 @@ package org.helm.notation2.tools;
 
 import java.io.IOException;
 import java.util.List;
-import org.helm.notation.NucleotideLoadingException;
+
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.NucleotideLoadingException;
 import org.helm.notation2.exception.PeptideUtilsException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
@@ -127,10 +128,10 @@ public final class SequenceConverter {
    * @return rna sequences divided by white space
    * @throws HELM2HandledException if the polymer contains HELM2 features
    * @throws PeptideUtilsException if the polymer is not a peptide
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public static String getPeptideSequenceFromNotation(HELM2Notation helm2notation) throws HELM2HandledException, PeptideUtilsException, org.helm.notation.NotationException, ChemistryException {
+  public static String getPeptideSequenceFromNotation(HELM2Notation helm2notation) throws HELM2HandledException, PeptideUtilsException, org.helm.notation2.exception.NotationException, ChemistryException {
     List<PolymerNotation> polymers = helm2notation.getListOfPolymers();
     StringBuffer sb = new StringBuffer();
     for (PolymerNotation polymer : polymers) {
@@ -175,7 +176,7 @@ public final class SequenceConverter {
    *           non-peptide polymer(s)
    * @throws HELM2HandledException if the polymer(s) contain(s) HELM2 features
    * @throws PeptideUtilsException if the polymer is not a peptide
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   public static String getPeptideNaturalAnalogSequenceFromNotation(HELM2Notation helm2Notation) throws HELM2HandledException, PeptideUtilsException, NotationException, ChemistryException {

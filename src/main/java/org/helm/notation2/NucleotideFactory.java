@@ -36,11 +36,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.helm.notation.NotationException;
-import org.helm.notation.NucleotideLoadingException;
-import org.helm.notation.wsadapter.MonomerStoreConfiguration;
-import org.helm.notation.wsadapter.NucleotideWSLoader;
+import org.helm.notation2.exception.NotationException;
+import org.helm.notation2.exception.NucleotideLoadingException;
 import org.helm.notation2.tools.NucleotideParser;
+import org.helm.notation2.wsadapter.MonomerStoreConfiguration;
+import org.helm.notation2.wsadapter.NucleotideWSLoader;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -146,7 +146,7 @@ public class NucleotideFactory {
    *
    * @throws NucleotideLoadingException
    *
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    * @throws java.io.IOException
    * @throws org.jdom.JDOMException
    */

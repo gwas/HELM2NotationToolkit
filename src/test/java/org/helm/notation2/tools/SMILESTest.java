@@ -27,14 +27,13 @@ import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.Chemistry;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
@@ -166,7 +165,7 @@ public class SMILESTest {
   }
 
   @Test
-  public void testSelfCycle() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, MonomerException, StructureException, ChemistryException,
+  public void testSelfCycle() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, MonomerException, ChemistryException,
       ParserException {
     // backbone cyclic peptide
     String notation = "PEPTIDE1{A.A.G.K}$PEPTIDE1,PEPTIDE1,1:R1-4:R2$$$";
@@ -191,7 +190,7 @@ public class SMILESTest {
   }
 
   @Test(expectedExceptions = BuilderMoleculeException.class)
-  public void testChiralCenter() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, MonomerException, StructureException,
+  public void testChiralCenter() throws ExceptionState, IOException, JDOMException, BuilderMoleculeException, CTKException, NotationException, MonomerException,
       ChemistryException, ParserException {
     // backbone and branch cyclic RNA
     String notation = "RNA1{R(C)P.RP.R(A)P.RP.R(A)P.R(U)P}$RNA1,RNA1,4:R3-9:R3$$$";
@@ -201,7 +200,7 @@ public class SMILESTest {
 
   @Test
   public void testInlineNotation() throws CTKSmilesException, BuilderMoleculeException, CTKException, NotationException, ParserException, JDOMException, MonomerLoadingException, IOException,
-      MonomerException, StructureException, ChemistryException {
+      MonomerException, ChemistryException {
 
     String notation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     String smiles = SMILES.getCanonicalSMILESForAll(HELM2NotationUtils.readNotation(notation));

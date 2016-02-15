@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.helm.notation2.Nucleotide;
+import org.helm.notation2.wsadapter.NucleotideWSSaver;
 
 public class NucleotideWSSaverTest {
   // @Test

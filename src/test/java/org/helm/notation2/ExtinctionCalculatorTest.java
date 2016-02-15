@@ -29,14 +29,13 @@ import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import org.helm.notation.CalculationException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
+import org.helm.notation2.exception.CalculationException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.FastaFormatException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.StateMachineParser;
 import org.helm.notation2.parser.notation.HELM2Notation;
@@ -171,7 +170,7 @@ public class ExtinctionCalculatorTest {
   @Test
   public void testCalculateFromPeptidePolymerNotation()
       throws NotationException, MonomerException, CalculationException,
-      IOException, JDOMException, StructureException, ExtinctionCoefficientException, ParserException, ChemistryException {
+      IOException, JDOMException, ExtinctionCoefficientException, ParserException, ChemistryException {
     String notation = "PEPTIDE1{A.G.G.W.E.E.E.E.E.W}$$$$";
     Float f = (float) 11000.0;
     assertEquals(ExtinctionCoefficient.getInstance().calculate(HELM2NotationUtils.readNotation(notation), ExtinctionCoefficient.PEPTIDE_UNIT_TYPE), f);
@@ -185,7 +184,7 @@ public class ExtinctionCalculatorTest {
 
   @Test
   public void testCalculateFromComplexNotation() throws NotationException,
-      MonomerException, IOException, JDOMException, StructureException,
+      MonomerException, IOException, JDOMException,
       CalculationException, ExtinctionCoefficientException, ParserException, ChemistryException {
     String input = "PEPTIDE1{A.G.G.W.E.E.E.E.E.W}$$$$";
     float newResult = ExtinctionCoefficient.getInstance().calculate(HELM2NotationUtils.readNotation(input), ExtinctionCoefficient.PEPTIDE_UNIT_TYPE);

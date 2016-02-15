@@ -26,12 +26,12 @@ package org.helm.notation2.tools;
 import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;

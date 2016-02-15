@@ -37,13 +37,12 @@ import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.IAtomBase;
 import org.helm.chemtoolkit.IBondBase;
-import org.helm.notation.MonomerException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.Attachment;
 import org.helm.notation2.Chemistry;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.MonomerException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -169,7 +168,7 @@ public class MonomerParser {
    *
    * @param attachment
    * @return true or false
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    * @throws java.io.IOException
    * @throws ChemistryException
    */
@@ -373,7 +372,7 @@ public class MonomerParser {
    *
    * @param monomer
    * @return true or false
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    * @throws java.io.IOException
    * @throws CTKException
    * @throws ChemistryException
@@ -579,7 +578,7 @@ public class MonomerParser {
    * number
    *
    * @param label
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    */
   public static void validateAttachmentLabel(String label)
       throws MonomerException {

@@ -23,21 +23,15 @@
  */
 package org.helm.notation2.tools;
 
-import static org.testng.AssertJUnit.assertEquals;
-
 import java.io.IOException;
 
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.RNAUtilsException;
-import org.helm.notation2.parser.ConverterHELM1ToHELM2;
-import org.helm.notation2.parser.ParserHELM2;
 import org.helm.notation2.parser.exceptionparser.ExceptionState;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.tools.HELM2NotationUtils;

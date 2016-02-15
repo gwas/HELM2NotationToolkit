@@ -26,10 +26,10 @@ package org.helm.notation2.tools;
 import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.Chemistry;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.tools.MDLUtils;
 import org.jdom2.JDOMException;

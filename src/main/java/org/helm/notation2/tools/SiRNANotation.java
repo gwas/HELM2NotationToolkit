@@ -77,12 +77,12 @@ public class SiRNANotation {
    * @throws JDOMException
    * @throws HELM2HandledException
    * @throws RNAUtilsException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    * @throws CTKException
    */
   public static HELM2Notation getSiRNANotation(String senseSeq, String antiSenseSeq) throws NotationException, FastaFormatException, IOException, JDOMException, HELM2HandledException,
-      RNAUtilsException, org.helm.notation.NotationException, ChemistryException, CTKException {
+      RNAUtilsException, org.helm.notation2.exception.NotationException, ChemistryException, CTKException {
     return getSirnaNotation(senseSeq, antiSenseSeq, NucleotideParser.RNA_DESIGN_NONE);
   }
 
@@ -100,12 +100,12 @@ public class SiRNANotation {
    * @throws JDOMException
    * @throws HELM2HandledException
    * @throws RNAUtilsException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    * @throws CTKException
    */
   public static HELM2Notation getSirnaNotation(String senseSeq, String antiSenseSeq, String rnaDesignType) throws NotationException, FastaFormatException, IOException, JDOMException,
-      HELM2HandledException, RNAUtilsException, org.helm.notation.NotationException, ChemistryException, CTKException {
+      HELM2HandledException, RNAUtilsException, org.helm.notation2.exception.NotationException, ChemistryException, CTKException {
     HELM2Notation helm2notation = null;
     if (senseSeq != null && senseSeq.length() > 0) {
       helm2notation = SequenceConverter.readRNA(senseSeq);
@@ -133,13 +133,13 @@ public class SiRNANotation {
    * @throws JDOMException
    * @throws IOException
    * @throws NotationException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws RNAUtilsException
    * @throws HELM2HandledException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   private static List<ConnectionNotation> hybridization(PolymerNotation one, PolymerNotation two, String rnaDesignType) throws NotationException, IOException, JDOMException, HELM2HandledException,
-      RNAUtilsException, org.helm.notation.NotationException, ChemistryException {
+      RNAUtilsException, org.helm.notation2.exception.NotationException, ChemistryException {
     List<ConnectionNotation> connections = new ArrayList<ConnectionNotation>();
     ConnectionNotation connection;
     if (one.getPolymerElements().getListOfElements() != null && one.getPolymerElements().getListOfElements().size() > 0 && two.getPolymerElements().getListOfElements() != null

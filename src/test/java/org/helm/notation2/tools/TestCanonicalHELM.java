@@ -27,11 +27,11 @@ import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.chemtoolkit.CTKSmilesException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;

@@ -42,14 +42,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.StructureException;
-
-import org.helm.notation.wsadapter.MonomerStoreConfiguration;
-import org.helm.notation.wsadapter.MonomerWSLoader;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
 import org.helm.notation2.tools.MonomerParser;
+import org.helm.notation2.wsadapter.MonomerStoreConfiguration;
+import org.helm.notation2.wsadapter.MonomerWSLoader;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -263,7 +261,7 @@ public class MonomerFactory {
    * @return MonomerFactory
    * @throws ChemistryException
    * @throws CTKException
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    * @throws java.io.IOException
    * @throws org.jdom.JDOMException
    */
@@ -374,15 +372,14 @@ public class MonomerFactory {
    *
    * @param monomerDBXML
    * @return MonomerCache
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    * @throws java.io.IOException
    * @throws org.jdom.JDOMException
    * @throws ChemistryException
    * @throws CTKException
    */
   public MonomerCache buildMonomerCacheFromXML(String monomerDBXML)
-      throws MonomerException, IOException, JDOMException,
-      StructureException, ChemistryException, CTKException {
+      throws MonomerException, IOException, JDOMException, ChemistryException, CTKException {
     ByteArrayInputStream bais = new ByteArrayInputStream(
         monomerDBXML.getBytes());
     return buildMonomerCacheFromXML(bais);
@@ -394,7 +391,7 @@ public class MonomerFactory {
    *
    * @param remoteMonomerCache
    * @throws java.io.IOException
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    */
   public synchronized void merge(MonomerCache remoteMonomerCache)
       throws IOException, MonomerException {
@@ -426,7 +423,7 @@ public class MonomerFactory {
    *
    * @param remoteMonomerCache
    * @throws java.io.IOException
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    */
   public synchronized void setMonomerCache(MonomerCache remoteMonomerCache)
       throws IOException, MonomerException {
@@ -443,7 +440,7 @@ public class MonomerFactory {
    * @return localMonomer and remoteMonomer mismatch, key is local, value is
    *         remote
    * @throws java.io.IOException
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    */
   public synchronized Map<Monomer, Monomer> getConflictedMonomerMap(
       MonomerCache remoteMonomerCache) throws IOException,
@@ -687,7 +684,7 @@ public class MonomerFactory {
    * @throws ChemistryException
    * @throws CTKException
    *
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.MonomerException
    * @throws java.io.IOException
    * @throws org.jdom.JDOMException
    */

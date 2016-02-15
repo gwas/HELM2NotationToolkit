@@ -21,7 +21,7 @@
  * SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation.wsadapter;
+package org.helm.notation2.wsadapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,9 +40,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 // import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.util.EntityUtils;
-import org.helm.notation.MonomerLoadingException;
 import org.helm.notation2.Attachment;
 import org.helm.notation2.Monomer;
+import org.helm.notation2.exception.MonomerLoadingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

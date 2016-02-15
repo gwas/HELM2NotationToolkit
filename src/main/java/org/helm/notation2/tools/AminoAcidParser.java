@@ -32,12 +32,12 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.exception.NotationException;
 import org.jdom2.JDOMException;
 
 /**
@@ -54,8 +54,8 @@ public class AminoAcidParser {
    *
    * @param peptideSequence
    * @return list of amino acid
-   * @throws org.helm.notation.MonomerException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.MonomerException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws java.io.IOException
    * @throws org.jdom.JDOMException
    * @throws MonomerLoadingException

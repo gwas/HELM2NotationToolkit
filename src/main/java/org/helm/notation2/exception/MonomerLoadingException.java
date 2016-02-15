@@ -19,34 +19,37 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package org.helm.notation;
+package org.helm.notation2.exception;
+
+import java.io.IOException;
 
 /**
- * This is the exception thrown for Invalid Structures
+ * This is the exception thrown for errors while loading monomers from source to store.
  * 
- * @author zhangtianhong
+ * @author lanigm
  */
-public class StructureException extends Exception {
+public class MonomerLoadingException extends IOException {
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates a new instance of <code>StructureException</code> without detail
+	 * Creates a new instance of <code>MonomerLoadingException</code> without detail
 	 * message.
 	 */
-	public StructureException() {
+	public MonomerLoadingException() {
 	}
 
 	/**
-	 * Constructs an instance of <code>StructureException</code> with the
+	 * Constructs an instance of <code>MonomerLoadingException</code> with the
 	 * specified detail message.
 	 * 
 	 * @param msg
 	 *            the detail message.
 	 */
-	public StructureException(String msg) {
+	public MonomerLoadingException(String msg) {
 		super(msg);
 	}
 
-	public StructureException(String msg, Throwable err) {
+	public MonomerLoadingException(String msg, Throwable err) {
 		super(msg, err);
 	}
 }

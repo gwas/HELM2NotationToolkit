@@ -28,11 +28,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerStore;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.NotationException;
 import org.jdom2.JDOMException;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;

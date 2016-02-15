@@ -21,7 +21,7 @@
  * SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation.wsadapter;
+package org.helm.notation2.wsadapter;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

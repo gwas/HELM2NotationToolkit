@@ -26,15 +26,14 @@ package org.helm.notation2.tools;
 import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ConnectionNotationException;
 import org.helm.notation2.exception.GroupingNotationException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.PolymerIDsException;
 import org.helm.notation2.exception.RNAUtilsException;
@@ -70,7 +69,7 @@ public class HELM2NotationUtilsTest {
 
   @Test
   public void testReplaceMonomer() throws NotationException, MonomerLoadingException, MonomerException, JDOMException, IOException, ParserException,
-      org.helm.notation2.parser.exceptionparser.NotationException, HELM1ConverterException, StructureException, RNAUtilsException, HELM2HandledException, ChemistryException, CTKException {
+      org.helm.notation2.parser.exceptionparser.NotationException, HELM1ConverterException, RNAUtilsException, HELM2HandledException, ChemistryException, CTKException {
 
     String notation =
         "RNA1{R(A)P.R(G)P.R(C)P.R(U)P.R(A)P.R(A)P.R(A)P.R(G)P.R(G)}|RNA2{R(C)P.R(C)P.R(U)P.R(U)P.R(U)P.R(A)P.R(G)P.R(C)P.R(U)}$$$$";

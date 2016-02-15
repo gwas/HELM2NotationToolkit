@@ -31,12 +31,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.Chemistry;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.tools.Images;
 import org.jdom2.JDOMException;

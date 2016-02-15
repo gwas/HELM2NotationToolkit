@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
@@ -981,10 +981,10 @@ public final class ChangeObjects {
    * @throws IOException
    * @throws JDOMException
    * @throws HELM2HandledException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws ChemistryException
    */
-  public static void hybridize(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation.NotationException,
+  public static void hybridize(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, IOException, JDOMException, HELM2HandledException, org.helm.notation2.exception.NotationException,
       ChemistryException {
     if (HELM2NotationUtils.getAllBasePairConnections(helm2notation.getListOfConnections()).isEmpty() && HELM2NotationUtils.getRNAPolymers(helm2notation.getListOfPolymers()).size() == 2) {
       List<ConnectionNotation> connections =

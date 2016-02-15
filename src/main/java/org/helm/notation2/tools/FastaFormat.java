@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.NotationConstant;
@@ -43,6 +41,8 @@ import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.NucleotideLoadingException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.HELMEntity;
@@ -297,7 +297,7 @@ public final class FastaFormat {
         elements.addMonomerNotation(aa);
       }
       return elements;
-    } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | MonomerException | org.helm.notation.NotationException e) {
+    } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException | JDOMException | MonomerException | org.helm.notation2.exception.NotationException e) {
       e.printStackTrace();
       LOG.error("PolymerListElements can not be initialized");
       throw new FastaFormatException("PolymerListElements can not be initialized " + e.getMessage());

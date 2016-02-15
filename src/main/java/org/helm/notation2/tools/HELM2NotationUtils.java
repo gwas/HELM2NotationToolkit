@@ -384,10 +384,10 @@ public class HELM2NotationUtils {
    * @throws NotationException
    * @throws RNAUtilsException
    * @throws HELM2HandledException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
-  public static String[] getFormatedSirnaSequences(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, HELM2HandledException, org.helm.notation.NotationException,
+  public static String[] getFormatedSirnaSequences(HELM2Notation helm2notation) throws NotationException, RNAUtilsException, HELM2HandledException, org.helm.notation2.exception.NotationException,
       ChemistryException {
     return getFormatedSirnaSequences(helm2notation, DEFAULT_PADDING_CHAR, DEFAULT_BASE_PAIR_CHAR);
   }
@@ -400,11 +400,11 @@ public class HELM2NotationUtils {
    * @throws NotationException
    * @throws RNAUtilsException
    * @throws HELM2HandledException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   public static String[] getFormatedSirnaSequences(HELM2Notation helm2notation, String paddingChar, String basePairChar) throws NotationException, RNAUtilsException, HELM2HandledException,
-      org.helm.notation.NotationException,
+      org.helm.notation2.exception.NotationException,
       ChemistryException {
     if (null == paddingChar || paddingChar.length() != 1) {
       throw new NotationException(

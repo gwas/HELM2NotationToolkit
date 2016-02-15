@@ -32,13 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.helm.notation.MonomerException;
-import org.helm.notation.NucleotideLoadingException;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.Nucleotide;
 import org.helm.notation2.NucleotideFactory;
 import org.helm.notation2.SimpleNotationGroupIterator;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.NucleotideLoadingException;
 import org.helm.notation2.parser.exceptionparser.NotationException;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -258,11 +258,11 @@ public class NucleotideParser {
    * @param i
    * @return
    * @throws ChemistryException
-   * @throws org.helm.notation.NotationException
+   * @throws org.helm.notation2.exception.NotationException
    * @throws MonomerException
    * @throws NucleotideLoadingException
    */
-  public static Nucleotide convertToNucleotide(String id, boolean last) throws MonomerException, org.helm.notation.NotationException, ChemistryException, NucleotideLoadingException,
+  public static Nucleotide convertToNucleotide(String id, boolean last) throws MonomerException, org.helm.notation2.exception.NotationException, ChemistryException, NucleotideLoadingException,
       NotationException {
     Map<String, String> reverseNucMap = NucleotideFactory.getInstance().getReverseNucleotideTemplateMap();
     // last nucleotide will be handled differently
@@ -345,8 +345,8 @@ public class NucleotideParser {
    * @return true or exception
    * @throws org.helm.notation2.parser.exceptionparser.NotationException
    * @throws java.io.IOException
-   * @throws org.helm.notation.NotationException
-   * @throws org.helm.notation.MonomerException
+   * @throws org.helm.notation2.exception.NotationException
+   * @throws org.helm.notation2.exception.MonomerException
    * @throws org.helm.notation.StructureException
    * @throws org.jdom.JDOMException
    * @throws org.helm.notation2.parser.exceptionparser.NotationException

@@ -19,37 +19,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package org.helm.notation;
-
-import java.io.IOException;
+package org.helm.notation2.exception;
 
 /**
- * This is the exception thrown for errors while loading nucleotides from source to store.
+ * This is the exception thrown for Invalid Monomers
  * 
- * @author lanigm
+ * @author zhangtianhong
  */
-public class NucleotideLoadingException extends IOException {
-	private static final long serialVersionUID = 1L;
+public class MonomerException extends Exception {
 
 	/**
-	 * Creates a new instance of <code>NucleotideLoadingException</code> without detail
+	 * Creates a new instance of <code>MonomerException</code> without detail
 	 * message.
 	 */
-	public NucleotideLoadingException() {
+	public MonomerException() {
 	}
 
 	/**
-	 * Constructs an instance of <code>NucleotideLoadingException</code> with the
+	 * Constructs an instance of <code>MonomerException</code> with the
 	 * specified detail message.
 	 * 
 	 * @param msg
 	 *            the detail message.
 	 */
-	public NucleotideLoadingException(String msg) {
+	public MonomerException(String msg) {
 		super(msg);
 	}
 
-	public NucleotideLoadingException(String msg, Throwable err) {
+	public MonomerException(String msg, Throwable err) {
 		super(msg, err);
 	}
 }

@@ -28,13 +28,13 @@ import java.util.List;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.Chemistry;
 import org.helm.notation2.RgroupStructure;
 import org.helm.notation2.calculation.MoleculeInformation;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotationUnit;

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.helm.notation.MonomerException;
+import org.helm.notation2.exception.MonomerException;
 import org.helm.notation2.tools.SMILES;
 
 /**

@@ -27,15 +27,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.NotationException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.calculation.MoleculeInformation;
 import org.helm.notation2.exception.AnalogSequenceException;
 import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.FastaFormatException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.parser.ConverterHELM1ToHELM2;
 import org.helm.notation2.parser.ParserHELM2;
@@ -120,7 +119,7 @@ public class MoleculeInformationTest {
   }
 
   @Test
-  public void testExtended() throws MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, PluginException, StructureException, BuilderMoleculeException,
+  public void testExtended() throws MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, PluginException, BuilderMoleculeException,
       CTKException, ParserException, ChemistryException {
 
     String newNotation =

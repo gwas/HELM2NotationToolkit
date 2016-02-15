@@ -23,9 +23,9 @@
  */
 package org.helm.notation2.tools;
 
-import org.helm.notation.NotationException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.PeptideUtilsException;
 import org.helm.notation2.tools.PeptideUtils;

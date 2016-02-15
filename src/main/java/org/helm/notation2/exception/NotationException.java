@@ -19,37 +19,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ******************************************************************************/
-package org.helm.notation;
-
-import java.io.IOException;
+package org.helm.notation2.exception;
 
 /**
- * This is the exception thrown for errors while loading monomers from source to store.
+ * This is the exception thrown for Invalid Notations
  * 
- * @author lanigm
+ * @author zhangtianhong
  */
-public class MonomerLoadingException extends IOException {
-	private static final long serialVersionUID = 1L;
+public class NotationException extends Exception {
 
 	/**
-	 * Creates a new instance of <code>MonomerLoadingException</code> without detail
+	 * Creates a new instance of <code>NotationException</code> without detail
 	 * message.
 	 */
-	public MonomerLoadingException() {
+	public NotationException() {
 	}
 
 	/**
-	 * Constructs an instance of <code>MonomerLoadingException</code> with the
+	 * Constructs an instance of <code>NotationException</code> with the
 	 * specified detail message.
 	 * 
 	 * @param msg
 	 *            the detail message.
 	 */
-	public MonomerLoadingException(String msg) {
+	public NotationException(String msg) {
 		super(msg);
 	}
 
-	public MonomerLoadingException(String msg, Throwable err) {
+	public NotationException(String msg, Throwable err) {
 		super(msg, err);
 	}
 }

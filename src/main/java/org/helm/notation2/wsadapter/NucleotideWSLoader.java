@@ -15,7 +15,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation.wsadapter;
+package org.helm.notation2.wsadapter;
 
 import java.io.File;
 import java.io.FileInputStream;

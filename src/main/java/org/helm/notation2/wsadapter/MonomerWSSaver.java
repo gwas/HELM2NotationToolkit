@@ -15,49 +15,71 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *****************************************************************************
  */
-package org.helm.notation.wsadapter;
+package org.helm.notation2.wsadapter;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
-// import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.util.EntityUtils;
-import org.helm.notation2.Nucleotide;
+import org.helm.notation2.Monomer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+
 /**
  * 
- * {@code NucleotideWSSaver} saves nucleotides to the webservice configured in {@code MonomerStoreConfiguration}.
+ * {@code MonomerWSSaver} saves monomers to the webservice configured in {@code MonomerStoreConfiguration}.
  * 
  * @author <a href="mailto:lanig@quattro-research.com">Marco Lanig</a>
  * @version $Id$
  */
-public class NucleotideWSSaver {
+public class MonomerWSSaver {
 
   /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(NucleotideWSSaver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MonomerWSSaver.class);
 
   /**
-   * Adds or updates a single nucleotide to the nucleotide store using the URL configured in
-   * {@code MonomerStoreConfiguration}.
+   * Adds or updates a single monomer to the monomer store using the URL configured in {@code MonomerStoreConfiguration}
+   * .
    * 
-   * @param nucleotide to save
+   * @param monomer to save
    */
-  public String saveNucleotideToStore(Nucleotide nucleotide) {
+  public String saveMonomerToStore(Monomer monomer) {
     String res = "";
     CloseableHttpResponse response = null;
 
     try {
-      response = WSAdapterUtils.putResource(nucleotide.toJSON(),
+      response = WSAdapterUtils.putResource(monomer.toJSON(),
           MonomerStoreConfiguration.getInstance()
               .getWebserviceNucleotidesPutFullURL());
       LOG.debug(response.getStatusLine().toString());
 
+      JsonFactory jsonf = new JsonFactory();
+      InputStream instream = response.getEntity().getContent();
+
+      JsonParser jsonParser = jsonf.createParser(instream);
+
+      while (!jsonParser.isClosed()) {
+        JsonToken jsonToken = jsonParser.nextToken();
+        if (JsonToken.FIELD_NAME.equals(jsonToken)) {
+          String fieldName = jsonParser.getCurrentName();
+          LOG.debug("Field name: " + fieldName);
+          jsonParser.nextToken();
+          if (fieldName.equals("monomerShortName")) {
+            res = jsonParser.getValueAsString();
+            break;
+          }
+        }
+      }
+
       EntityUtils.consume(response.getEntity());
 
     } catch (Exception e) {
-      LOG.error("Saving nucleotide failed!", e);
+      LOG.error("Saving monomer failed!", e);
       return "";
     } finally {
       try {

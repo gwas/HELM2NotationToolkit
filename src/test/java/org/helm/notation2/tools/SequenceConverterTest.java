@@ -25,13 +25,12 @@ package org.helm.notation2.tools;
 
 import java.io.IOException;
 
-import org.helm.notation.MonomerException;
-import org.helm.notation.MonomerLoadingException;
-import org.helm.notation.NotationException;
-import org.helm.notation.NucleotideLoadingException;
-import org.helm.notation.StructureException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.exception.NotationException;
+import org.helm.notation2.exception.NucleotideLoadingException;
 import org.helm.notation2.exception.ParserException;
 import org.helm.notation2.exception.RNAUtilsException;
 import org.helm.notation2.tools.SequenceConverter;
@@ -48,7 +47,7 @@ import org.testng.annotations.Test;
 public class SequenceConverterTest {
 
   @Test
-  public void getNucleotideSequenceFromNotation() throws NucleotideLoadingException, MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, StructureException,
+  public void getNucleotideSequenceFromNotation() throws NucleotideLoadingException, MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException,
       org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ParserException, RNAUtilsException, ChemistryException {
     String notation = "RNA1{R(T)P.R(G)P.R(U)}$$$$";
     Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(HELM2NotationUtils.readNotation(notation)), "TGU");
@@ -59,7 +58,7 @@ public class SequenceConverterTest {
 
   @Test(expectedExceptions = HELM2HandledException.class)
   public void getNucleotideSequenceFromNotationWithException() throws NucleotideLoadingException, MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException,
-      StructureException,
+
       org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ParserException, RNAUtilsException, ChemistryException {
     String notation = "RNA1{R(T)P.R(G)P.(R(U))'3'}$$$$";
     Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(HELM2NotationUtils.readNotation(notation)), "RGU");

@@ -28,12 +28,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.helm.chemtoolkit.CTKException;
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.HELM1FormatException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.MonomerNotation;

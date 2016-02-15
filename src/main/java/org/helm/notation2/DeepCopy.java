@@ -21,8 +21,8 @@
  ******************************************************************************/
 package org.helm.notation2;
 
-import org.helm.notation.MonomerException;
-import org.helm.notation.NotationException;
+import org.helm.notation2.exception.MonomerException;
+import org.helm.notation2.exception.NotationException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,4 +1,4 @@
-package org.helm.notation.wsadapter;
+package org.helm.notation2.wsadapter;
 
 import java.io.IOException;
 import java.net.URI;

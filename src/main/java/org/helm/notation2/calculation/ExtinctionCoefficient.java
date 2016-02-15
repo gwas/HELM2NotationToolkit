@@ -35,12 +35,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.helm.notation.CalculationException;
-import org.helm.notation.NotationException;
 import org.helm.notation2.Monomer;
+import org.helm.notation2.exception.CalculationException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ExtinctionCoefficientException;
 import org.helm.notation2.exception.HELM2HandledException;
+import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.helm.notation2.parser.notation.polymer.PolymerNotation;
 import org.helm.notation2.tools.MethodsMonomerUtils;
