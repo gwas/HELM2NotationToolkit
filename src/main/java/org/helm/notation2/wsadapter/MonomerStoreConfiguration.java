@@ -71,6 +71,15 @@ public class MonomerStoreConfiguration {
 
   private static final String WEBSERVICE_NUCLEOTIDES_PUT_PATH = "webservice.nucleotides.put.path";
 
+  // private static final String USE_EXTERNAL_MONOMERS =
+  // "use.external.monomers";
+
+  // private static final String USE_EXTERNAL_MONOMERS_PATH =
+  // "use.external.monomers.path";
+
+  // private static final String USE_EXTERNAL_NUCLEOTIDES =
+  // "use.external.nucleotides";
+
   private static MonomerStoreConfiguration _instance;
 
   private boolean isUseWebservice;
@@ -261,6 +270,7 @@ public class MonomerStoreConfiguration {
    * Refreshes the configuration using the local properties file.
    */
   public void refresh() {
+    System.out.println(CONFIG_FILE_PATH);
     File configFile = new File(CONFIG_FILE_PATH);
 
     if (!configFile.exists()) {
@@ -300,8 +310,7 @@ public class MonomerStoreConfiguration {
     try
 
     {
-      PropertiesConfiguration conf = new PropertiesConfiguration(
-          CONFIG_FILE_PATH);
+      PropertiesConfiguration conf = new PropertiesConfiguration(CONFIG_FILE_PATH);
       isUseWebservice = conf.getBoolean(USE_WEBSERVICE);
       isUpdateAutomatic = conf.getBoolean(UPDATE_AUTOMATIC);
       webserviceMonomersURL = conf.getString(WEBSERVICE_MONOMERS_URL);

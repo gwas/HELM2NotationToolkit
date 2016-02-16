@@ -3502,46 +3502,6 @@
                 </Attachments>
             </Monomer>
             <Monomer>
-                <MonomerID>naP</MonomerID>
-                <MonomerSmiles>[Na+].[O-]P([*])([*])=O |$;;;_R1;_R2;$|</MonomerSmiles>
-                <MonomerMolFile>H4sIAAAAAAAAAJ1Ruw7CMAzc/RWWYG1l59nMFJWlperA3pGFgYHvJ04RtCUSFZYTOT77dHYAsR3vj+sNkbQmJraWVI1vA0B0iCbiM/9YCAEviohAXlQy+zBFXjs3RREl7HFJkXdhKWIvec6yDLutLDMtXFrHc5bzZi2xIxiVn+gfLXE2qirzrcVuY/Guem1oqaUbU53+yRLXqtK9zuoErLMmW2vX2RbxcGoSg4CFfJ7IY0GGpp8QOYLI+EqQY1cD7KPBE5lJmyyIAgAA</MonomerMolFile>
-                <MonomerType>Backbone</MonomerType>
-                <PolymerType>RNA</PolymerType>
-                <NaturalAnalog>P</NaturalAnalog>
-                <MonomerName>Sodium Phosphate</MonomerName>
-                <Attachments>
-                    <Attachment>
-                        <AttachmentID>R1-OH</AttachmentID>
-                        <AttachmentLabel>R1</AttachmentLabel>
-                        <CapGroupName>OH</CapGroupName>
-                        <CapGroupSmiles>O[*] |$;_R1$|</CapGroupSmiles>
-                    </Attachment>
-                    <Attachment>
-                        <AttachmentID>R2-OH</AttachmentID>
-                        <AttachmentLabel>R2</AttachmentLabel>
-                        <CapGroupName>OH</CapGroupName>
-                        <CapGroupSmiles>O[*] |$;_R2$|</CapGroupSmiles>
-                    </Attachment>
-                </Attachments>
-            </Monomer>
-            <Monomer>
-                <MonomerID>tfU</MonomerID>
-                <MonomerSmiles>FC(F)(F)c1cn([*])c(=O)[nH]c1=O |$;;;;;;;_R1;;;;;$|</MonomerSmiles>
-                <MonomerMolFile>H4sIAAAAAAAAAK2SPU/DMBCGd/+Kk2DFug878c0UmFpQB/aOXRgY+vt7jpQm5Dw0KZYV2U/Oj15fEgD2p9/L+QcARRCVEna8g9sIAUjqBJzNaagqfDMiBtu8UGSSUhcUeylSKzDaW4RX+Ktoz8GCMalKtXCkjOVxi/Z5o2W6kUQpJc0shzUW5fIPWSbLoi+rsow3wqgk82/0eb+FY5e4v/Vlo2XKkupq3t3j070WO8GU+cG/zk4oa9/s7vsay5jFdXeVZcxCUThvykIAZmBPu+G5pOypIfEGQ8nXGspNqp5aYfHe3EzGQOioIaIm9beoVJZ0D3D8+BpoDQhUydthF8KzjXAFM1FO+xYFAAA=</MonomerMolFile>
-                <MonomerType>Branch</MonomerType>
-                <PolymerType>RNA</PolymerType>
-                <NaturalAnalog>U</NaturalAnalog>
-                <MonomerName>5-trifluoromethyl-uracil</MonomerName>
-                <Attachments>
-                    <Attachment>
-                        <AttachmentID>R1-H</AttachmentID>
-                        <AttachmentLabel>R1</AttachmentLabel>
-                        <CapGroupName>H</CapGroupName>
-                        <CapGroupSmiles>[*][H] |$_R1;$|</CapGroupSmiles>
-                    </Attachment>
-                </Attachments>
-            </Monomer>
-            <Monomer>
                 <MonomerID>baA</MonomerID>
                 <MonomerSmiles>[*]n1cnc2c(NCc3ccccc3)ncnc12 |$_R1;;;;;;;;;;;;;;;;;$|</MonomerSmiles>
                 <MonomerMolFile>H4sIAAAAAAAAAK2UMW7DMAxFd52CQLuWICnJkuak6JSgyNC9Y5cOHXr+UgIS2aYXWxUMw36mHvhpJw7g8vnz+/UNQN4TFQ7s5QyP5RxwBiF9Pjv6KqXAhxCR05uXgDSlUK8IUyqxVhDqU4ITLBXbR7N49FFKvWLkIjRqESROBy09kWCQRaLrHkvKOsbhXu4WM5cdvQhOPg8nYiwSaDRRt4wkeryjujfEg4n6XDxKDHPL7Wn/V6d7Q8yj3y4wSvbDFsHij1r6dAWj0MHfdLcwTiUetLR3FP/PcjwRA1M9rylMarVUbG3ZpIq8NaRG17WKgqWKojXE1tm6Vr15izJbmu8tz6kOgW0KRWz75anRtcEDJ1sbgG0KRWxT6Pb6r7iuDY0uay8At7f3RmtE4Eper2fnnnW5P1uPjMoOBwAA</MonomerMolFile>

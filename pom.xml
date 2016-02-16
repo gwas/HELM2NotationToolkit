@@ -63,11 +63,6 @@
 			<version>5.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.pfizer</groupId>
-			<artifactId>sdlib</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
 			<version>1.9</version>

@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation2.exception.ChemistryException;
+import org.helm.notation2.exception.EncoderException;
 import org.helm.notation2.exception.MonomerException;
 import org.helm.notation2.exception.MonomerLoadingException;
 import org.helm.notation2.tools.MonomerParser;
@@ -505,7 +506,7 @@ public class MonomerFactory {
     Map<String, Map<String, Monomer>> newMonomerDB;
     try {
       newMonomerDB = fetchMonomerDBFromWebService(newAttachmentDB);
-    } catch (URISyntaxException e) {
+    } catch (URISyntaxException | EncoderException e) {
       e.printStackTrace();
       throw new IOException(
           "URISyntaxException prevents fetching monomers from webservice.");
@@ -590,7 +591,7 @@ public class MonomerFactory {
 
   private static Map<String, Map<String, Monomer>> fetchMonomerDBFromWebService(
       Map<String, Attachment> attachments) throws IOException,
-          URISyntaxException {
+          URISyntaxException, EncoderException {
     Map<String, Map<String, Monomer>> monomerDB = new HashMap<String, Map<String, Monomer>>();
 
     monomerDB.put("PEPTIDE", new MonomerWSLoader("PEPTIDE").loadMonomerStore(attachments));

@@ -244,11 +244,10 @@ public final class BuilderMolecule {
 
     }
 
-    LOG.info("kjkjllll");
     for (Map.Entry<String, RgroupStructure> e : mapMolecules.entrySet()) {
       listMolecules.add(e.getValue().getMolecule());
     }
-    LOG.info("completed");
+
     return listMolecules;
   }
 
@@ -266,19 +265,10 @@ public final class BuilderMolecule {
     /* a chemical molecule should only contain one monomer */
     if (validMonomers.size() == 1) {
       try {
-        if (validMonomers.get(0).getCanSMILES() != null) {
+        Monomer monomer = validMonomers.get(0);
+        String input = getInput(monomer);
+        if (input != null) {
           /* Build monomer + Rgroup information! */
-          Monomer monomer = validMonomers.get(0);
-
-          String input = null;
-          // if (monomer.getMolfile() != null) {
-          // LOG.info("Use molfile for monomer generation");
-          // input = monomer.getMolfile();
-          // }
-          if (input == null && monomer.getCanSMILES() != null) {
-            LOG.info("Use smiles for monomer generation");
-            input = monomer.getCanSMILES();
-          }
 
           List<Attachment> listAttachments = monomer.getAttachmentList();
           AttachmentList list = new AttachmentList();
@@ -336,9 +326,11 @@ public final class BuilderMolecule {
    */
   private static RgroupStructure buildMoleculefromPeptideOrRNA(final String id, final List<Monomer> validMonomers) throws BuilderMoleculeException, ChemistryException {
     try {
+      String input = null;
       AbstractMolecule currentMolecule = null;
+      input = getInput(validMonomers.get(0));
       AbstractMolecule prevMolecule =
-          Chemistry.getInstance().getManipulator().getMolecule(validMonomers.get(0).getCanSMILES(), generateAttachmentList(validMonomers.get(0).getAttachmentList()));
+          Chemistry.getInstance().getManipulator().getMolecule(input, generateAttachmentList(validMonomers.get(0).getAttachmentList()));
       AbstractMolecule firstMolecule = null;
       Monomer prevMonomer = null;
 
@@ -357,7 +349,8 @@ public final class BuilderMolecule {
         LOG.debug("Monomer " + currentMonomer.getAlternateId());
         i++;
         if (prevMonomer != null) {
-          currentMolecule = Chemistry.getInstance().getManipulator().getMolecule(currentMonomer.getCanSMILES(), generateAttachmentList(currentMonomer.getAttachmentList()));
+          input = getInput(currentMonomer);
+          currentMolecule = Chemistry.getInstance().getManipulator().getMolecule(input, generateAttachmentList(currentMonomer.getAttachmentList()));
 
           current.setMolecule(currentMolecule);
           current.setRgroupMap(generateRgroupMap(id + ":" + String.valueOf(i), currentMolecule));
@@ -397,8 +390,9 @@ public final class BuilderMolecule {
           }
         } /* first Monomer! */ else {
           prevMonomer = currentMonomer;
+          input = getInput(prevMonomer);
           prevMolecule =
-              Chemistry.getInstance().getManipulator().getMolecule(prevMonomer.getCanSMILES(), generateAttachmentList(prevMonomer.getAttachmentList()));
+              Chemistry.getInstance().getManipulator().getMolecule(input, generateAttachmentList(prevMonomer.getAttachmentList()));
           firstMolecule = prevMolecule;
           first.setMolecule(firstMolecule);
           first.setRgroupMap(generateRgroupMap(id + ":" + String.valueOf(i), firstMolecule));
@@ -467,20 +461,21 @@ public final class BuilderMolecule {
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   public static AbstractMolecule getMoleculeForMonomer(final Monomer monomer) throws BuilderMoleculeException, ChemistryException {
-    String smiles = monomer.getCanSMILES();
+    String input = getInput(monomer);
+    if (input != null) {
+      List<Attachment> listAttachments = monomer.getAttachmentList();
+      AttachmentList list = new AttachmentList();
 
-    List<Attachment> listAttachments = monomer.getAttachmentList();
-    AttachmentList list = new AttachmentList();
-
-    for (Attachment attachment : listAttachments) {
-      list.add(new org.helm.chemtoolkit.Attachment(attachment.getAlternateId(), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
+      for (Attachment attachment : listAttachments) {
+        list.add(new org.helm.chemtoolkit.Attachment(attachment.getAlternateId(), attachment.getLabel(), attachment.getCapGroupName(), attachment.getCapGroupSMILES()));
+      }
+      try {
+        return Chemistry.getInstance().getManipulator().getMolecule(input, list);
+      } catch (IOException | CTKException e) {
+        throw new BuilderMoleculeException("Molecule can't be built for the given monomer");
+      }
     }
-    try {
-      return Chemistry.getInstance().getManipulator().getMolecule(smiles, list);
-    } catch (IOException | CTKException e) {
-      throw new BuilderMoleculeException("Molecule can't be built for the given monomer");
-    }
-
+    return null;
   }
 
   /**
@@ -492,5 +487,18 @@ public final class BuilderMolecule {
    */
   public static AbstractMolecule getMolecule(String smiles) throws IOException, CTKException, ChemistryException {
     return Chemistry.getInstance().getManipulator().getMolecule(smiles, null);
+  }
+
+  private static String getInput(Monomer monomer) {
+    String input = null;
+    if (monomer.getMolfile() != null) {
+      LOG.info("Use molfile for monomer generation");
+      input = monomer.getMolfile();
+    }
+    if (input == null && monomer.getCanSMILES() != null) {
+      LOG.info("Use smiles for monomer generation");
+      input = monomer.getCanSMILES();
+    }
+    return input;
   }
 }

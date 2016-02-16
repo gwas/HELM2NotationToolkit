@@ -42,11 +42,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.helm.notation2.Attachment;
 import org.helm.notation2.Monomer;
+import org.helm.notation2.exception.EncoderException;
 import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.tools.MolfileEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import b64.Base64;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -98,10 +98,11 @@ public class MonomerWSLoader {
    *
    * @throws IOException
    * @throws URISyntaxException
+   * @throws EncoderException
    */
   public Map<String, Monomer> loadMonomerStore(
       Map<String, Attachment> attachmentDB) throws IOException,
-          URISyntaxException {
+          URISyntaxException, EncoderException {
     Map<String, Monomer> monomers = new HashMap<String, Monomer>();
 
     CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -197,10 +198,11 @@ public class MonomerWSLoader {
    *
    * @throws JsonParseException
    * @throws IOException
+   * @throws EncoderException
    */
   private Map<String, Monomer> deserializeMonomerStore(JsonParser parser,
       Map<String, Attachment> attachmentDB) throws JsonParseException,
-          IOException {
+          IOException, EncoderException {
     Map<String, Monomer> monomers = new HashMap<String, Monomer>();
     Monomer currentMonomer = null;
 
@@ -240,7 +242,7 @@ public class MonomerWSLoader {
           break;
         case "molfile":
           parser.nextToken();
-          currentMonomer.setMolfile(Base64.decodeToString(parser.getText()));
+          currentMonomer.setMolfile(MolfileEncoder.decode(parser.getText()));
           break;
         case "monomerType":
           parser.nextToken();
