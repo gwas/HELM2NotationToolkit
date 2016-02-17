@@ -21,10 +21,12 @@
  ******************************************************************************/
 package org.helm.notation2;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -246,7 +248,7 @@ public class MonomerFactory {
 
   public static void setupBuilder() {
     URL schema = MonomerFactory.class.getResource(MONOMER_DB_SCHEMA_RESOURCE);
-    builder = new SAXBuilder(true); // checks both well-formedness and
+    builder = new SAXBuilder(false); // checks both well-formedness and
     // validity
     builder.setFeature(XML_SCHEMA_VALIDATION_FEATURE, true);
     builder.setProperty(EXTERNAL_SCHEMA_LOCATION_KEY, DEFAULT_NAME_SPACE
@@ -633,10 +635,11 @@ public class MonomerFactory {
 
   private static String buildMonomerDbXMLFromCache(MonomerCache cache)
       throws MonomerException {
-    XMLOutputter outputer = new XMLOutputter(Format.getCompactFormat());
+    XMLOutputter outputer = new XMLOutputter(Format.getPrettyFormat());
 
     StringBuilder sb = new StringBuilder();
-    sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><MONOMER_DB xmlns=\"lmr\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+    sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + System.getProperty("line.separator") + "<MonomerDB xmlns=\"lmr\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">"
+        + System.getProperty("line.separator"));
 
     Map<String, Map<String, Monomer>> mDB = cache.getMonomerDB();
     Element polymerListElement = new Element(POLYMER_LIST_ELEMENT);
@@ -659,7 +662,7 @@ public class MonomerFactory {
       }
     }
     String polymerListString = outputer.outputString(polymerListElement);
-    sb.append(polymerListString);
+    sb.append(polymerListString + System.getProperty("line.separator"));
 
     Map<String, Attachment> aDB = cache.getAttachmentDB();
     Element attachmentListElement = new Element(ATTACHMENT_LIST_ELEMENT);
@@ -673,7 +676,7 @@ public class MonomerFactory {
     String attachmentListString = outputer.outputString(attachmentListElement);
     sb.append(attachmentListString);
 
-    sb.append("</MONOMER_DB>");
+    sb.append(System.getProperty("line.separator") + "</MonomerDB>" + System.getProperty("line.separator"));
 
     return sb.toString();
   }
@@ -694,6 +697,7 @@ public class MonomerFactory {
     InputStream in = null;
 
     // check for webservice properties file
+
     if (MonomerStoreConfiguration.getInstance().isUseWebservice()) {
       try {
         cache = buildMonomerCacheFromWS();
@@ -705,6 +709,18 @@ public class MonomerFactory {
       }
 
       logger.log(Level.INFO, "WebService '' is used for monomer cache initialization");
+    } else if (MonomerStoreConfiguration.getInstance().isUseExternalMonomers()) {
+      try {
+        in = new FileInputStream(MONOMER_DB_FILE_PATH);
+        cache = buildMonomerCacheFromXML(in);
+        validate(cache.getMonomerDB());
+        logger.log(Level.INFO, MonomerStoreConfiguration.getInstance().getExternalMonomersPath()
+            + " is used for monomer cache initialization");
+      } catch (Exception e) {
+        logger.log(Level.INFO, "Unable to use local monomer DB file: "
+            + MonomerStoreConfiguration.getInstance().getExternalMonomersPath());
+      }
+
     } else {
       File cacheFile = new File(MONOMER_CACHE_FILE_PATH);
       if (cacheFile.exists()) {
@@ -782,8 +798,10 @@ public class MonomerFactory {
     serializeMonomerCache(cache, MONOMER_CACHE_FILE_PATH);
 
     String monomerDbXML = buildMonomerDbXMLFromCache(cache);
+
     FileOutputStream fos = new FileOutputStream(MONOMER_DB_FILE_PATH);
     fos.write(monomerDbXML.getBytes());
+    fos.close();
   }
 
   private static Map<String, Map<String, Monomer>> buildMonomerDB(

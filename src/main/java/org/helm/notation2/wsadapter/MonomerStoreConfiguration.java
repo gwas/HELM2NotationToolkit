@@ -30,8 +30,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -71,20 +69,27 @@ public class MonomerStoreConfiguration {
 
   private static final String WEBSERVICE_NUCLEOTIDES_PUT_PATH = "webservice.nucleotides.put.path";
 
-  // private static final String USE_EXTERNAL_MONOMERS =
-  // "use.external.monomers";
+  private static final String USE_EXTERNAL_MONOMERS = "use.external.monomers";
 
-  // private static final String USE_EXTERNAL_MONOMERS_PATH =
-  // "use.external.monomers.path";
+  private static final String EXTERNAL_MONOMERS_PATH = "external.monomers.path";
 
-  // private static final String USE_EXTERNAL_NUCLEOTIDES =
-  // "use.external.nucleotides";
+  private static final String USE_EXTERNAL_NUCLEOTIDES = "use.external.nucleotides";
+
+  private static final String EXTERNAL_NUCLEOTIDES_PATH = "external.nucleotides.path";
 
   private static MonomerStoreConfiguration _instance;
 
   private boolean isUseWebservice;
 
   private boolean isUpdateAutomatic;
+
+  private boolean isUseExternalMonomers;
+
+  private boolean isUseExternalNucleotides;
+
+  private String externalMonomersPath;
+
+  private String externalNucleotidesPath;
 
   private String webserviceMonomersURL;
 
@@ -116,11 +121,15 @@ public class MonomerStoreConfiguration {
   private void resetConfigToDefault() {
     isUseWebservice = false;
     isUpdateAutomatic = true;
+    isUseExternalMonomers = false;
+    isUseExternalNucleotides = false;
     webserviceMonomersURL = "";
     webserviceMonomersPath = "";
     webserviceMonomersPutPath = "";
     webserviceEditorCategorizationURL = "";
     webserviceEditorCategorizationPath = "";
+    externalNucleotidesPath = "";
+    externalMonomersPath = "";
   }
 
   /**
@@ -266,11 +275,26 @@ public class MonomerStoreConfiguration {
         + webserviceEditorCategorizationPath;
   }
 
+  public boolean isUseExternalMonomers() {
+    return isUseExternalMonomers;
+  }
+
+  public boolean isUseExternalNucleotides() {
+    return isUseExternalNucleotides;
+  }
+
+  public String getExternalNucleotidesPath() {
+    return externalNucleotidesPath;
+  }
+
+  public String getExternalMonomersPath() {
+    return externalMonomersPath;
+  }
+
   /**
    * Refreshes the configuration using the local properties file.
    */
   public void refresh() {
-    System.out.println(CONFIG_FILE_PATH);
     File configFile = new File(CONFIG_FILE_PATH);
 
     if (!configFile.exists()) {
@@ -321,12 +345,13 @@ public class MonomerStoreConfiguration {
       webserviceNucleotidesPutPath = conf.getString(WEBSERVICE_NUCLEOTIDES_PUT_PATH);
       webserviceEditorCategorizationURL = conf.getString(WEBSERVICE_EDITOR_CATEGORIZATION_URL);
       webserviceEditorCategorizationPath = conf.getString(WEBSERVICE_EDITOR_CATEGORIZATION_PATH);
+      /* load from external xml file */
+      isUseExternalMonomers = conf.getBoolean(USE_EXTERNAL_MONOMERS);
+      externalMonomersPath = conf.getString(EXTERNAL_MONOMERS_PATH);
+      isUseExternalNucleotides = conf.getBoolean(USE_EXTERNAL_NUCLEOTIDES);
+      externalNucleotidesPath = conf.getString(EXTERNAL_NUCLEOTIDES_PATH);
 
-    } catch (ConfigurationException |
-
-    NoSuchElementException e)
-
-    {
+    } catch (ConfigurationException | NoSuchElementException e) {
       resetConfigToDefault();
       e.printStackTrace();
     }
@@ -341,7 +366,7 @@ public class MonomerStoreConfiguration {
   public String toString() {
     String lineSep = System.getProperty("line.separator");
     String res =
-        String.format("Webservice configuration:%sUse Webservice: %s%sUpdate Automatic: %s%sGetMonomers: %s%sPutMonomers: %s%sGetNucleotides: %s%sPutNucleotides: %s%sCategorization config: %s", lineSep, isUseWebservice(), lineSep, isUpdateAutomatic(), lineSep, getWebserviceMonomersFullURL(), lineSep, getWebserviceMonomersPutFullURL(), lineSep, getWebserviceNucleotidesFullURL(), lineSep, getWebserviceNucleotidesPutFullURL(), lineSep, getWebserviceEditorCategorizationFullURL());
+        String.format("Webservice configuration:%sUse Webservice: %s%sUpdate Automatic: %s%sGetMonomers: %s%sPutMonomers: %s%sGetNucleotides: %s%sPutNucleotides: %s%sCategorization config: %s%sUse external monomer xml file: %s%sMonomer xml file: %s%sUse external nucleotide xml file: %s%sNucleotide xml file:%s", lineSep, isUseWebservice(), lineSep, isUpdateAutomatic(), lineSep, getWebserviceMonomersFullURL(), lineSep, getWebserviceMonomersPutFullURL(), lineSep, getWebserviceNucleotidesFullURL(), lineSep, getWebserviceNucleotidesPutFullURL(), lineSep, getWebserviceEditorCategorizationFullURL(), lineSep, isUseExternalMonomers(), lineSep, getExternalMonomersPath(), lineSep, isUseExternalNucleotides(), lineSep, getExternalNucleotidesPath());
 
     return res;
   }

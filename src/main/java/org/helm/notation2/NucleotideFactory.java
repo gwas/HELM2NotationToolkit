@@ -114,6 +114,8 @@ public class NucleotideFactory {
       // check for webservice properties file
       if (MonomerStoreConfiguration.getInstance().isUseWebservice()) {
         initializeNucleotideTemplatesFromWebService();
+      } else if (MonomerStoreConfiguration.getInstance().isUseExternalNucleotides()) {
+        initalizeNucleotideTemplatesFromExternalFile();
       } else {
         initializeNucleotideTemplates();
       }
@@ -167,6 +169,41 @@ public class NucleotideFactory {
         logger.log(Level.INFO, "Unable to use local nucleotide templates for initialization");
         localFile.delete();
         logger.log(Level.INFO, "Deleted local nucleotide templates file");
+      }
+    }
+
+    if (null == templates) {
+      in = NucleotideFactory.class.getResourceAsStream(NUCLEOTIDE_TEMPLATE_XML_RESOURCE);
+      try {
+        templates = buildNucleotideTemplates(in);
+        validate(templates);
+      } catch (IOException | JDOMException | NotationException e) {
+        throw new NucleotideLoadingException(
+            "Initializing NucleotideStore failed because of "
+                + e.getClass().getSimpleName(), e);
+      }
+
+      logger.log(Level.INFO, NUCLEOTIDE_TEMPLATE_XML_RESOURCE
+          + " is used for nucleotide templates initialization");
+    }
+
+    nucleotideTemplates = templates;
+    reverseNucleotideMap = getReverseNucleotideTemplateMap(NotationConstant.NOTATION_SOURCE);
+  }
+
+  private static void initalizeNucleotideTemplatesFromExternalFile() throws NucleotideLoadingException {
+    InputStream in = null;
+    File externalFile = new File(MonomerStoreConfiguration.getInstance().getExternalNucleotidesPath());
+    Map<String, Map<String, String>> templates = null;
+    if (externalFile.exists()) {
+      try {
+        in = new FileInputStream(externalFile);
+        templates = buildNucleotideTemplates(in);
+        validate(templates);
+        logger.log(Level.INFO, MonomerStoreConfiguration.getInstance().getExternalNucleotidesPath()
+            + " is used for nucleotide templates initialization");
+      } catch (Exception e) {
+        logger.log(Level.INFO, "Unable to use external nucleotide templates for initialization");
       }
     }
 
