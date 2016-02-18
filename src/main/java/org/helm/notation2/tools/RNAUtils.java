@@ -227,7 +227,7 @@ public class RNAUtils {
     }
 
     if (hasPhosphat((MonomerNotationUnitRNA) lastObject)) {
-      MonomerNotation lastObjectwithoutPhosphat = new MonomerNotationUnitRNA(lastObject.getID().substring(0, lastObject.getID().length() - 1), "RNA");
+      MonomerNotation lastObjectwithoutPhosphat = new MonomerNotationUnitRNA(lastObject.getUnit().substring(0, lastObject.getUnit().length() - 1), "RNA");
       ChangeObjects.changeMonomerNotation(polymer.getPolymerElements().getListOfElements().size() - 1, polymer, lastObjectwithoutPhosphat);
       LOG.info("Last phosphate was removed from the last nucleotide");
     }
@@ -241,11 +241,11 @@ public class RNAUtils {
    */
   /* To Do check for other modified phosphates? */
   private static boolean hasPhosphat(MonomerNotationUnitRNA monomerNotationUnitRNA) {
-    if (monomerNotationUnitRNA.getContents().get(monomerNotationUnitRNA.getContents().size() - 1).getID().endsWith("P")) {
-      LOG.info("MonomerNotationUnitRNA " + monomerNotationUnitRNA.getID() + " has a phosphate");
+    if (monomerNotationUnitRNA.getContents().get(monomerNotationUnitRNA.getContents().size() - 1).getUnit().endsWith("P")) {
+      LOG.info("MonomerNotationUnitRNA " + monomerNotationUnitRNA.getUnit() + " has a phosphate");
       return true;
     }
-    LOG.info("MonomerNotationUnitRNA " + monomerNotationUnitRNA.getID() + " has no phosphate");
+    LOG.info("MonomerNotationUnitRNA " + monomerNotationUnitRNA.getUnit() + " has no phosphate");
     return false;
   }
 
@@ -270,7 +270,7 @@ public class RNAUtils {
     }
 
     if (!(hasPhosphat((MonomerNotationUnitRNA) lastObject))) {
-      MonomerNotation lastObjectwithPhosphat = new MonomerNotationUnitRNA(lastObject.getID() + "P", "RNA");
+      MonomerNotation lastObjectwithPhosphat = new MonomerNotationUnitRNA(lastObject.getUnit() + "P", "RNA");
       ChangeObjects.changeMonomerNotation(polymer.getPolymerElements().getListOfElements().size() - 1, polymer, lastObjectwithPhosphat);
       LOG.info("Phosphate was added to the last nucleotide");
     }
@@ -295,7 +295,7 @@ public class RNAUtils {
       reversePolymer = SequenceConverter.readRNA(generateAntiparallel(polymer)).getCurrentPolymer();
       reversePolymer =
           new PolymerNotation(reversePolymer.getPolymerID(), reversePolymer.getPolymerElements(), "Antiparallel to "
-              + polymer.getPolymerID().getID());
+              + polymer.getPolymerID().getId());
       return reversePolymer;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
       e.printStackTrace();
@@ -336,7 +336,7 @@ public class RNAUtils {
       inverse = SequenceConverter.readRNA(generateInverse(polymer).toString()).getListOfPolymers().get(0);
       inverse =
           new PolymerNotation(inverse.getPolymerID(), inverse.getPolymerElements(), "Inverse to "
-              + polymer.getPolymerID().getID());
+              + polymer.getPolymerID().getId());
       return inverse;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
       e.printStackTrace();
@@ -365,7 +365,7 @@ public class RNAUtils {
       complementReversePolymer = SequenceConverter.readRNA(generateReverseComplement(polymer).toString()).getListOfPolymers().get(0);
       complementReversePolymer =
           new PolymerNotation(complementReversePolymer.getPolymerID(), complementReversePolymer.getPolymerElements(),
-              "ReverseComplement to " + polymer.getPolymerID().getID());
+              "ReverseComplement to " + polymer.getPolymerID().getId());
       return complementReversePolymer;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
       e.printStackTrace();
@@ -445,7 +445,7 @@ public class RNAUtils {
       complementPolymer = SequenceConverter.readRNA(generateComplement(polymer).toString()).getListOfPolymers().get(0);
       complementPolymer =
           new PolymerNotation(complementPolymer.getPolymerID(), complementPolymer.getPolymerElements(),
-              "NormalComplement to " + polymer.getPolymerID().getID());
+              "NormalComplement to " + polymer.getPolymerID().getId());
       return complementPolymer;
     } catch (NotationException | FastaFormatException | HELM2HandledException e) {
       e.printStackTrace();
@@ -511,7 +511,7 @@ public class RNAUtils {
    *         otherwise
    */
   private static boolean hasModification(MonomerNotationUnitRNA monomerNotation) {
-    if (monomerNotation.getID().contains("[") || monomerNotation.getID().contains("(X)") || monomerNotation.getID().endsWith(")")) {
+    if (monomerNotation.getUnit().contains("[") || monomerNotation.getUnit().contains("(X)") || monomerNotation.getUnit().endsWith(")")) {
       return true;
     }
     return false;
@@ -786,7 +786,7 @@ public class RNAUtils {
         if (i == monomerNotations.size() - 1) {
           last = true;
         }
-        nucleotides.add(NucleotideParser.convertToNucleotide(monomerNotation.getID(), last));
+        nucleotides.add(NucleotideParser.convertToNucleotide(monomerNotation.getUnit(), last));
       } catch (MonomerException | NucleotideLoadingException | NotationException | org.helm.notation2.exception.NotationException e) {
         e.printStackTrace();
         throw new RNAUtilsException("Nucleotide can not be read " + e.getMessage());

@@ -111,7 +111,7 @@ public final class HELM1Utils {
     StringBuilder notation = new StringBuilder();
 
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
-      String id = polymer.getPolymerID().getID();
+      String id = polymer.getPolymerID().getId();
       String elementsToHELM = polymer.getPolymerElements().toHELM();
       Map<String, String> adHocList = findAdHocMonomers(elementsToHELM, polymer.getPolymerID().getType());
       Map<String, String> convert = convertAdHocMonomersIntoSMILES(adHocList);
@@ -224,7 +224,7 @@ public final class HELM1Utils {
     Map<String, List<String>> labelIdMap = new TreeMap<String, List<String>>();
 
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
-      String id = polymer.getPolymerID().getID();
+      String id = polymer.getPolymerID().getId();
       String elementsToHELM = polymer.getPolymerElements().toHELM();
       Map<String, String> adHocList = findAdHocMonomers(elementsToHELM, polymer.getPolymerID().getType());
       Map<String, String> convert = convertAdHocMonomersIntoSMILES(adHocList);
@@ -280,7 +280,7 @@ public final class HELM1Utils {
         }
 
         notation = notation + helm2notation.getPolymerNotation(id).getPolymerID().getType() + count + "{" + helm2notation.getPolymerNotation(id).toHELM() + "}|";
-        convertsortedIdstoIds.put(helm2notation.getPolymerNotation(id).getPolymerID().getID(), helm2notation.getPolymerNotation(id).getPolymerID().getType() + count);
+        convertsortedIdstoIds.put(helm2notation.getPolymerNotation(id).getPolymerID().getId(), helm2notation.getPolymerNotation(id).getPolymerID().getType() + count);
 
       }
 
@@ -305,8 +305,8 @@ public final class HELM1Utils {
       /* canonicalize connection */
       /* change the id's of the polymers to the sorted ids */
       List<String> connections = new ArrayList<String>();
-      String source = connectionNotation.getSourceId().getID();
-      String target = connectionNotation.getTargetId().getID();
+      String source = connectionNotation.getSourceId().getId();
+      String target = connectionNotation.getTargetId().getId();
 
       /* pairs will be not shown */
       if (!(connectionNotation.toHELM().equals(""))) {

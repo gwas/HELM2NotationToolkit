@@ -133,7 +133,7 @@ public final class Validation {
    */
   protected static boolean validateMonomers(List<MonomerNotation> mon) throws ChemistryException, MonomerLoadingException, org.helm.notation2.parser.exceptionparser.NotationException {
     for (MonomerNotation monomerNotation : mon) {
-      if (!(isMonomerValid(monomerNotation.getID(), monomerNotation.getType()))) {
+      if (!(isMonomerValid(monomerNotation.getUnit(), monomerNotation.getType()))) {
         return false;
       }
     }
@@ -169,9 +169,9 @@ public final class Validation {
         }
 
         /* check Monomers:-> can be number */
-        PolymerNotation source = helm2notation.getPolymerNotation(connection.getSourceId().getID());
+        PolymerNotation source = helm2notation.getPolymerNotation(connection.getSourceId().getId());
         String sourceUnit = connection.getSourceUnit();
-        PolymerNotation target = helm2notation.getPolymerNotation(connection.getTargetId().getID());
+        PolymerNotation target = helm2notation.getPolymerNotation(connection.getTargetId().getId());
         String targetUnit = connection.getTargetUnit();
 
         /* check for specific interactions */
@@ -209,17 +209,17 @@ public final class Validation {
           if (listMonomerOccurencesOne.isEmpty()) {
             for (Integer occurenceTwo : listMonomerOccurencesTwo) {
               List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo), occurenceTwo);
-              checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), helm2notation, connection, interconnection, connection.getTargetId().getID());
+              checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), helm2notation, connection, interconnection, connection.getTargetId().getId());
             }
           }
           for (Integer occurenceOne : listMonomerOccurencesOne) {
             /* get Monomers */
             List<Monomer> listMonomersOne = getAllMonomers(source.getMonomerNotation(occurenceOne), occurenceOne);
-            checkSingleAttachment(listMonomersOne, connection.getrGroupSource(), helm2notation, connection, interconnection, connection.getSourceId().getID());
+            checkSingleAttachment(listMonomersOne, connection.getrGroupSource(), helm2notation, connection, interconnection, connection.getSourceId().getId());
             /* check single attachment */
             for (Integer occurenceTwo : listMonomerOccurencesTwo) {
               List<Monomer> listMonomersTwo = getAllMonomers(target.getMonomerNotation(occurenceTwo), occurenceTwo);
-              checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), helm2notation, connection, interconnection, connection.getTargetId().getID());
+              checkSingleAttachment(listMonomersTwo, connection.getrGroupTarget(), helm2notation, connection, interconnection, connection.getTargetId().getId());
               checkAttachment(listMonomersOne, listMonomersTwo, connection, helm2notation, interconnection, false);
 
             }
@@ -278,13 +278,13 @@ public final class Validation {
       MonomerNotation mon = ValidationMethod.decideWhichMonomerNotation(sourceUnit, e.getType());
       /* it is only one monomer e.g. C */
       if (mon instanceof MonomerNotationUnit) {
-        PolymerNotation polymerNotation = helm2notation.getPolymerNotation(e.getID());
+        PolymerNotation polymerNotation = helm2notation.getPolymerNotation(e.getId());
         /* monomer can also be unknown */
         if (sourceUnit.equals("?")) {
           return occurences;
         }
         for (int i = 0; i < polymerNotation.getPolymerElements().getListOfElements().size(); i++) {
-          if (polymerNotation.getPolymerElements().getListOfElements().get(i).getID().equals(sourceUnit)) {
+          if (polymerNotation.getPolymerElements().getListOfElements().get(i).getUnit().equals(sourceUnit)) {
             occurences.add(i + 1);
           }
         }
@@ -294,15 +294,15 @@ public final class Validation {
           throw new AttachmentException("Monomer is not there");
         }
       } /* second: group (mixture or or) or list */ else if (mon instanceof MonomerNotationGroup || mon instanceof MonomerNotationList) {
-        PolymerNotation polymerNotation = helm2notation.getPolymerNotation(e.getID());
+        PolymerNotation polymerNotation = helm2notation.getPolymerNotation(e.getId());
         Map<String, String> elements = new HashMap<String, String>();
         for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) mon).getListOfElements()) {
-          elements.put(groupElement.getMonomerNotation().getID(), "");
+          elements.put(groupElement.getMonomerNotation().getUnit(), "");
         }
 
         for (int i = 0; i < polymerNotation.getPolymerElements().getListOfElements().size(); i++) {
-          if (elements.containsKey(polymerNotation.getPolymerElements().getListOfElements().get(i).getID())) {
-            elements.put(polymerNotation.getPolymerElements().getListOfElements().get(i).getID(), "1");
+          if (elements.containsKey(polymerNotation.getPolymerElements().getListOfElements().get(i).getUnit())) {
+            elements.put(polymerNotation.getPolymerElements().getListOfElements().get(i).getUnit(), "1");
             occurences.add(i + 1);
           }
         }
@@ -330,9 +330,9 @@ public final class Validation {
     for (GroupingNotation grouping : listGroupings) {
       /* check for each group element if the polymer id is there */
       for (GroupingElement groupingElement : grouping.getAmbiguity().getListOfElements()) {
-        if (!(listPolymerIDs.contains(groupingElement.getID().getID()))) {
+        if (!(listPolymerIDs.contains(groupingElement.getID().getId()))) {
           LOG.info("Element of Group: "
-              + groupingElement.getID().getID()
+              + groupingElement.getID().getId()
               + " does not exist");
           return false;
         }
@@ -451,8 +451,8 @@ public final class Validation {
   private static void checkPolymerIDSConnection(ConnectionNotation not, List<String> listPolymerIDs)
       throws PolymerIDsException {
     /* the polymer ids have to be there */
-    checkExistenceOfPolymerID(not.getSourceId().getID(), listPolymerIDs);
-    checkExistenceOfPolymerID(not.getTargetId().getID(), listPolymerIDs);
+    checkExistenceOfPolymerID(not.getSourceId().getId(), listPolymerIDs);
+    checkExistenceOfPolymerID(not.getTargetId().getId(), listPolymerIDs);
   }
 
   /**
@@ -478,14 +478,14 @@ public final class Validation {
       monomers.addAll(getMonomersRNA((MonomerNotationUnitRNA) not, monomerStore, position));
 
     } else if (not instanceof MonomerNotationUnit) {
-      String id = not.getID();
+      String id = not.getUnit();
       if (id.startsWith("[") && id.endsWith("]")) {
         id = id.substring(1, id.length() - 1);
       }
       monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
     } else if (not instanceof MonomerNotationGroup) {
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
-        String id = groupElement.getMonomerNotation().getID();
+        String id = groupElement.getMonomerNotation().getUnit();
         if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
@@ -496,7 +496,7 @@ public final class Validation {
         if (listElement instanceof MonomerNotationUnitRNA) {
           monomers.addAll(getMonomersRNA(((MonomerNotationUnitRNA) listElement), monomerStore, position));
         } else {
-          String id = listElement.getID();
+          String id = listElement.getUnit();
           if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
           }
@@ -536,7 +536,7 @@ public final class Validation {
       monomers.addAll(getMonomersRNAOnlyBase((MonomerNotationUnitRNA) not, monomerStore));
 
     } else if (not instanceof MonomerNotationUnit) {
-      String id = not.getID();
+      String id = not.getUnit();
       if (id.startsWith("[") && id.endsWith("]")) {
         id = id.substring(1, id.length() - 1);
       }
@@ -544,7 +544,7 @@ public final class Validation {
     } else if (not instanceof MonomerNotationGroup) {
       LOG.debug("MonomerNotationGroup");
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
-        String id = groupElement.getMonomerNotation().getID();
+        String id = groupElement.getMonomerNotation().getUnit();
         if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
@@ -556,7 +556,7 @@ public final class Validation {
         if (listElement instanceof MonomerNotationUnitRNA) {
           monomers.addAll(getMonomersRNAOnlyBase(((MonomerNotationUnitRNA) listElement), monomerStore));
         } else {
-          String id = listElement.getID();
+          String id = listElement.getUnit();
           if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
           }
@@ -628,11 +628,11 @@ public final class Validation {
 
           /* Is the attachment point already occupied by another monomer */
           /* Intra connections */
-          if (helm2notation.getSimplePolymer(not.getSourceId().getID()).getMapIntraConnection().containsKey(detailsource)) {
+          if (helm2notation.getSimplePolymer(not.getSourceId().getId()).getMapIntraConnection().containsKey(detailsource)) {
             LOG.info("Attachment point is already occupied");
             throw new AttachmentException("Attachment point is already occupied");
           }
-          if (helm2notation.getSimplePolymer(not.getTargetId().getID()).getMapIntraConnection().containsKey(detailtarget)) {
+          if (helm2notation.getSimplePolymer(not.getTargetId().getId()).getMapIntraConnection().containsKey(detailtarget)) {
             LOG.info("Attachment point is already occupied");
             throw new AttachmentException("Attachment point is already occupied");
           }
@@ -643,10 +643,10 @@ public final class Validation {
         String detailtarget = not.getTargetUnit() + "$" + not.getrGroupTarget();
 
         /* Inter connections */
-        detailsource = not.getSourceId().getID() + "$"
+        detailsource = not.getSourceId().getId() + "$"
             + detailsource;
 
-        detailtarget = not.getTargetId().getID() + "$"
+        detailtarget = not.getTargetId().getId() + "$"
             + detailtarget;
 
         /* check */
@@ -660,9 +660,9 @@ public final class Validation {
           throw new AttachmentException("Attachment point is already occupied");
         }
         /* Inter connections */
-        detailsource = not.getSourceId().getID() + "$" + not.getSourceUnit() + "$"
+        detailsource = not.getSourceId().getId() + "$" + not.getSourceUnit() + "$"
             + not.getrGroupSource();
-        detailtarget = not.getTargetId().getID() + "$" + not.getTargetUnit() + "$"
+        detailtarget = not.getTargetId().getId() + "$" + not.getTargetUnit() + "$"
             + not.getrGroupTarget();
 
         if (specific) {
@@ -732,8 +732,8 @@ public final class Validation {
     try {
       List<Monomer> monomers = new ArrayList<Monomer>();
       for (int index = 0; index < rna.getContents().size(); index++) {
-        String id = rna.getContents().get(index).getID();
-        if (rna.getContents().get(index).getID().startsWith("[") && rna.getContents().get(index).getID().endsWith("]")) {
+        String id = rna.getContents().get(index).getUnit();
+        if (rna.getContents().get(index).getUnit().startsWith("[") && rna.getContents().get(index).getUnit().endsWith("]")) {
           id = id.substring(1, id.length() - 1);
         }
         /* Special case */
@@ -766,7 +766,7 @@ public final class Validation {
     try {
       List<Monomer> monomers = new ArrayList<Monomer>();
       for (MonomerNotationUnit unit : rna.getContents()) {
-        String id = unit.getID().replace("[", "");
+        String id = unit.getUnit().replace("[", "");
         id = id.replace("]", "");
         Monomer mon = MethodsMonomerUtils.getMonomer(rna.getType(), id, "");
 

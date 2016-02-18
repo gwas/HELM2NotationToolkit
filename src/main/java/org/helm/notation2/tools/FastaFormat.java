@@ -330,7 +330,7 @@ public final class FastaFormat {
       elements.addMonomerNotation(nucleotide.getNotation());
     }
     /* remove the phosphat of the last group */
-    String id = elements.getCurrentMonomerNotation().getID();
+    String id = elements.getCurrentMonomerNotation().getUnit();
     try {
       elements.changeMonomerNotation(new MonomerNotationUnitRNA(id.substring(0, id.length() - 1), "RNA"));
     } catch (org.helm.notation2.parser.exceptionparser.NotationException | IOException e) {
@@ -410,7 +410,7 @@ public final class FastaFormat {
     initMapAminoAcid();
     StringBuilder fasta = new StringBuilder();
     for (PolymerNotation polymer : polymers) {
-      String header = polymer.getPolymerID().getID();
+      String header = polymer.getPolymerID().getId();
       if (polymer.getAnnotation() != null) {
         header = polymer.getAnnotation();
       }
@@ -452,7 +452,7 @@ public final class FastaFormat {
   public static String generateFastaFromRNAPolymer(List<PolymerNotation> polymers) throws FastaFormatException, ChemistryException {
     StringBuilder fasta = new StringBuilder();
     for (PolymerNotation polymer : polymers) {
-      String header = polymer.getPolymerID().getID();
+      String header = polymer.getPolymerID().getId();
       if (polymer.getAnnotation() != null) {
         header = polymer.getAnnotation();
       }
@@ -580,7 +580,7 @@ public final class FastaFormat {
       /* simple MonomerNotationUnit */
       if (current instanceof MonomerNotationUnit) {
 
-        String id = aminoacids.get(current.getID().replace("[", "").replace("]", "")).getNaturalAnalog();
+        String id = aminoacids.get(current.getUnit().replace("[", "").replace("]", "")).getNaturalAnalog();
         change = new MonomerNotationUnit(id, current.getType());
         change.setCount(current.getCount());
         if (current.getAnnotation() != null) {
@@ -589,7 +589,7 @@ public final class FastaFormat {
       } else if (current instanceof MonomerNotationGroup) {
         if (current instanceof MonomerNotationGroupOr) {
           StringBuilder sb = new StringBuilder();
-          String id = current.getID();
+          String id = current.getUnit();
           for (String element : id.split(",")) {
             sb.append(aminoacids.get(element.replace("[", "").replace("]", "")).getNaturalAnalog() + ",");
           }
@@ -598,7 +598,7 @@ public final class FastaFormat {
 
         } else if (current instanceof MonomerNotationGroupMixture) {
           StringBuilder sb = new StringBuilder();
-          String id = current.getID();
+          String id = current.getUnit();
           for (String element : id.split("\\+")) {
             sb.append(aminoacids.get(element.replace("[", "").replace("]", "")).getNaturalAnalog() + "+");
           }
@@ -612,7 +612,7 @@ public final class FastaFormat {
 
       } else if (current instanceof MonomerNotationList) {
         StringBuilder sb = new StringBuilder();
-        String id = current.getID();
+        String id = current.getUnit();
         for (String element : id.split("\\.")) {
           sb.append(aminoacids.get(element.replace("[", "").replace("]", "")).getNaturalAnalog() + ".");
         }
@@ -731,7 +731,7 @@ public final class FastaFormat {
       StringBuilder changeid = new StringBuilder();
 
       for (MonomerNotation not : ((MonomerNotationUnitRNA) monomerNotation).getContents()) {
-        Monomer monomer = nucleotidesNaturalAnalog.get(not.getID().replace("[", "").replace("]", ""));
+        Monomer monomer = nucleotidesNaturalAnalog.get(not.getUnit().replace("[", "").replace("]", ""));
         String id = monomer.getNaturalAnalog();
         if (monomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
           id = "(" + id + ")";
@@ -740,7 +740,7 @@ public final class FastaFormat {
       }
       return changeid.toString();
     } else {
-      Monomer monomer = nucleotidesNaturalAnalog.get(monomerNotation.getID().replace("[", "").replace("]", ""));
+      Monomer monomer = nucleotidesNaturalAnalog.get(monomerNotation.getUnit().replace("[", "").replace("]", ""));
       String id = monomer.getNaturalAnalog();
       if (monomer.getMonomerType().equals(Monomer.BRANCH_MOMONER_TYPE)) {
         id = "(" + id + ")";

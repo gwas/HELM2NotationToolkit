@@ -400,7 +400,7 @@ public final class ChangeObjects {
       }
     } else if (monomerNotation instanceof MonomerNotationUnit) {
       /* Simple MonomerNotationUnit */
-      if (monomerNotation.getID().equals(existingMonomerID)) {
+      if (monomerNotation.getUnit().equals(existingMonomerID)) {
         return produceMonomerNotationUnitWithOtherID(monomerNotation, newMonomerID);
       }
     } else if (monomerNotation instanceof MonomerNotationList) {
@@ -442,11 +442,11 @@ public final class ChangeObjects {
     StringBuilder sb = new StringBuilder();
     String id = "";
     for (MonomerNotationGroupElement object : monomerNotation.getListOfElements()) {
-      if (object.getMonomerNotation().getID().equals(existingMonomerID)) {
+      if (object.getMonomerNotation().getUnit().equals(existingMonomerID)) {
         hasChanged = true;
         id = generateGroupElement(newMonomerID, object.getValue());
       } else {
-        id = generateGroupElement(object.getMonomerNotation().getID(), object.getValue());
+        id = generateGroupElement(object.getMonomerNotation().getUnit(), object.getValue());
       }
       if (monomerNotation instanceof MonomerNotationGroupOr) {
         sb.append(id + ",");
@@ -513,11 +513,11 @@ public final class ChangeObjects {
           hasChanged = true;
         }
       } else {
-        if (element.getID().equals(existingMonomerID)) {
+        if (element.getUnit().equals(existingMonomerID)) {
           hasChanged = true;
           id = generateIDMonomerNotation(newMonomerID, element.getCount(), element.getAnnotation());
         } else {
-          id = generateIDMonomerNotation(element.getID(), element.getCount(), element.getAnnotation());
+          id = generateIDMonomerNotation(element.getUnit(), element.getCount(), element.getAnnotation());
         }
 
       }
@@ -623,11 +623,11 @@ public final class ChangeObjects {
     StringBuilder sb = new StringBuilder();
     String id = "";
     for (MonomerNotation element : object.getContents()) {
-      if (element.getID().equals(existingMonomerID)) {
+      if (element.getUnit().equals(existingMonomerID)) {
         hasChanged = "";
         id = generateIDRNA(newMonomerID, element.getCount(), element.getAnnotation());
       } else {
-        id = generateIDRNA(element.getID(), element.getCount(), element.getAnnotation());
+        id = generateIDRNA(element.getUnit(), element.getCount(), element.getAnnotation());
       }
       sb.append(id);
     }
@@ -828,12 +828,12 @@ public final class ChangeObjects {
     StringBuilder sb = new StringBuilder();
     String id = "";
     for (MonomerNotationGroupElement object : monomerNotationGroup.getListOfElements()) {
-      String newID = ChangeObjects.produceID(object.getMonomerNotation().getID(), object.getMonomerNotation().getType());
+      String newID = ChangeObjects.produceID(object.getMonomerNotation().getUnit(), object.getMonomerNotation().getType());
       if (newID != null) {
         hasChanged = true;
         id = generateGroupElement(newID, object.getValue());
       } else {
-        id = generateGroupElement(object.getMonomerNotation().getID(), object.getValue());
+        id = generateGroupElement(object.getMonomerNotation().getUnit(), object.getValue());
       }
       if (monomerNotationGroup instanceof MonomerNotationGroupOr) {
         sb.append(id + ",");
@@ -875,12 +875,12 @@ public final class ChangeObjects {
           hasChanged = true;
         }
       } else {
-        String newID = ChangeObjects.produceID(element.getID(), element.getType());
+        String newID = ChangeObjects.produceID(element.getUnit(), element.getType());
         if (newID != null) {
           hasChanged = true;
           id = generateIDMonomerNotation(newID, element.getCount(), element.getAnnotation());
         } else {
-          id = generateIDMonomerNotation(element.getID(), element.getCount(), element.getAnnotation());
+          id = generateIDMonomerNotation(element.getUnit(), element.getCount(), element.getAnnotation());
         }
 
       }
@@ -908,7 +908,7 @@ public final class ChangeObjects {
    * @throws CTKException
    */
   private static MonomerNotation produceMonomerNotationUnitWithOtherID(MonomerNotation monomerNotation) throws NotationException, IOException, ChemistryException, CTKException {
-    String newID = ChangeObjects.produceID(monomerNotation.getID(), monomerNotation.getType());
+    String newID = ChangeObjects.produceID(monomerNotation.getUnit(), monomerNotation.getType());
     if (newID != null) {
       MonomerNotationUnit result = new MonomerNotationUnit(newID, monomerNotation.getType());
       if (monomerNotation.isAnnotationTrue()) {
@@ -934,13 +934,13 @@ public final class ChangeObjects {
     StringBuilder sb = new StringBuilder();
     String id = "";
     for (MonomerNotation element : monomerNotationUnitRNA.getContents()) {
-      String newID = ChangeObjects.produceID(element.getID(), element.getType());
+      String newID = ChangeObjects.produceID(element.getUnit(), element.getType());
 
       if (newID != null) {
         hasChanged = "";
         id = generateIDRNA(newID, element.getCount(), element.getAnnotation());
       } else {
-        id = generateIDRNA(element.getID(), element.getCount(), element.getAnnotation());
+        id = generateIDRNA(element.getUnit(), element.getCount(), element.getAnnotation());
       }
       sb.append(id);
     }

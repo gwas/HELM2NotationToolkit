@@ -701,8 +701,8 @@ public class MonomerFactory {
     if (MonomerStoreConfiguration.getInstance().isUseWebservice()) {
       try {
         cache = buildMonomerCacheFromWS();
-        // validate(cache.getMonomerDB());
-      } catch (MonomerException | IOException | JDOMException e) {
+        validate(cache.getMonomerDB());
+      } catch (MonomerException | IOException | JDOMException | CTKException e) {
         throw new MonomerLoadingException(
             "Initializing MonomerStore failed because of "
                 + e.getClass().getSimpleName(), e);
@@ -888,6 +888,7 @@ public class MonomerFactory {
       Set<String> monomers = monomerMap.keySet();
       for (String monomer : monomers) {
         Monomer m = monomerMap.get(monomer);
+        logger.info(m.getAlternateId());
         MonomerParser.validateMonomer(m);
       }
     }

@@ -184,7 +184,7 @@ public final class xHelmNotationExporter {
    * @throws CTKException
    */
   private static void addAdHocMonomer(MonomerNotation monomerNotation) throws IOException, JDOMException, ChemistryException {
-    Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(monomerNotation.getType(), monomerNotation.getID().replace("[", "").replace("]", ""));
+    Monomer monomer = MonomerFactory.getInstance().getMonomerStore().getMonomer(monomerNotation.getType(), monomerNotation.getUnit().replace("[", "").replace("]", ""));
     if (monomer.isAdHocMonomer()) {
       set.add(monomer);
     }

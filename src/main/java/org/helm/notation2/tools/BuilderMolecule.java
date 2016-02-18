@@ -81,19 +81,19 @@ public final class BuilderMolecule {
    * @throws ChemistryException if the Chemistry Engine can not be initialized
    */
   public static RgroupStructure buildMoleculefromSinglePolymer(final PolymerNotation polymernotation) throws BuilderMoleculeException, HELM2HandledException, ChemistryException {
-    LOG.info("Build molecule for single Polymer " + polymernotation.getPolymerID().getID());
+    LOG.info("Build molecule for single Polymer " + polymernotation.getPolymerID().getId());
     /* Case 1: BLOB -> throw exception */
     if (polymernotation.getPolymerID() instanceof BlobEntity) {
       LOG.error("Molecule can't be build for BLOB");
       throw new BuilderMoleculeException("Molecule can't be build for BLOB");
     } /* Case 2: CHEM */ else if (polymernotation.getPolymerID() instanceof ChemEntity) {
       List<Monomer> validMonomers = MethodsMonomerUtils.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
-      return buildMoleculefromCHEM(polymernotation.getPolymerID().getID(), validMonomers);
+      return buildMoleculefromCHEM(polymernotation.getPolymerID().getId(), validMonomers);
     } /* Case 3: RNA or PEPTIDE */ else if (polymernotation.getPolymerID() instanceof RNAEntity
         || polymernotation.getPolymerID() instanceof PeptideEntity) {
       List<Monomer> validMonomers =
           MethodsMonomerUtils.getListOfHandledMonomers(polymernotation.getPolymerElements().getListOfElements());
-      return buildMoleculefromPeptideOrRNA(polymernotation.getPolymerID().getID(), validMonomers);
+      return buildMoleculefromPeptideOrRNA(polymernotation.getPolymerID().getId(), validMonomers);
     } else {
       LOG.error("Molecule can't be build for unknown polymer type");
       throw new BuilderMoleculeException("Molecule can't be build for unknown polymer type");
@@ -126,12 +126,12 @@ public final class BuilderMolecule {
     /* Build for every single polymer a single molecule */
     LOG.info("Build for each polymer a single molecule");
     for (PolymerNotation polymer : polymers) {
-      map.put(polymer.getPolymerID().getID(), polymer);
+      map.put(polymer.getPolymerID().getId(), polymer);
       try {
 
         current = buildMoleculefromSinglePolymer(polymer);
-        mapMolecules.put(polymer.getPolymerID().getID(), current);
-        mapIAtomBase.put(polymer.getPolymerID().getID(), current.getMolecule().getRgroups());
+        mapMolecules.put(polymer.getPolymerID().getId(), current);
+        mapIAtomBase.put(polymer.getPolymerID().getId(), current.getMolecule().getRgroups());
       } catch (HELM2HandledException | CTKException e) {
         throw new BuilderMoleculeException(e.getMessage());
       }
@@ -147,8 +147,8 @@ public final class BuilderMolecule {
         throw new BuilderMoleculeException("Molecule can't be build for group connection");
       }
       /* Get the source molecule + target molecule */
-      String idFirst = connection.getSourceId().getID();
-      String idSecond = connection.getTargetId().getID();
+      String idFirst = connection.getSourceId().getId();
+      String idSecond = connection.getTargetId().getId();
       if (mapMolecules.get(idFirst) == null) {
         idFirst = mapConnections.get(idFirst);
       }
@@ -197,12 +197,12 @@ public final class BuilderMolecule {
         try {
           LOG.debug("Self-cycle connection: " + connection.toString());
           molecule =
-              Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
-                  + rgroupOne), one.getMolecule(), one.getRgroupMap().get(connection.getTargetId().getID() + ":"
+              Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getId() + ":" + source + ":"
+                  + rgroupOne), one.getMolecule(), one.getRgroupMap().get(connection.getTargetId().getId() + ":"
                       + target + ":"
                       + rgroupTwo));
-          one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + rgroupOne);
-          one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + rgroupTwo);
+          one.getRgroupMap().remove(connection.getSourceId().getId() + ":" + source + ":" + rgroupOne);
+          one.getRgroupMap().remove(connection.getSourceId().getId() + ":" + source + ":" + rgroupTwo);
           mapMolecules.put(idFirst, one);
         } catch (CTKException e) {
           throw new BuilderMoleculeException(e.getMessage());
@@ -211,16 +211,16 @@ public final class BuilderMolecule {
         try {
           LOG.info("MERGE");
           molecule =
-              Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getID() + ":" + source + ":"
-                  + rgroupOne), two.getMolecule(), two.getRgroupMap().get(connection.getTargetId().getID() + ":"
+              Chemistry.getInstance().getManipulator().merge(one.getMolecule(), one.getRgroupMap().get(connection.getSourceId().getId() + ":" + source + ":"
+                  + rgroupOne), two.getMolecule(), two.getRgroupMap().get(connection.getTargetId().getId() + ":"
                       + target + ":"
                       + rgroupTwo));
           LOG.info("Merge completed");
           RgroupStructure actual = new RgroupStructure();
           actual.setMolecule(molecule);
           Map<String, IAtomBase> rgroupMap = new HashMap<String, IAtomBase>();
-          one.getRgroupMap().remove(connection.getSourceId().getID() + ":" + source + ":" + rgroupOne);
-          two.getRgroupMap().remove(connection.getTargetId().getID() + ":" + target + ":" + rgroupTwo);
+          one.getRgroupMap().remove(connection.getSourceId().getId() + ":" + source + ":" + rgroupOne);
+          two.getRgroupMap().remove(connection.getTargetId().getId() + ":" + target + ":" + rgroupTwo);
           rgroupMap.putAll(one.getRgroupMap());
           rgroupMap.putAll(two.getRgroupMap());
           actual.setRgroupMap(rgroupMap);
@@ -230,8 +230,8 @@ public final class BuilderMolecule {
         }
 
         LOG.info("jkj");
-        mapConnections.put(connection.getSourceId().getID(), idFirst + idSecond);
-        mapConnections.put(connection.getTargetId().getID(), idFirst + idSecond);
+        mapConnections.put(connection.getSourceId().getId(), idFirst + idSecond);
+        mapConnections.put(connection.getTargetId().getId(), idFirst + idSecond);
 
         /* HashMap refresh */
         for (Map.Entry e : mapConnections.entrySet()) {

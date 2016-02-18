@@ -250,9 +250,9 @@ public class HELM2NotationUtils {
    */
   private static void section1(List<PolymerNotation> polymers, Map<String, String> mapIds) throws NotationException {
     for (PolymerNotation polymer : polymers) {
-      if (mapIds.containsKey(polymer.getPolymerID().getID())) {
+      if (mapIds.containsKey(polymer.getPolymerID().getId())) {
         /* change id */
-        PolymerNotation newpolymer = new PolymerNotation(mapIds.get(polymer.getPolymerID().getID()));
+        PolymerNotation newpolymer = new PolymerNotation(mapIds.get(polymer.getPolymerID().getId()));
         newpolymer = new PolymerNotation(newpolymer.getPolymerID(), polymer.getPolymerElements());
         helm2notation.addPolymer(newpolymer);
       } else {
@@ -274,10 +274,10 @@ public class HELM2NotationUtils {
 
     for (ConnectionNotation connection : connections) {
       HELMEntity first = connection.getSourceId();
-      String idFirst = first.getID();
+      String idFirst = first.getId();
 
       HELMEntity second = connection.getTargetId();
-      String idSecond = second.getID();
+      String idSecond = second.getId();
 
       if (mapIds.containsKey(idFirst)) {
         first = new ConnectionNotation(mapIds.get(idFirst)).getSourceId();
@@ -306,8 +306,8 @@ public class HELM2NotationUtils {
 
     for (GroupingNotation grouping : groupings) {
       GroupEntity groupID = grouping.getGroupID();
-      if (mapIds.containsKey(groupID.getID())) {
-        groupID = new GroupingNotation(mapIds.get(groupID.getID())).getGroupID();
+      if (mapIds.containsKey(groupID.getId())) {
+        groupID = new GroupingNotation(mapIds.get(groupID.getId())).getGroupID();
       }
 
       String details = grouping.toHELM2().split("\\(")[1].split("\\)")[0];
@@ -431,11 +431,11 @@ public class HELM2NotationUtils {
       PolymerNotation two = null;
 
       for (PolymerNotation node : rnaList) {
-        if (node.getPolymerID().getID().equals("RNA1")) {
+        if (node.getPolymerID().getId().equals("RNA1")) {
           rna1Seq = RNAUtils.getSequence(node);
           rna1Annotation = node.getAnnotation();
           one = node;
-        } else if (node.getPolymerID().getID().equals("RNA2")) {
+        } else if (node.getPolymerID().getId().equals("RNA2")) {
           rna2Seq = RNAUtils.getSequence(node);
           two = node;
           rna2Annotation = node.getAnnotation();
@@ -568,8 +568,8 @@ public class HELM2NotationUtils {
     Map<Integer, Integer> map = new HashMap<Integer, Integer>();
     for (ConnectionNotation connection : connections) {
 
-      String source = connection.getSourceId().getID();
-      String target = connection.getTargetId().getID();
+      String source = connection.getSourceId().getId();
+      String target = connection.getTargetId().getId();
       Integer int1 = new Integer(connection.getSourceUnit());
       Integer int2 = new Integer(connection.getTargetUnit());
 
@@ -615,7 +615,7 @@ public class HELM2NotationUtils {
     for (PolymerNotation polymer : helm2notation.getListOfPolymers()) {
       HELM2Notation single = new HELM2Notation();
       single.addPolymer(polymer);
-      List<ConnectionNotation> selfConnections = getSelfCycleConnections(polymer.getPolymerID().getID(), allselfConnections);
+      List<ConnectionNotation> selfConnections = getSelfCycleConnections(polymer.getPolymerID().getId(), allselfConnections);
       for (ConnectionNotation selfConnection : selfConnections) {
         single.addConnection(selfConnection);
       }
@@ -635,7 +635,7 @@ public class HELM2NotationUtils {
   private static List<ConnectionNotation> getAllSelfCycleConnections(List<ConnectionNotation> connections) {
     List<ConnectionNotation> listSelfCycle = new ArrayList<ConnectionNotation>();
     for (ConnectionNotation connection : connections) {
-      if ((connection.getTargetId().getID().equals(connection.getSourceId().getID()))) {
+      if ((connection.getTargetId().getId().equals(connection.getSourceId().getId()))) {
         listSelfCycle.add(connection);
       }
     }
@@ -652,7 +652,7 @@ public class HELM2NotationUtils {
   private static List<ConnectionNotation> getSelfCycleConnections(String id, List<ConnectionNotation> connections) {
     List<ConnectionNotation> list = new ArrayList<ConnectionNotation>();
     for (ConnectionNotation connection : connections) {
-      if (connection.getSourceId().getID().equals(id)) {
+      if (connection.getSourceId().getId().equals(id)) {
         list.add(connection);
       }
     }
