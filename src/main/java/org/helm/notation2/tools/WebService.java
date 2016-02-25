@@ -480,4 +480,39 @@ public class WebService {
     return result;
   }
 
+  /**
+   * method to generate a SMILES representation for a whole HELM2 input
+   *
+   * @param notation
+   * @return
+   * @throws BuilderMoleculeException
+   * @throws CTKException
+   * @throws ChemistryException
+   * @throws ValidationException
+   * @throws MonomerLoadingException
+   */
+  public String generateSMILESForHELM2(String notation) throws BuilderMoleculeException, CTKException, ChemistryException, ValidationException, MonomerLoadingException {
+    String result = SMILES.getSMILESForAll(validate(notation));
+    setMonomerFactoryToDefault(notation);
+    return result;
+  }
+
+  /**
+   * method to generate a SMILES representation for a whole HELM2 input
+   *
+   * @param notation
+   * @return
+   * @throws BuilderMoleculeException
+   * @throws CTKException
+   * @throws ChemistryException
+   * @throws ValidationException
+   * @throws MonomerLoadingException
+   * @throws NotationException
+   */
+  public String generateCanSMILESForHELM2(String notation) throws BuilderMoleculeException, CTKException, ChemistryException, ValidationException, MonomerLoadingException, NotationException {
+    String result = SMILES.getCanonicalSMILESForAll((validate(notation)));
+    setMonomerFactoryToDefault(notation);
+    return result;
+  }
+
 }

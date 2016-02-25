@@ -139,8 +139,7 @@ public final class SMILES {
    * @return
    */
   public static String getUniqueExtendedSMILES(String smiles) {
-    // TODO Auto-generated method stub
-    return null;
+    return smiles;
   }
 
   /**
