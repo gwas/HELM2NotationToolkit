@@ -1,7 +1,7 @@
 HELM2NotationToolkit Requirements
 ================================
 
-HELMNotationToolkit 1.0
+HELM2NotationToolkit 1.0
 -----------------------
 * Java 1.7
 
