@@ -2116,20 +2116,14 @@
                     <Attachment>
                         <AttachmentID>R1-H</AttachmentID>
                         <AttachmentLabel>R1</AttachmentLabel>
- 			<CapGroupName>H</CapGroupName>
-                        <CapGroupSmiles>[*][H] |$_R1;$|</CapGroupSmiles>
                     </Attachment>
                     <Attachment>
                         <AttachmentID>R2-OH</AttachmentID>
                         <AttachmentLabel>R2</AttachmentLabel>
-    			<CapGroupName>OH</CapGroupName>
-                        <CapGroupSmiles>O[*] |$;_R2$|</CapGroupSmiles>
                     </Attachment>
                     <Attachment>
                         <AttachmentID>R3-H</AttachmentID>
                         <AttachmentLabel>R3</AttachmentLabel>
-			<CapGroupName>H</CapGroupName>
-                        <CapGroupSmiles>[*][H] |$_R3;$|</CapGroupSmiles>
                     </Attachment>
                 </Attachments>
             </Monomer>
