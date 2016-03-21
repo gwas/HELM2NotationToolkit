@@ -70,8 +70,8 @@ public class MoleculePropertyCalculatorTest {
     Double resultEditor = (double) 332.35;
     String notation = "CHEM1{[MCC]}|CHEM2{[Az]}$CHEM2,CHEM1,1:R1-1:R1$$$";
     if (Chemistry.getInstance().getChemistry().equals("org.helm.chemtoolkit.chemaxon.ChemaxonManipulator")) {
-      Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
-    }
+    	Assert.assertEquals(testMolecularWeight(notation), resultEditor, 0.01);
+         }
   }
 
   @Test
