@@ -45,7 +45,6 @@ import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import chemaxon.marvin.plugin.PluginException;
 
 public class MoleculePropertyCalculatorTest {
 
@@ -120,7 +119,7 @@ public class MoleculePropertyCalculatorTest {
   }
 
   @Test
-  public void testExtended() throws MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException, PluginException, BuilderMoleculeException,
+  public void testExtended() throws MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException,BuilderMoleculeException,
       CTKException, ParserException, ChemistryException {
 
     String newNotation =

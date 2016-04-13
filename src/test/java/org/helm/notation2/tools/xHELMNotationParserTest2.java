@@ -53,7 +53,6 @@ import org.jdom2.input.SAXBuilder;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 
-import chemaxon.marvin.plugin.PluginException;
 
 public class xHELMNotationParserTest2 {
 
@@ -94,7 +93,7 @@ public class xHELMNotationParserTest2 {
   @Test
   public void testParseXHelmNotation() throws JDOMException, IOException,
       MonomerException, NotationException,
-      ClassNotFoundException, PluginException, ParserException,
+      ClassNotFoundException, ParserException,
       ValidationException, HELM1FormatException, JDOMException, ChemistryException, org.helm.notation2.parser.exceptionparser.NotationException {
 
     String workingDir = System.getProperty("user.dir");
