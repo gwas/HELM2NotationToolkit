@@ -413,7 +413,6 @@ public class Monomer implements Serializable {
       List<IAtomBase> atoms = mol.getIAtomArray();
       for (IAtomBase atom : atoms) {
         String symbol = atom.getMolAtom().toString();
-        System.out.println(symbol);
         if ("[A]".contains(symbol)) {
           containsA = true;
           break;

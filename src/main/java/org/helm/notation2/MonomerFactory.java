@@ -48,6 +48,7 @@ import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.EncoderException;
 import org.helm.notation2.exception.MonomerException;
 import org.helm.notation2.exception.MonomerLoadingException;
+import org.helm.notation2.tools.MethodsMonomerUtils;
 import org.helm.notation2.tools.MonomerParser;
 import org.helm.notation2.wsadapter.MonomerStoreConfiguration;
 import org.helm.notation2.wsadapter.MonomerWSLoader;
@@ -58,6 +59,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a factory class to build monomer database from
@@ -66,6 +68,9 @@ import org.jdom2.output.XMLOutputter;
  * @author zhangtianhong
  */
 public class MonomerFactory {
+	
+	  private static final org.slf4j.Logger LOG =
+		      LoggerFactory.getLogger(MonomerFactory.class);
 
   public static final String NOTATION_DIRECTORY = NotationConstant.NOTATION_DIRECTORY;
 
@@ -758,7 +763,7 @@ public class MonomerFactory {
       if (null == cache) {
         in = MonomerFactory.class.getResourceAsStream(MONOMER_DB_XML_RESOURCE);
         try {
-          System.out.println("BuildMonomerCacheFromXML");
+          LOG.info("BuildMonomerCacheFromXML");
           cache = buildMonomerCacheFromXML(in);
           validate(cache.getMonomerDB());
         } catch (MonomerException | IOException | JDOMException | CTKException e) {

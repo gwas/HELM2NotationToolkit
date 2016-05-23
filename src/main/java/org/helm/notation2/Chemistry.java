@@ -89,7 +89,6 @@ public final class Chemistry {
     try {
       PropertiesConfiguration conf = new PropertiesConfiguration(CONFIG_FILE_PATH);
       chemistry = conf.getString(CHEMISTRY_PLUGIN);
-      System.out.println(chemistry);
     } catch (ConfigurationException e) {
       resetConfigToDefault();
       e.printStackTrace();
@@ -134,7 +133,7 @@ public final class Chemistry {
         configFile.createNewFile();
         InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation2/resources/Chemistry.property");
         reader = new BufferedReader(new InputStreamReader(in));
-        System.out.println("");
+
 
         writer = new BufferedWriter(new FileWriter(configFile));
         String line;

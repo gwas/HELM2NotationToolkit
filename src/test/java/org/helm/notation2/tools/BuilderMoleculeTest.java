@@ -27,8 +27,11 @@ import java.io.IOException;
 import java.util.List;
 
 import org.helm.chemtoolkit.AbstractMolecule;
+import org.helm.chemtoolkit.AttachmentList;
 import org.helm.chemtoolkit.CTKException;
+import org.helm.notation2.Attachment;
 import org.helm.notation2.Chemistry;
+import org.helm.notation2.Monomer;
 import org.helm.notation2.RgroupStructure;
 import org.helm.notation2.calculation.MoleculePropertyCalculator;
 import org.helm.notation2.exception.BuilderMoleculeException;
@@ -152,6 +155,23 @@ public class BuilderMoleculeTest {
     node.getPolymerElements().getListOfElements().add(mon);
     BuilderMolecule.buildMoleculefromSinglePolymer(new PolymerNotation(node.getPolymerID(), node.getPolymerElements(),
         ""));
+  }
+  
+  
+  @Test
+  public void testBuildMoleculeSMILESAtomMap() throws IOException, CTKException, ChemistryException{
+	  Monomer mon = new Monomer();
+	 
+	  String input = "[H:1]N1CC[C@H]1C([OH:2])=O";
+	  AttachmentList list = new AttachmentList();
+
+	  list.add(new org.helm.chemtoolkit.Attachment("R1-H","R1", "H", "[*][H] |$_R1;$|"));
+	  list.add(new org.helm.chemtoolkit.Attachment("R2-OH","R2", "OH", "O[*] |$;_R2$|"));
+	  AbstractMolecule molecule = Chemistry.getInstance().getManipulator().getMolecule(input, list);
+	     
+	  RgroupStructure result = new RgroupStructure();
+	  result.setMolecule(molecule);
+	            //result.setRgroupMap(generateRgroupMap("1"+ ":" + "1", molecule));
   }
 
 }

@@ -304,7 +304,6 @@ public class MonomerStoreConfiguration {
         configFile.createNewFile();
         InputStream in = Chemistry.class.getResourceAsStream("/org/helm/notation2/resources/MonomerStoreConfig.properties");
         reader = new BufferedReader(new InputStreamReader(in));
-        System.out.println("");
 
         writer = new BufferedWriter(new FileWriter(configFile));
         String line;

@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.chemtoolkit.CTKException;
@@ -197,7 +199,7 @@ public final class MethodsMonomerUtils {
   public static Monomer getMonomer(String type, String id, String info) throws MonomerException, NotationException, ChemistryException{
     try {
       if (id.startsWith("[") && id.endsWith("]")) {
-        id = id.substring(1, id.length() - 1);
+       id = id.substring(1, id.length() - 1);
       }
       MonomerFactory monomerFactory = MonomerFactory.getInstance();
       MonomerStore monomerStore = monomerFactory.getMonomerStore();
@@ -260,10 +262,39 @@ public final class MethodsMonomerUtils {
       throw new MonomerException("Defined Monomer is not in the database and also not a valid SMILES " + id);
     }
   }
+  
+  
+  private static List<Attachment> extractAttachments(String smiles) throws MonomerLoadingException{
+	  List<Attachment> attachments = new ArrayList<Attachment>();
+	  Pattern pattern = Pattern.compile("\\[(\\w+):([1-9]\\d*)\\]");
+	  Matcher matcher = pattern.matcher(smiles);
+	  while(matcher.find()){
+		 Attachment att = new Attachment();
+		// <CapGroupSmiles>[*:1][H]</CapGroupSmiles>
+		 LOG.debug("Group2 " + matcher.group(2) + " Group1 " + matcher.group(1));
+		 att.setAlternateId("R" + matcher.group(2) + "-" + matcher.group(1));
+		 att.setCapGroupName(matcher.group(1));
+		 att.setId(Integer.parseInt(matcher.group(2)) - 1);
+		 att.setLabel("R" + matcher.group(2));
+		 
+		 /*Set CapGroupSmiles*/
+		 if(att.getCapGroupName().equals("OH")){
+			 att.setCapGroupSMILES("O[*:" + matcher.group(2) + "]");
+		 }else if(att.getCapGroupName().equals("H")){
+			 att.setCapGroupSMILES("[*:" + matcher.group(2) + "][H]");
+		 } else{
+			 throw new MonomerLoadingException("CapGroup is unknown");
+		 }	
+		 
+		 attachments.add(att);
+	  }
+	  return attachments;
+	   
+  }
 
   public static Monomer generateTemporaryMonomer(String id, String polymerType, String naturalAnalog) throws NotationException, MonomerLoadingException, ChemistryException {
-    String uniqueSmiles = id;
-
+    String uniqueSmiles = Chemistry.getInstance().getManipulator().convertExtendedSmiles(id);
+    
     String alternateId = generateNextAdHocMonomerID(polymerType);
     Map<String, Attachment> ids = MonomerFactory.getInstance().getAttachmentDB();
     Attachment R1HAtt = ids.get("R1-H");
@@ -286,11 +317,20 @@ public final class MethodsMonomerUtils {
       m = new Monomer(polymerType, Monomer.BACKBONE_MOMONER_TYPE,
           naturalAnalog, alternateId);
     }
+    
+    
+    
     m.setAdHocMonomer(true);
     m.setCanSMILES(uniqueSmiles);
     m.setName("Dynamic");
 
     List<Attachment> al = new ArrayList<Attachment>();
+    al = extractAttachments(uniqueSmiles);
+    if(al.size() > 0){
+    	m.setAttachmentList(al);
+    }else{
+    	
+
     int start = 0;
     int pos = uniqueSmiles.indexOf("R", start);
     String number = "";
@@ -324,12 +364,13 @@ public final class MethodsMonomerUtils {
     }
 
     m.setAttachmentList(al);
+    }
     try {
       MonomerFactory.getInstance().getMonomerStore().addNewMonomer(m);
     } catch (Exception ex) {
       ex.printStackTrace();
       throw new NotationException(
-          "Unable to add adhoc new monomer into monomer databse",
+          "Unable to add adhoc new monomer into monomer database",
           ex);
     }
 

@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.CTKException;
@@ -93,6 +95,8 @@ public class MonomerParser {
   public static final String CAP_GROUP_SMILES_ELEMENT = "CapGroupSmiles";
 
   private static List<String> polymerTypes = new ArrayList<String>();
+  
+  protected static final String SMILES_EXTENSION_SEPARATOR_REGEX = "\\|";
 
   static {
     polymerTypes = Arrays.asList(Monomer.SUPPORTED_POLYMER_TYPES);
@@ -505,6 +509,9 @@ public class MonomerParser {
           String rgroupId = attachmentLabels.get(i).substring(1);
           IAtomBase atom = null;
           atom = molecule.getRGroupAtom(Integer.parseInt(rgroupId), true);
+          if(atom == null){
+        	  throw new MonomerException("Molecule does not contain the specified Rgroup");
+          }
           if (atom.getIBondCount() != 1) {
             throw new MonomerException(
                 "R group can only connect with one atom in monomer: "
@@ -529,10 +536,10 @@ public class MonomerParser {
    * @param extendedSmiles
    * @return string list
    */
-  private static List<String> getAttachmentLabels(String extendedSmiles) {
-    List<String> labels = new ArrayList<String>();
+  private static List<String> getAttachmentLabels(String smiles) {
 
-    int start = 0;
+
+    /*int start = 0;
     int rPos = extendedSmiles.indexOf("R");
     StringBuffer sb = new StringBuffer();
     while (rPos > 0) {
@@ -546,12 +553,86 @@ public class MonomerParser {
         start = rPos + 1;
         rPos = extendedSmiles.indexOf("R", start);
       }
+    }*/
+    
+    String  extendedSmiles = getExtension(smiles);
+    List<String> list = new ArrayList<>();
+    if (extendedSmiles != null) {
+      Integer currIndex = 0;
+      char[] items = extendedSmiles.toCharArray();
+      List<Integer> indexes = new ArrayList<Integer>();
+
+      while (extendedSmiles.indexOf("_R", currIndex) > 0) {
+        currIndex = extendedSmiles.indexOf("_R", currIndex);
+        indexes.add(currIndex);
+        currIndex++;
+      }
+
+      for (int k = 0; k < items.length; k++) {
+        if (items[k] == 'R') {
+          indexes.add(currIndex + k);
+          currIndex++;
+        }
+      }
+
+      String[] tokens = extendedSmiles.split("R", -1);
+      if (tokens.length > 1) {
+        for (int i = 1; i < tokens.length; i++) {
+          String token = tokens[i];
+          char[] chars = token.toCharArray();
+          String numbers = "";
+          for (int j = 0; j < chars.length; j++) {
+            String letter = String.valueOf(chars[j]);
+            if (letter.matches("[0-9]")) {
+              numbers += letter;
+            } else {
+              break;
+            }
+          }
+
+          if (numbers.length() > 0) {
+            list.add("R" + numbers);
+          }
+        }
+      }
     }
-    return labels;
+    
+    if(extendedSmiles == null){
+    	Pattern pattern = Pattern.compile("\\[\\*:([1-9]\\d*)\\]|\\[\\w+:([1-9]\\d*)\\]");
+    	Matcher matcher = pattern.matcher(smiles);
+
+  	  
+  	  while(matcher.find()){
+  		  String replace = "";
+  		  if(matcher.group(1) != null){
+  			  replace = matcher.group(1);
+  		  }
+  		  if(matcher.group(2) != null){
+  			  replace = matcher.group(2);
+  		  }
+  		  
+  		  list.add("R" + replace);
+  	  }
+    }
+
+    return list;
   }
 
-  /**
-   * This mehtod checks if strings in a list are unique
+  private static String getExtension(String smiles) {
+	  String result = null;
+	    try {
+
+	      String[] components = smiles.split(SMILES_EXTENSION_SEPARATOR_REGEX);
+	      result = components[1];
+	    } catch (ArrayIndexOutOfBoundsException e) {
+	// not extended SMILES
+	    }
+
+	    return result;
+}
+
+/**
+   * This method checks if strings in a list are unique
    *
    * @param labels
    * @return true or fals

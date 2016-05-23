@@ -192,7 +192,6 @@ public final class HELM1Utils {
       LOG.info("First Section of canonical HELM was generated");
       convertsortedIdstoIds = (Map<String, String>) temp[0];
       String firstSection = (String) temp[1];
-      LOG.info("Hallo");
       String secondSection = setCanonicalHELMSecondSection(convertsortedIdstoIds, helm2notation.getListOfConnections());
       LOG.info("Second Section of canonical HELM was generated");
       return firstSection + "$" + secondSection + "$" + "" + "$" + "" + "$V2.0";

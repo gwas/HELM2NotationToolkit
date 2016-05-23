@@ -132,9 +132,7 @@ public class FastaFormatTest {
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
-
     return FastaFormat.convertIntoAnalogSequence(parserHELM2.getHELM2Notation()).toHELM2();
-
   }
 
 }

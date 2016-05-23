@@ -206,7 +206,8 @@ public class SMILESTest {
     String smiles = SMILES.getCanonicalSMILESForAll(HELM2NotationUtils.readNotation(notation));
 
     // replaced A with Smiles String
-    notation = "PEPTIDE1{[C[C@H](N[*])C([*])=O |$;;;_R1;;_R2;$|].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+   // notation = "PEPTIDE1{[C[C@H](N[H:1])C([OH:2])=O].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    notation = "PEPTIDE1{[C[C@H](N[H:1])C([OH:2])=O].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     String smilesInline = SMILES.getCanonicalSMILESForAll(HELM2NotationUtils.readNotation(notation));
     AssertJUnit.assertEquals(smiles, smilesInline);
 

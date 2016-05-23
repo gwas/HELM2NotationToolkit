@@ -480,16 +480,16 @@ public final class Validation {
 
     } else if (not instanceof MonomerNotationUnit) {
       String id = not.getUnit();
-      if (id.startsWith("[") && id.endsWith("]")) {
-        id = id.substring(1, id.length() - 1);
-      }
+     //if (id.startsWith("[") && id.endsWith("]")) {
+     //   id = id.substring(1, id.length() - 1);
+     // }
       monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
     } else if (not instanceof MonomerNotationGroup) {
       for (MonomerNotationGroupElement groupElement : ((MonomerNotationGroup) not).getListOfElements()) {
         String id = groupElement.getMonomerNotation().getUnit();
-        if (id.startsWith("[") && id.endsWith("]")) {
+        /*if (id.startsWith("[") && id.endsWith("]")) {
           id = id.substring(1, id.length() - 1);
-        }
+        }*/
         monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
       }
     } else if (not instanceof MonomerNotationList) {
@@ -498,9 +498,9 @@ public final class Validation {
           monomers.addAll(getMonomersRNA(((MonomerNotationUnitRNA) listElement), monomerStore, position));
         } else {
           String id = listElement.getUnit();
-          if (id.startsWith("[") && id.endsWith("]")) {
+          /*if (id.startsWith("[") && id.endsWith("]")) {
             id = id.substring(1, id.length() - 1);
-          }
+          }*/
           monomers.add(MethodsMonomerUtils.getMonomer(not.getType(), id, ""));
         }
       }

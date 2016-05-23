@@ -29,6 +29,7 @@ import static org.testng.AssertJUnit.assertEquals;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.helm.chemtoolkit.AbstractChemistryManipulator;
 import org.helm.notation2.calculation.ExtinctionCoefficient;
 import org.helm.notation2.exception.CalculationException;
 import org.helm.notation2.exception.ChemistryException;
@@ -283,5 +284,6 @@ public class ExtinctionCalculatorTest {
 		Float f = (float) 46.200005;
 		assertEquals(ExtinctionCoefficient.getInstance().calculate(HELM2NotationUtils.readNotation(notation)), f);
 	}
+	
 
 }

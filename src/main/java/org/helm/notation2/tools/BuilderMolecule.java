@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.helm.chemtoolkit.AbstractChemistryManipulator.StType;
 import org.helm.chemtoolkit.AbstractMolecule;
 import org.helm.chemtoolkit.AttachmentList;
 
@@ -227,8 +228,6 @@ public final class BuilderMolecule {
         } catch (CTKException e) {
           throw new BuilderMoleculeException(e.getMessage());
         }
-
-        LOG.info("jkj");
         mapConnections.put(connection.getSourceId().getId(), idFirst + idSecond);
         mapConnections.put(connection.getTargetId().getId(), idFirst + idSecond);
 
@@ -435,16 +434,11 @@ public final class BuilderMolecule {
       // while (flag) {
       // if (molecule.getAttachments().size() > 0) {
       for (int i = molecule.getAttachments().size() - 1; i > -1; i--) {
-
         org.helm.chemtoolkit.Attachment attachment = molecule.getAttachments().get(i);
         int groupId = AbstractMolecule.getIdFromLabel(attachment.getLabel());
-
         AbstractMolecule rMol = Chemistry.getInstance().getManipulator().getMolecule(attachment.getSmiles(), null);
         molecule = Chemistry.getInstance().getManipulator().merge(molecule, molecule.getRGroupAtom(groupId, true), rMol, rMol.getRGroupAtom(groupId, true));
-      } // else {
-        // flag = false;
-      // }
-      // }
+      } 
       return molecule;
     } catch (NullPointerException | IOException | CTKException e) {
       throw new BuilderMoleculeException("Unused rgroups can't be merged into the molecule" + e.getMessage());
@@ -495,7 +489,7 @@ public final class BuilderMolecule {
       input = monomer.getMolfile();
     }
     if (input == null && monomer.getCanSMILES() != null) {
-      LOG.info("Use smiles for monomer generation");
+      LOG.info("Use smiles for monomer generation " + monomer.getCanSMILES());
       input = monomer.getCanSMILES();
     }
     return input;

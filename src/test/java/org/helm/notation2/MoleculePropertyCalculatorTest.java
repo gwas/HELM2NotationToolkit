@@ -86,7 +86,7 @@ public class MoleculePropertyCalculatorTest {
   public void testgetMolecularWeightWithSMILES() throws ExceptionState, IOException, JDOMException,
       FastaFormatException, AnalogSequenceException, BuilderMoleculeException, CTKException, NotationException, ChemistryException {
     Double resultEditor = (double) 106.12;
-    String notation = "CHEM1{[[*]OCCOCCO[*] |$_R1;;;;;;;;_R2$|]}$$$$";
+    String notation = "CHEM1{[[H:1]OCCOCCO[H:2]]}$$$$";
     Assert.assertEquals(BigDecimal.valueOf(testMolecularWeight(notation)).setScale(2, BigDecimal.ROUND_HALF_UP).toString(), resultEditor.toString());
   }
 
@@ -114,6 +114,7 @@ public class MoleculePropertyCalculatorTest {
     String helm2 = converter.doConvert(notation);
     ParserHELM2 parserHELM2 = new ParserHELM2();
     parserHELM2.parse(helm2);
+    System.out.println(parserHELM2.getJSON());
     return MoleculePropertyCalculator.getMolecularWeight(parserHELM2.getHELM2Notation());
 
   }

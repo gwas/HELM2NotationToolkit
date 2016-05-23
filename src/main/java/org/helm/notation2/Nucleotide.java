@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.helm.notation2.tools.MethodsMonomerUtils;
 import org.helm.notation2.tools.NucleotideParser;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,6 +38,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author ZHANGTIANHONG
  */
 public class Nucleotide implements Serializable {
+	
+	  private static final org.slf4j.Logger LOG =
+		      LoggerFactory.getLogger(Nucleotide.class);
 
   public static final int STARTING_POSITION_TYPE = 1;
 
@@ -206,7 +211,7 @@ public class Nucleotide implements Serializable {
 
       return m.getNaturalAnalog();
     } catch (Exception e) {
-      System.out.println("Unable to get natural analog for "
+      LOG.info("Unable to get natural analog for "
           + baseNotation);
       return "X";
     }
@@ -246,7 +251,7 @@ public class Nucleotide implements Serializable {
         Monomer m = monomers.get(phosphateSymbol);
         return m;
       } catch (Exception ex) {
-        System.out.println("Unable to get phosphate monomer for "
+        LOG.info("Unable to get phosphate monomer for "
             + phosphateSymbol);
         return null;
       }
@@ -288,7 +293,7 @@ public class Nucleotide implements Serializable {
         Monomer m = monomers.get(baseSymbol);
         return m;
       } catch (Exception ex) {
-        System.out.println("Unable to get base monomer for "
+        LOG.info("Unable to get base monomer for "
             + baseSymbol);
         return null;
       }
@@ -329,7 +334,7 @@ public class Nucleotide implements Serializable {
         Monomer m = monomers.get(sugarSymbol);
         return m;
       } catch (Exception ex) {
-        System.out.println("Unable to get sugar monomer for "
+        LOG.info("Unable to get sugar monomer for "
             + sugarSymbol);
         return null;
       }
@@ -489,7 +494,6 @@ public class Nucleotide implements Serializable {
 
     try {
       String jsonINString = mapper.writeValueAsString(this);
-      System.out.println(jsonINString);
       jsonINString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
 
       return jsonINString;
