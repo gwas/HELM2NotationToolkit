@@ -23,13 +23,16 @@
  */
 package org.helm.notation2.tools;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.helm.chemtoolkit.CTKException;
+import org.helm.notation2.calculation.MoleculePropertyCalculator;
+import org.helm.notation2.exception.BuilderMoleculeException;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.MonomerLoadingException;
 import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
-import org.helm.notation2.tools.HELM2NotationUtils;
-import org.helm.notation2.tools.MethodsMonomerUtils;
-import org.helm.notation2.tools.Validation;
+import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -266,6 +269,34 @@ public class TestValidation {
 
     Assert.assertFalse(Validation.validateMonomers(MethodsMonomerUtils.getListOfMonomerNotation(HELM2NotationUtils.readNotation(test).getListOfPolymers())));
 
+  }
+  
+  @Test
+  public void testPnaAsRnaType() throws ParserException, JDOMException {
+
+    String test ="RNA1{R(A).R(A)}$$$$v2.0";
+    HELM2Notation helm2 = HELM2NotationUtils.readNotation(test);
+
+      try {
+          Assert.assertTrue(Validation.validateConnections(helm2));
+          Assert.assertNotNull(MoleculePropertyCalculator.getMolecularFormular(helm2));
+      } catch (NotationException | ChemistryException | BuilderMoleculeException | CTKException ex) {
+          Logger.getLogger(TestValidation.class.getName()).log(Level.SEVERE, null, ex);
+      }
+  }
+    
+  @Test
+  public void testInternalRnaLinker() throws ParserException, JDOMException {
+
+    String test ="RNA1{R(A)P.P.P.R(A)}$$$$v2.0";
+    HELM2Notation helm2 = HELM2NotationUtils.readNotation(test);
+
+      try {
+          Assert.assertTrue(Validation.validateConnections(helm2));
+          Assert.assertNotNull(MoleculePropertyCalculator.getMolecularFormular(helm2));
+      } catch (ChemistryException | BuilderMoleculeException | CTKException | NotationException ex) {
+          Logger.getLogger(TestValidation.class.getName()).log(Level.SEVERE, null, ex);
+      }
   }
 
 }
