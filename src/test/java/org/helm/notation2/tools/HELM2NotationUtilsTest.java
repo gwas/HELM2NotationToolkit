@@ -26,6 +26,7 @@ package org.helm.notation2.tools;
 import java.io.IOException;
 
 import org.helm.chemtoolkit.CTKException;
+import org.helm.notation2.Monomer;
 import org.helm.notation2.MonomerFactory;
 import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.ConnectionNotationException;
@@ -108,10 +109,15 @@ public class HELM2NotationUtilsTest {
     System.out.println(MonomerFactory.getInstance().getMonomerStore().getMonomer("RNA", "NM#1"));
 
     String notation =
-        "PEPTIDE1{([C[C@H](N[*:1])C([*:2])=O]+G:?).G.G.G.C.C.K.K.K.K}|CHEM1{MCC}|RNA1{R(C)P.R([Nc1ncnc2n([*:1])cnc12])[sP].RP.R(G)P.[LR]([5meC])P}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+        "PEPTIDE1{([C[C@H](N[OH:1])C([H:2])=O]+G:?).G.G.G.C.C.K.K.K.K}|CHEM1{MCC}|RNA1{R(C)P.R([Nc1ncnc2n([*:1])cnc12])[sP].RP.R(G)P.[LR]([5meC])P}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     HELM2Notation helm2notation = HELM2NotationUtils.readNotation(notation);
     ChangeObjects.replaceSMILESWithTemporaryIds(helm2notation);
     System.out.println(helm2notation.toHELM2());
+    
+   Monomer m =  MonomerFactory.getInstance().getMonomerStore().getMonomer("PEPTIDE","PM#1");
+   
+   Assert.assertEquals(m.getAttachment("R1").getAlternateId(),"R1-OH");
+   Assert.assertEquals(m.getAttachment("R2").getAlternateId(),"R2-H");
 
   }
 
