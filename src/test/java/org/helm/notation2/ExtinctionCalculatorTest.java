@@ -104,7 +104,7 @@ public class ExtinctionCalculatorTest {
 	@Test
 	public void testCalculationWithCHEMAndBlob()
 			throws ParserException, JDOMException, ExtinctionCoefficientException, ChemistryException {
-		HELM2Notation helm2notation = HELM2NotationUtils.readNotation("CHEM1{[MCC]}|RNA1{R(U)}|BLOB1{?}$$$$V2.0");
+		HELM2Notation helm2notation = HELM2NotationUtils.readNotation("CHEM1{[MCC]}|RNA1{R(U)}|BLOB1{*}$$$$V2.0");
 		Float f = (float) 10.21;
 		Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(helm2notation))
 				.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
@@ -114,7 +114,7 @@ public class ExtinctionCalculatorTest {
 	public void testCalculationWithException()
 			throws ParserException, JDOMException, ExtinctionCoefficientException, ChemistryException {
 		HELM2Notation helm2notation = HELM2NotationUtils
-				.readNotation("CHEM1{[MCC]}|RNA1{(R(U)+R(A))}|BLOB1{?}$$$$V2.0");
+				.readNotation("CHEM1{[MCC]}|RNA1{(R(U)+R(A))}|BLOB1{*}$$$$V2.0");
 		Float f = (float) 10.21;
 		Assert.assertEquals(BigDecimal.valueOf(ExtinctionCoefficient.getInstance().calculate(helm2notation))
 				.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(), f);
@@ -123,7 +123,7 @@ public class ExtinctionCalculatorTest {
 	@Test(expectedExceptions = ExtinctionCoefficientException.class)
 	public void testCalculationWithException2()
 			throws ParserException, JDOMException, ExtinctionCoefficientException, ChemistryException {
-		HELM2Notation helm2notation = HELM2NotationUtils.readNotation("PEPTIDE1{?}$$$$V2.0");
+		HELM2Notation helm2notation = HELM2NotationUtils.readNotation("PEPTIDE1{*}$$$$V2.0");
 		ExtinctionCoefficient.getInstance().calculate(helm2notation);
 	}
 
@@ -151,7 +151,7 @@ public class ExtinctionCalculatorTest {
 	@Test(expectedExceptions = ExtinctionCoefficientException.class)
 	public void testCalculationWithException6()
 			throws ParserException, JDOMException, ExtinctionCoefficientException, ChemistryException {
-		HELM2Notation helm2notation = HELM2NotationUtils.readNotation("PEPTIDE1{?}$$$$V2.0");
+		HELM2Notation helm2notation = HELM2NotationUtils.readNotation("PEPTIDE1{*}$$$$V2.0");
 		ExtinctionCoefficient.getInstance().calculate(helm2notation);
 	}
 
