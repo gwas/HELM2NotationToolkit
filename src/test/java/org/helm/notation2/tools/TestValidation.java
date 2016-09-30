@@ -32,6 +32,7 @@ import org.helm.notation2.exception.ChemistryException;
 import org.helm.notation2.exception.MonomerLoadingException;
 import org.helm.notation2.exception.NotationException;
 import org.helm.notation2.exception.ParserException;
+import org.helm.notation2.exception.ValidationException;
 import org.helm.notation2.parser.notation.HELM2Notation;
 import org.jdom2.JDOMException;
 import org.testng.Assert;
@@ -297,6 +298,34 @@ public class TestValidation {
       } catch (ChemistryException | BuilderMoleculeException | CTKException | NotationException ex) {
           Logger.getLogger(TestValidation.class.getName()).log(Level.SEVERE, null, ex);
       }
+  }
+  
+  
+  //@Test
+  public void testConnectionExtended() throws ParserException, JDOMException, NotationException, ChemistryException, MonomerLoadingException, ValidationException {
+	  String test = "PEPTIDE1{A.A.G}$PEPTIDE1,PEPTIDE1,(1,2):(R1,R2)-G:?$$$v2.0";
+	  
+	  //String test = "RNA1{R(A)P.R(G)P}$RNA1,RNA1,R(A)P:R3-G:R3$$$v2.0";
+	  
+	  //String test = "RNA1{R(A)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(G)P.R(C)P.R(C)P.R(C)P.R(C)}|PEPTIDE1{A.G.G.G.K.K.K.K}$RNA1,PEPTIDE1,(1,3):R1-1:R1$$$";
+
+	  HELM2Notation helm2 = HELM2NotationUtils.readNotation(test);
+
+	  Validation.validateConnections(helm2);
+	  
+	  WebService webService = new WebService();
+	  webService.validateHELM(test);
+	  
+
+	  helm2 = HELM2NotationUtils.readNotation(test);
+
+	  Validation.validateConnections(helm2);
+	  
+	  webService = new WebService();
+	  webService.validateHELM(test);
+        
+   
+	  
   }
 
 }
