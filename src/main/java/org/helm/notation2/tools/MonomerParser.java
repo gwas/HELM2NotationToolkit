@@ -444,7 +444,7 @@ public class MonomerParser {
               "Attachment labels on monomer must be unique: "
                   + errorNote);
         }
-        if (attachmentLabels.size() > attachments.size()) {
+        if (attachmentLabels.size() != attachments.size()) {
           throw new MonomerException(
               "Attachment label number on monomer must match attachment number: "
                   + errorNote);

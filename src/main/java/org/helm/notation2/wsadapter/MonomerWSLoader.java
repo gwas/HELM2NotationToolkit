@@ -242,7 +242,13 @@ public class MonomerWSLoader {
           break;
         case "molfile":
           parser.nextToken();
-          currentMonomer.setMolfile(MolfileEncoder.decode(parser.getText()));
+          try{
+              currentMonomer.setMolfile(MolfileEncoder.decode(parser.getText()));
+          }catch(EncoderException e){
+        	  LOG.info("Monomer file was not in the Base64-Format");
+        	 currentMonomer.setMolfile(parser.getText()); 
+          }
+   
           break;
         case "monomerType":
           parser.nextToken();
