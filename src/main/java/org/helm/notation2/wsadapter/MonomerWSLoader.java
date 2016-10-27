@@ -63,358 +63,390 @@ import com.fasterxml.jackson.core.JsonToken;
  */
 public class MonomerWSLoader {
 
-  /** The Logger for this class */
-  private static final Logger LOG = LoggerFactory.getLogger(MonomerWSLoader.class);
+	/** The Logger for this class */
+	private static final Logger LOG = LoggerFactory.getLogger(MonomerWSLoader.class);
 
-  /** PolymerTypes, that can be used to filter the fetched monomers. */
-  private final String[] knownPolymerTypes = new String[] {"PEPTIDE", "RNA",
-      "CHEM"};
+	/** PolymerTypes, that can be used to filter the fetched monomers. */
+	private final String[] knownPolymerTypes = new String[] { "PEPTIDE", "RNA", "CHEM" };
 
-  private String polymerType;
+	private String polymerType;
 
-  /**
-   * Constructor using polymerType as parameter. This will be one of PEPTIDE,
-   * RNA, or CHEM.
-   *
-   * @param polymerType
-   * @throws IOException
-   */
-  public MonomerWSLoader(String polymerType) throws IOException {
-    if (!Arrays.asList(knownPolymerTypes).contains(polymerType)) {
-      throw new IOException("Unknown polymerType '" + polymerType
-          + "'. Supported types are " + knownPolymerTypes);
-    }
-    this.polymerType = polymerType;
-  }
+	/**
+	 * Constructor using polymerType as parameter. This will be one of PEPTIDE,
+	 * RNA, or CHEM.
+	 *
+	 * @param polymerType
+	 * @throws IOException
+	 */
+	public MonomerWSLoader(String polymerType) throws IOException {
+		if (!Arrays.asList(knownPolymerTypes).contains(polymerType)) {
+			throw new IOException(
+					"Unknown polymerType '" + polymerType + "'. Supported types are " + knownPolymerTypes);
+		}
+		this.polymerType = polymerType;
+	}
 
-  /**
-   * Loads the monomer store using the URL configured in
-   * {@code MonomerStoreConfiguration} and the polymerType that was given to
-   * constructor.
-   *
-   * @param attachmentDB the attachments stored in Toolkit.
-   *
-   * @return Map containing monomers
-   *
-   * @throws IOException
-   * @throws URISyntaxException
-   * @throws EncoderException
-   */
-  public Map<String, Monomer> loadMonomerStore(
-      Map<String, Attachment> attachmentDB) throws IOException,
-          URISyntaxException, EncoderException {
-    Map<String, Monomer> monomers = new HashMap<String, Monomer>();
+	/**
+	 * Loads the monomer store using the URL configured in
+	 * {@code MonomerStoreConfiguration} and the polymerType that was given to
+	 * constructor.
+	 *
+	 * @param attachmentDB
+	 *            the attachments stored in Toolkit.
+	 *
+	 * @return Map containing monomers
+	 *
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws EncoderException
+	 */
+	public Map<String, Monomer> loadMonomerStore(Map<String, Attachment> attachmentDB)
+			throws IOException, URISyntaxException, EncoderException {
+		Map<String, Monomer> monomers = new HashMap<String, Monomer>();
 
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    // There is no need to provide user credentials
-    // HttpClient will attempt to access current user security context
-    // through Windows platform specific methods via JNI.
-    CloseableHttpResponse response = null;
-    try {
-      HttpGet httpget = new HttpGet(
-          new URIBuilder(MonomerStoreConfiguration.getInstance().getWebserviceMonomersFullURL() + polymerType).build());
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		// There is no need to provide user credentials
+		// HttpClient will attempt to access current user security context
+		// through Windows platform specific methods via JNI.
+		CloseableHttpResponse response = null;
+		try {
+			HttpGet httpget = new HttpGet(
+					new URIBuilder(MonomerStoreConfiguration.getInstance().getWebserviceMonomersFullURL() + polymerType)
+							.build());
 
-      LOG.debug("Executing request " + httpget.getRequestLine());
-      response = httpclient.execute(httpget);
-      LOG.debug(response.getStatusLine().toString());
+			LOG.debug("Executing request " + httpget.getRequestLine());
+			response = httpclient.execute(httpget);
+			LOG.debug(response.getStatusLine().toString());
 
-      JsonFactory jsonf = new JsonFactory();
-      InputStream instream = response.getEntity().getContent();
-      if (response.getStatusLine().getStatusCode() != 200) {
-        throw new MonomerLoadingException("Response from the Webservice throws an error");
-      }
-      JsonParser jsonParser = jsonf.createJsonParser(instream);
-      monomers = deserializeMonomerStore(jsonParser, attachmentDB);
-      LOG.debug(monomers.size() + " " + polymerType
-          + " monomers loaded");
+			JsonFactory jsonf = new JsonFactory();
+			InputStream instream = response.getEntity().getContent();
+			if (response.getStatusLine().getStatusCode() != 200) {
+				throw new MonomerLoadingException("Response from the Webservice throws an error");
+			}
+			JsonParser jsonParser = jsonf.createJsonParser(instream);
+			monomers = deserializeMonomerStore(jsonParser, attachmentDB);
+			LOG.debug(monomers.size() + " " + polymerType + " monomers loaded");
 
-      EntityUtils.consume(response.getEntity());
+			EntityUtils.consume(response.getEntity());
 
-    } finally {
-      if (response != null) {
-        response.close();
-      }
-      if (httpclient != null) {
-        httpclient.close();
-      }
-    }
+		} finally {
+			if (response != null) {
+				response.close();
+			}
+			if (httpclient != null) {
+				httpclient.close();
+			}
+		}
 
-    return monomers;
-  }
+		return monomers;
+	}
 
-  /**
-   * Loads the monomer categories using the URL configured in
-   * {@code MonomerStoreConfiguration}.
-   *
-   * @return List containing monomer categories
-   *
-   * @throws IOException
-   * @throws URISyntaxException
-   */
-  public static List<CategorizedMonomer> loadMonomerCategorization()
-      throws IOException, URISyntaxException {
-    List<CategorizedMonomer> config = new LinkedList<CategorizedMonomer>();
+	/**
+	 * Loads the monomer categories using the URL configured in
+	 * {@code MonomerStoreConfiguration}.
+	 *
+	 * @return List containing monomer categories
+	 *
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public static List<CategorizedMonomer> loadMonomerCategorization() throws IOException, URISyntaxException {
+		List<CategorizedMonomer> config = new LinkedList<CategorizedMonomer>();
 
-    CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpClient httpclient = HttpClients.createDefault();
 
-    // There is no need to provide user credentials
-    // HttpClient will attempt to access current user security context
-    // through Windows platform specific methods via JNI.
-    CloseableHttpResponse response = null;
-    try {
-      response = WSAdapterUtils.getResource(MonomerStoreConfiguration.getInstance().getWebserviceEditorCategorizationFullURL());
+		// There is no need to provide user credentials
+		// HttpClient will attempt to access current user security context
+		// through Windows platform specific methods via JNI.
+		CloseableHttpResponse response = null;
+		try {
+			response = WSAdapterUtils
+					.getResource(MonomerStoreConfiguration.getInstance().getWebserviceEditorCategorizationFullURL());
 
-      LOG.debug(response.getStatusLine().toString());
+			LOG.debug(response.getStatusLine().toString());
 
-      JsonFactory jsonf = new JsonFactory();
-      InputStream instream = response.getEntity().getContent();
+			JsonFactory jsonf = new JsonFactory();
+			InputStream instream = response.getEntity().getContent();
 
-      JsonParser jsonParser = jsonf.createJsonParser(instream);
-      config = deserializeEditorCategorizationConfig(jsonParser);
-      LOG.debug(config.size()
-          + " categorization info entries loaded");
+			JsonParser jsonParser = jsonf.createJsonParser(instream);
+			config = deserializeEditorCategorizationConfig(jsonParser);
+			LOG.debug(config.size() + " categorization info entries loaded");
 
-      EntityUtils.consume(response.getEntity());
+			EntityUtils.consume(response.getEntity());
 
-    } finally {
-      if (response != null) {
-        response.close();
-      }
-      if (httpclient != null) {
-        httpclient.close();
-      }
-    }
+		} finally {
+			if (response != null) {
+				response.close();
+			}
+			if (httpclient != null) {
+				httpclient.close();
+			}
+		}
 
-    return config;
-  }
+		return config;
+	}
 
-  /**
-   * Private routine to deserialize monomer Store JSON. This is done manually to
-   * give more freedom regarding data returned by the webservice.
-   *
-   * @param parser the JSONParser containing JSONData.
-   * @param attachmentDB the attachments stored in the Toolkit
-   * @return Map containing monomers
-   *
-   * @throws JsonParseException
-   * @throws IOException
-   * @throws EncoderException
-   */
-  private Map<String, Monomer> deserializeMonomerStore(JsonParser parser,
-      Map<String, Attachment> attachmentDB) throws JsonParseException,
-          IOException, EncoderException {
-    Map<String, Monomer> monomers = new HashMap<String, Monomer>();
-    Monomer currentMonomer = null;
+	/**
+	 * Private routine to deserialize monomer Store JSON. This is done manually
+	 * to give more freedom regarding data returned by the webservice.
+	 *
+	 * @param parser
+	 *            the JSONParser containing JSONData.
+	 * @param attachmentDB
+	 *            the attachments stored in the Toolkit
+	 * @return Map containing monomers
+	 *
+	 * @throws JsonParseException
+	 * @throws IOException
+	 * @throws EncoderException
+	 */
+	private Map<String, Monomer> deserializeMonomerStore(JsonParser parser, Map<String, Attachment> attachmentDB)
+			throws JsonParseException, IOException, EncoderException {
+		Map<String, Monomer> monomers = new HashMap<String, Monomer>();
+		Monomer currentMonomer = null;
 
-    parser.nextToken();
-    while (parser.hasCurrentToken()) {
-      String fieldName = parser.getCurrentName();
-      JsonToken token = parser.getCurrentToken();
+		parser.nextToken();
+		while (parser.hasCurrentToken()) {
+			String fieldName = parser.getCurrentName();
+			JsonToken token = parser.getCurrentToken();
 
-      if (JsonToken.START_OBJECT.equals(token)) {
-        currentMonomer = new Monomer();
-      } else if (JsonToken.END_OBJECT.equals(token)) {
-        monomers.put(currentMonomer.getAlternateId(), currentMonomer);
-      }
+			if (JsonToken.START_OBJECT.equals(token)) {
+				currentMonomer = new Monomer();
+			} else if (JsonToken.END_OBJECT.equals(token)) {
+				monomers.put(currentMonomer.getAlternateId(), currentMonomer);
+			}
 
-      if (fieldName != null) {
-        switch (fieldName) {
-        // id is first field
-        case "id":
-          parser.nextToken();
-          currentMonomer.setId(Integer.parseInt(parser.getText()));
-          break;
-        case "alternateId":
-          parser.nextToken();
-          currentMonomer.setAlternateId(parser.getText());
-          break;
-        case "naturalAnalog":
-          parser.nextToken();
-          currentMonomer.setNaturalAnalog(parser.getText());
-          break;
-        case "name":
-          parser.nextToken();
-          currentMonomer.setName(parser.getText());
-          break;
-        case "canSMILES":
-          parser.nextToken();
-          currentMonomer.setCanSMILES(parser.getText());
-          break;
-        case "molfile":
-          parser.nextToken();
-          try{
-              currentMonomer.setMolfile(MolfileEncoder.decode(parser.getText()));
-          }catch(EncoderException e){
-        	  LOG.info("Monomer file was not in the Base64-Format");
-        	 currentMonomer.setMolfile(parser.getText()); 
-          }
-   
-          break;
-        case "monomerType":
-          parser.nextToken();
-          currentMonomer.setMonomerType(parser.getText());
-          break;
-        case "polymerType":
-          parser.nextToken();
-          currentMonomer.setPolymerType(parser.getText());
-          break;
-        case "attachmentList":
-          currentMonomer.setAttachmentList(deserializeAttachmentList(parser, attachmentDB));
-          break;
-        case "newMonomer":
-          parser.nextToken();
-          currentMonomer.setNewMonomer(Boolean.parseBoolean(parser.getText()));
-          break;
-        case "adHocMonomer":
-          parser.nextToken();
-          currentMonomer.setAdHocMonomer(Boolean.parseBoolean(parser.getText()));
-          break;
-        default:
-          break;
-        }
-      }
-      parser.nextToken();
-    }
+			if (fieldName != null) {
+				switch (fieldName) {
+				// id is first field
+				case "id":
+					parser.nextToken();
+					currentMonomer.setId(Integer.parseInt(parser.getText()));
+					break;
+				case "alternateId":
+					parser.nextToken();
+					currentMonomer.setAlternateId(parser.getText());
+					break;
+				case "naturalAnalog":
+					parser.nextToken();
+					currentMonomer.setNaturalAnalog(parser.getText());
+					break;
+				case "name":
+					parser.nextToken();
+					currentMonomer.setName(parser.getText());
+					break;
+				case "canSMILES":
+					parser.nextToken();
+					currentMonomer.setCanSMILES(parser.getText());
+					break;
+				case "molfile":
+					parser.nextToken();
+					try {
+						currentMonomer.setMolfile(MolfileEncoder.decode(parser.getText()));
+					} catch (EncoderException e) {
+						LOG.info("Monomer file was not in the Base64-Format");
+						currentMonomer.setMolfile(parser.getText());
+					}
 
-    return monomers;
-  }
+					break;
+				case "monomerType":
+					parser.nextToken();
+					currentMonomer.setMonomerType(parser.getText());
+					break;
+				case "polymerType":
+					parser.nextToken();
+					currentMonomer.setPolymerType(parser.getText());
+					break;
+				case "attachmentList":
+					currentMonomer.setAttachmentList(deserializeAttachmentList(parser, attachmentDB));
+					break;
+				case "newMonomer":
+					parser.nextToken();
+					currentMonomer.setNewMonomer(Boolean.parseBoolean(parser.getText()));
+					break;
+				case "adHocMonomer":
+					parser.nextToken();
+					currentMonomer.setAdHocMonomer(Boolean.parseBoolean(parser.getText()));
+					break;
+				default:
+					break;
+				}
+			}
+			parser.nextToken();
+		}
 
-  /**
-   * Private routine to deserialize a JSON containing attachment data. This is
-   * done manually to give more freedom regarding data returned by the
-   * webservice.
-   *
-   * @param parser the JSONParser containing JSONData.
-   * @param attachmentDB the attachments stored in the Toolkit
-   * @return List containing attachments
-   *
-   * @throws JsonParseException
-   * @throws IOException
-   */
-  private List<Attachment> deserializeAttachmentList(JsonParser parser,
-      Map<String, Attachment> attachmentDB) throws JsonParseException,
-          IOException {
-    List<Attachment> attachments = new ArrayList<Attachment>();
-    Attachment currentAttachment = null;
+		return monomers;
+	}
 
-    while (!JsonToken.END_ARRAY.equals(parser.nextToken())) {
+	/**
+	 * Private routine to deserialize a JSON containing attachment data. This is
+	 * done manually to give more freedom regarding data returned by the
+	 * webservice.
+	 *
+	 * @param parser
+	 *            the JSONParser containing JSONData.
+	 * @param attachmentDB
+	 *            the attachments stored in the Toolkit
+	 * @return List containing attachments
+	 *
+	 * @throws JsonParseException
+	 * @throws IOException
+	 */
+	private List<Attachment> deserializeAttachmentList(JsonParser parser, Map<String, Attachment> attachmentDB)
+			throws JsonParseException, IOException {
+		List<Attachment> attachments = new ArrayList<Attachment>();
+		Attachment currentAttachment = null;
 
-      String fieldName = parser.getCurrentName();
-      JsonToken token = parser.getCurrentToken();
+		while (!JsonToken.END_ARRAY.equals(parser.nextToken())) {
 
-      if (JsonToken.START_OBJECT.equals(token)) {
-        currentAttachment = new Attachment();
-      } else if (JsonToken.END_OBJECT.equals(token)) {
-        currentAttachment.setCapGroupSMILES(attachmentDB.get(currentAttachment.getAlternateId()).getCapGroupSMILES());
-        attachments.add(currentAttachment);
-      }
+			String fieldName = parser.getCurrentName();
+			JsonToken token = parser.getCurrentToken();
 
-      if (fieldName != null) {
-        switch (fieldName) {
-        case "id":
-          parser.nextToken();
-          currentAttachment.setId(Integer.parseInt(parser.getText()));
-          break;
-        case "alternateId":
-          parser.nextToken();
-          currentAttachment.setAlternateId(parser.getText());
-          break;
-        case "label":
-          parser.nextToken();
-          currentAttachment.setLabel(parser.getText());
-          break;
-        case "capGroupName":
-          parser.nextToken();
-          currentAttachment.setCapGroupName(parser.getText());
-          break;
-        case "capGroupSMILES":
-          parser.nextToken();
-          currentAttachment.setCapGroupSMILES(parser.getText());
-          break;
-        default:
-          break;
-        }
-      }
+			if (JsonToken.START_OBJECT.equals(token)) {
+				currentAttachment = new Attachment();
+			} else if (JsonToken.END_OBJECT.equals(token)) {
+				/*
+				 * Issue 4 all attachment points have to be fully defined for
+				 * any new monomer
+				 */
+				if (validateAttachment(currentAttachment)) {
+					currentAttachment.setCapGroupSMILES(
+							attachmentDB.get(currentAttachment.getAlternateId()).getCapGroupSMILES());
+					attachments.add(currentAttachment);
+				}
+			}
 
-    }
+			if (fieldName != null) {
+				switch (fieldName) {
+				case "id":
+					parser.nextToken();
+					if (parser.getText() != null) {
+						currentAttachment.setId(Integer.parseInt(parser.getText()));
+					}
+					break;
+				case "alternateId":
+					parser.nextToken();
+					currentAttachment.setAlternateId(parser.getText());
+					break;
+				case "label":
+					parser.nextToken();
+					currentAttachment.setLabel(parser.getText());
+					break;
+				case "capGroupName":
+					parser.nextToken();
+					currentAttachment.setCapGroupName(parser.getText());
+					break;
+				case "capGroupSMILES":
+					parser.nextToken();
+					currentAttachment.setCapGroupSMILES(parser.getText());
+					break;
+				default:
+					break;
+				}
+			}
 
-    return attachments;
-  }
+		}
 
-  /**
-   * Private routine to deserialize JSON containing monomer categorization data.
-   * This is done manually to give more freedom regarding data returned by the
-   * webservice.
-   *
-   * @param parser the JSONParser containing JSONData.
-   * @return List containing the monomer categorization
-   *
-   * @throws JsonParseException
-   * @throws IOException
-   */
-  private static List<CategorizedMonomer> deserializeEditorCategorizationConfig(
-      JsonParser parser) throws JsonParseException, IOException {
-    List<CategorizedMonomer> config = new LinkedList<CategorizedMonomer>();
-    CategorizedMonomer currentMonomer = null;
+		return attachments;
+	}
 
-    parser.nextToken();
-    while (parser.hasCurrentToken()) {
-      String fieldName = parser.getCurrentName();
-      JsonToken token = parser.getCurrentToken();
+	private boolean validateAttachment(Attachment currentAttachment) {
+		try {
+			currentAttachment.getId();
+			
+			if (currentAttachment.getAlternateId() == "null" || currentAttachment.getAlternateId().isEmpty()) {
+				return false;
+			}
+			if (currentAttachment.getCapGroupName() == "null" || currentAttachment.getCapGroupName().isEmpty()) {
+				return false;
+			}
+			if (currentAttachment.getCapGroupSMILES() == "null" || currentAttachment.getCapGroupSMILES().isEmpty()) {
+				return false;
+			}
+			if (currentAttachment.getLabel().equals("null") || currentAttachment.getLabel().equals(" ")) {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 
-      if (JsonToken.START_OBJECT.equals(token)) {
-        currentMonomer = new CategorizedMonomer();
-      } else if (JsonToken.END_OBJECT.equals(token)) {
-        config.add(currentMonomer);
-      }
+	/**
+	 * Private routine to deserialize JSON containing monomer categorization
+	 * data. This is done manually to give more freedom regarding data returned
+	 * by the webservice.
+	 *
+	 * @param parser
+	 *            the JSONParser containing JSONData.
+	 * @return List containing the monomer categorization
+	 *
+	 * @throws JsonParseException
+	 * @throws IOException
+	 */
+	private static List<CategorizedMonomer> deserializeEditorCategorizationConfig(JsonParser parser)
+			throws JsonParseException, IOException {
+		List<CategorizedMonomer> config = new LinkedList<CategorizedMonomer>();
+		CategorizedMonomer currentMonomer = null;
 
-      if (fieldName != null) {
-        switch (fieldName) {
-        // id is first field
-        case "monomerID":
-          parser.nextToken();
-          currentMonomer.setMonomerID(parser.getText());
-          break;
-        case "monomerName":
-          parser.nextToken();
-          currentMonomer.setMonomerName(parser.getText());
-          break;
-        case "naturalAnalogon":
-          parser.nextToken();
-          currentMonomer.setNaturalAnalogon(parser.getText());
-          break;
-        case "monomerType":
-          parser.nextToken();
-          currentMonomer.setMonomerType(parser.getText());
-          break;
-        case "polymerType":
-          parser.nextToken();
-          currentMonomer.setPolymerType(parser.getText());
-          break;
-        case "category":
-          parser.nextToken();
-          currentMonomer.setCategory(parser.getText());
-          break;
-        case "shape":
-          parser.nextToken();
-          currentMonomer.setShape(parser.getText());
-          break;
-        case "fontColor":
-          parser.nextToken();
-          currentMonomer.setFontColor(parser.getText());
-          break;
-        case "backgroundColor":
-          parser.nextToken();
-          currentMonomer.setBackgroundColor(parser.getText());
-          break;
-        default:
-          break;
-        }
-      }
-      parser.nextToken();
-    }
+		parser.nextToken();
+		while (parser.hasCurrentToken()) {
+			String fieldName = parser.getCurrentName();
+			JsonToken token = parser.getCurrentToken();
 
-    return config;
-  }
+			if (JsonToken.START_OBJECT.equals(token)) {
+				currentMonomer = new CategorizedMonomer();
+			} else if (JsonToken.END_OBJECT.equals(token)) {
+				config.add(currentMonomer);
+			}
+
+			if (fieldName != null) {
+				switch (fieldName) {
+				// id is first field
+				case "monomerID":
+					parser.nextToken();
+					currentMonomer.setMonomerID(parser.getText());
+					break;
+				case "monomerName":
+					parser.nextToken();
+					currentMonomer.setMonomerName(parser.getText());
+					break;
+				case "naturalAnalogon":
+					parser.nextToken();
+					currentMonomer.setNaturalAnalogon(parser.getText());
+					break;
+				case "monomerType":
+					parser.nextToken();
+					currentMonomer.setMonomerType(parser.getText());
+					break;
+				case "polymerType":
+					parser.nextToken();
+					currentMonomer.setPolymerType(parser.getText());
+					break;
+				case "category":
+					parser.nextToken();
+					currentMonomer.setCategory(parser.getText());
+					break;
+				case "shape":
+					parser.nextToken();
+					currentMonomer.setShape(parser.getText());
+					break;
+				case "fontColor":
+					parser.nextToken();
+					currentMonomer.setFontColor(parser.getText());
+					break;
+				case "backgroundColor":
+					parser.nextToken();
+					currentMonomer.setBackgroundColor(parser.getText());
+					break;
+				default:
+					break;
+				}
+			}
+			parser.nextToken();
+		}
+
+		return config;
+	}
 
 }
