@@ -239,7 +239,11 @@ public class NucleotideParser {
             throw new NotationException(
                 "Invalid Polymer Notation: modified monomer must be enclosed by brackets");
           } else {
-            ids.add(element.substring(i, matchingPos));
+        	String el = element.substring(i, matchingPos);
+        	if(el.startsWith("[") && el.endsWith("]")){
+        		el = el.substring(1, el.length() - 1);
+        	}
+            ids.add(el);
           }
           i = matchingPos;
 
