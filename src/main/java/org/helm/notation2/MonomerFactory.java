@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -108,7 +109,8 @@ public class MonomerFactory {
    * First key is polymer Type, such as "RNA" Second key is monomer ID, such as
    * "A"
    */
-  private static Map<String, Map<String, Monomer>> monomerDB; // key is
+  private static Map<String, Map<String, Monomer>> monomerDB; 
+  // key is
   // monomer
   // SMILES, value
   // is Monomer
@@ -148,7 +150,7 @@ public class MonomerFactory {
     if (includeNewMonomers) {
       return monomerDB;
     } else {
-      Map<String, Map<String, Monomer>> reducedMonomerDB = new HashMap<String, Map<String, Monomer>>();
+      Map<String, Map<String, Monomer>> reducedMonomerDB = new TreeMap<String, Map<String, Monomer>>(String.CASE_INSENSITIVE_ORDER);
       for (String polymerType : monomerDB.keySet()) {
         Map<String, Monomer> monomerMap = monomerDB.get(polymerType);
         reducedMonomerDB.put(polymerType, excludeNewMonomers(monomerMap));
@@ -185,13 +187,25 @@ public class MonomerFactory {
     if (includeNewMonomers) {
       return smilesMonomerDB;
     } else {
-      return excludeNewMonomers(smilesMonomerDB);
+      return excludeNewMonomersSmiles(smilesMonomerDB);
     }
   }
+  
+  private synchronized Map<String, Monomer> excludeNewMonomersSmiles( Map<String, Monomer> monomerMap) {
+    Map<String, Monomer> reducedMonomerMap = new HashMap<String, Monomer>();
+    for (String identifier : monomerMap.keySet()) {
+      Monomer monomer = monomerMap.get(identifier);
+      if (!monomer.isNewMonomer()) {
+        reducedMonomerMap.put(identifier, monomer);
+      }
+    }
+    return reducedMonomerMap;
+  }
+                                                                     
 
   private synchronized Map<String, Monomer> excludeNewMonomers(
       Map<String, Monomer> monomerMap) {
-    Map<String, Monomer> reducedMonomerMap = new HashMap<String, Monomer>();
+    Map<String, Monomer> reducedMonomerMap = new TreeMap<String, Monomer>(String.CASE_INSENSITIVE_ORDER);
     for (String identifier : monomerMap.keySet()) {
       Monomer monomer = monomerMap.get(identifier);
       if (!monomer.isNewMonomer()) {
@@ -225,7 +239,7 @@ public class MonomerFactory {
   }
 
   public synchronized Map<String, List<String>> getAttachmentLabelIDs() {
-    Map<String, List<String>> labelMap = new HashMap<String, List<String>>();
+    Map<String, List<String>> labelMap = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 
     // group attachments based on R value (label)
     Set<String> idSet = attachmentDB.keySet();
@@ -355,7 +369,7 @@ public class MonomerFactory {
           throws IOException, MonomerException {
     Map<String, Monomer> monomerMap = monomerDB.get(monomer.getPolymerType());
     if (null == monomerMap) {
-      Map<String, Monomer> map = new HashMap<String, Monomer>();
+      Map<String, Monomer> map = new TreeMap<String, Monomer>(String.CASE_INSENSITIVE_ORDER);
       Monomer copyMonomer = DeepCopy.copy(monomer);
       map.put(monomer.getAlternateId(), copyMonomer);
       monomerDB.put(monomer.getPolymerType(), map);
@@ -531,7 +545,7 @@ public class MonomerFactory {
   }
 
   private static Map<String, Attachment> fetchAttachmentDBFromWebService() {
-    Map<String, Attachment> attachments = new HashMap<String, Attachment>();
+    Map<String, Attachment> attachments = new TreeMap<String, Attachment>(String.CASE_INSENSITIVE_ORDER);
 
     Attachment att = new Attachment();
     att.setAlternateId("R1-X");
@@ -599,7 +613,7 @@ public class MonomerFactory {
   private static Map<String, Map<String, Monomer>> fetchMonomerDBFromWebService(
       Map<String, Attachment> attachments) throws IOException,
           URISyntaxException, EncoderException {
-    Map<String, Map<String, Monomer>> monomerDB = new HashMap<String, Map<String, Monomer>>();
+    Map<String, Map<String, Monomer>> monomerDB = new TreeMap<String, Map<String, Monomer>>(String.CASE_INSENSITIVE_ORDER);
 
     monomerDB.put("PEPTIDE", new MonomerWSLoader("PEPTIDE").loadMonomerStore(attachments));
     monomerDB.put("RNA", new MonomerWSLoader("RNA").loadMonomerStore(attachments));
@@ -812,7 +826,7 @@ public class MonomerFactory {
   private static Map<String, Map<String, Monomer>> buildMonomerDB(
       Element polymerList) throws MonomerException, IOException,
           JDOMException, CTKException, ChemistryException {
-    Map<String, Map<String, Monomer>> map = new HashMap<String, Map<String, Monomer>>();
+    Map<String, Map<String, Monomer>> map = new TreeMap<String, Map<String, Monomer>>(String.CASE_INSENSITIVE_ORDER);
     List poplymers = polymerList.getChildren();
 
     Iterator i = poplymers.iterator();
@@ -820,7 +834,7 @@ public class MonomerFactory {
       Element polymer = (Element) i.next();
       Attribute polymerType = polymer.getAttribute(POLYMER_TYPE_ATTRIBUTE);
 
-      Map idMonomerMap = new HashMap<String, Monomer>();
+      Map idMonomerMap = new TreeMap<String, Monomer>(String.CASE_INSENSITIVE_ORDER);
 
       List monomers = polymer.getChildren();
       Iterator it = monomers.iterator();
@@ -840,7 +854,7 @@ public class MonomerFactory {
   private static Map<String, Attachment> buildAttachmentDB(
       Element attachmentList) throws MonomerException, IOException,
           JDOMException, ChemistryException {
-    Map<String, Attachment> map = new HashMap<String, Attachment>();
+    Map<String, Attachment> map = new TreeMap<String, Attachment>(String.CASE_INSENSITIVE_ORDER);
 
     List attachments = attachmentList.getChildren();
     Iterator i = attachments.iterator();

@@ -65,7 +65,7 @@ public class RNAUtilsTest {
 
   @Test
   public void testGetTrimmedNucleotideSequence() throws RNAUtilsException, HELM2HandledException, ChemistryException, ParserException, JDOMException {
-    String notation = "RNA1{R(G)P.R(A)[sP].RP.R(G)P.[LR]([5meC])}$$$$";
+    String notation = "RNA1{r(g)P.R(A)[sP].RP.R(G)P.[LR]([5meC])}$$$$";
     Assert.assertEquals(RNAUtils.getTrimmedNucleotideSequence(HELM2NotationUtils.readNotation(notation).getListOfPolymers().get(0)), "GAXGC");
   }
 

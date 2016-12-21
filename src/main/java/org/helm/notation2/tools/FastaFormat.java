@@ -659,7 +659,7 @@ public final class FastaFormat {
             sb.append(changeIdForRNA(element.getMonomerNotation()) + ",");
           }
           sb.setLength(sb.length() - 1);
-          change = new MonomerNotationList(sb.toString(), current.getType());
+          change = new MonomerNotationGroupOr(sb.toString(), current.getType());
 
         } else if (current instanceof MonomerNotationGroupMixture) {
           StringBuilder sb = new StringBuilder();
@@ -667,7 +667,7 @@ public final class FastaFormat {
             sb.append(changeIdForRNA(element.getMonomerNotation()) + "+");
           }
           sb.setLength(sb.length() - 1);
-          change = new MonomerNotationList(sb.toString(), current.getType());
+          change = new MonomerNotationGroupMixture(sb.toString(), current.getType());
 
         } else {
           /* throw new exception */
@@ -713,7 +713,7 @@ public final class FastaFormat {
   private static PolymerNotation convertRNAIntoAnalogSequence(PolymerNotation polymer) throws AnalogSequenceException {
 
     /* change only if it is possible */
-    for (int i = 0; i < polymer.getListMonomers().size(); i++) {
+    for (int i = 0; i < polymer.getPolymerElements().getListOfElements().size(); i++) {
       polymer.getPolymerElements().getListOfElements().set(i, generateMonomerNotationRNA(polymer.getPolymerElements().getListOfElements().get(i)));
     }
 

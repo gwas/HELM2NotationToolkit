@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.helm.chemtoolkit.CTKException;
 import org.helm.notation2.Monomer;
@@ -120,13 +121,13 @@ public class NucleotideParser {
 
   public static Map<String, Map<String, String>> getNucleotideTemplates(
       Element templatesElement) {
-    Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();
+    Map<String, Map<String, String>> map = new TreeMap<String, Map<String, String>>(String.CASE_INSENSITIVE_ORDER);
 
     List templates = templatesElement.getChildren();
     for (Iterator i = templates.iterator(); i.hasNext();) {
       Element templateElement = (Element) i.next();
       String notationSource = templateElement.getAttributeValue(TEMPLATE_NOTATION_SOURCE_ATTRIBUTE);
-      Map<String, String> tmpMap = new HashMap<String, String>();
+      Map<String, String> tmpMap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
       map.put(notationSource, tmpMap);
       List nucleotides = templateElement.getChildren();
       for (Iterator it = nucleotides.iterator(); it.hasNext();) {

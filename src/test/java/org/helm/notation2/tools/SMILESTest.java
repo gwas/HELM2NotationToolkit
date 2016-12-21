@@ -74,13 +74,13 @@ public class SMILESTest {
   }
 
   public PolymerNotation getSimpleChemNotation() throws ParserException, JDOMException {
-    String notation = "CHEM1{PEG2}$$$$";
+    String notation = "CHEM1{[PEG2]}$$$$";
     return HELM2NotationUtils.readNotation(notation).getListOfPolymers().get(0);
 
   }
 
   public PolymerNotation getSmilesNotation() throws ParserException, JDOMException {
-    String notation = "CHEM1{[*]OCCOCCOCCO[*] |$_R1;;;;;;;;;;;_R3$|}$$$$";
+    String notation = "CHEM1{[[*]OCCOCCOCCO[*] |$_R1;;;;;;;;;;;_R3$|]}$$$$";
     return HELM2NotationUtils.readNotation(notation).getListOfPolymers().get(0);
 
   }
@@ -176,16 +176,16 @@ public class SMILESTest {
     testHELM1AgainstHELM2(notation);
 
     // cyclic chem
-    notation = "CHEM1{SS3}|CHEM2{SS3}$CHEM1,CHEM2,1:R1-1:R1|CHEM1,CHEM2,1:R2-1:R2$$$";
+    notation = "CHEM1{[SS3]}|CHEM2{[SS3]}$CHEM1,CHEM2,1:R1-1:R1|CHEM1,CHEM2,1:R2-1:R2$$$";
     testHELM1AgainstHELM2(notation);
 
     // peptide-chem cycles
-    notation = "PEPTIDE1{H.H.E.E.E}|CHEM1{SS3}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+    notation = "PEPTIDE1{H.H.E.E.E}|CHEM1{[SS3]}|CHEM2{[EG]}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testHELM1AgainstHELM2(notation);
 
     // multiple peptide-chem cycles
     notation =
-        "PEPTIDE1{E.E.E.E.E}|PEPTIDE2{E.D.D.I.A.C.D.E}|CHEM1{SS3}|CHEM2{SS3}|CHEM3{SS3}$PEPTIDE2,CHEM2,8:R2-1:R1|PEPTIDE1,CHEM3,5:R2-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1|PEPTIDE2,CHEM3,1:R1-1:R1|CHEM1,CHEM2,1:R2-1:R2$$$";
+        "PEPTIDE1{E.E.E.E.E}|PEPTIDE2{E.D.D.I.A.C.D.E}|CHEM1{[SS3]}|CHEM2{[SS3]}|CHEM3{[SS3]}$PEPTIDE2,CHEM2,8:R2-1:R1|PEPTIDE1,CHEM3,5:R2-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1|PEPTIDE2,CHEM3,1:R1-1:R1|CHEM1,CHEM2,1:R2-1:R2$$$";
     testHELM1AgainstHELM2(notation);
   }
 
@@ -202,17 +202,17 @@ public class SMILESTest {
   public void testInlineNotation() throws CTKSmilesException, BuilderMoleculeException, CTKException, NotationException, ParserException, JDOMException, MonomerLoadingException, IOException,
       MonomerException, ChemistryException {
 
-    String notation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    String notation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{[MCC]}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     String smiles = SMILES.getCanonicalSMILESForAll(HELM2NotationUtils.readNotation(notation));
 
     // replaced A with Smiles String
    // notation = "PEPTIDE1{[C[C@H](N[H:1])C([OH:2])=O].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
-    notation = "PEPTIDE1{[C[C@H](N[H:1])C([OH:2])=O].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    notation = "PEPTIDE1{[C[C@H](N[H:1])C([OH:2])=O].G.G.G.C.C.K.K.K.K}|CHEM1{[MCC]}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     String smilesInline = SMILES.getCanonicalSMILESForAll(HELM2NotationUtils.readNotation(notation));
     AssertJUnit.assertEquals(smiles, smilesInline);
 
     // replaced A with slightly modified A
-    notation = "PEPTIDE1{[C[C@H](N[*])C(=O)C[*] |$;;;_R1;;;;_R2$|].G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    notation = "PEPTIDE1{[C[C@H](N[*])C(=O)C[*] |$;;;_R1;;;;_R2$|].G.G.G.C.C.K.K.K.K}|CHEM1{[MCC]}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
 
     System.out.println(SMILES.getCanonicalSMILESForAll(HELM2NotationUtils.readNotation(notation)));
 

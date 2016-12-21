@@ -28,10 +28,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -638,7 +638,7 @@ public class MonomerParser {
    * @return true or fals
    */
   private static boolean areAttachmentLabelsUnique(List<String> labels) {
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
     for (int i = 0; i < labels.size(); i++) {
       map.put(labels.get(i), labels.get(i));
     }

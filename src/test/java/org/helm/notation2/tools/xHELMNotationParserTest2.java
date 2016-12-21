@@ -109,14 +109,14 @@ public class xHELMNotationParserTest2 {
     MonomerStore store = xHelmNotationParser.getMonomerStore(xHELMRootElement);
     updateMonomerStore(store);
 
-    AssertJUnit.assertEquals("RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|CHEM1{SMCC}$PEPTIDE1,CHEM1,2:R3-1:R2|RNA1,CHEM1,1:R1-1:R1$$$", helmString);
+    AssertJUnit.assertEquals("RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|CHEM1{[SMCC]}$PEPTIDE1,CHEM1,2:R3-1:R2|RNA1,CHEM1,1:R1-1:R1$$$", helmString);
 
     /* Read + Validate */
     validateHELM(helmString);
     String canonicalNotation = new WebService().convertStandardHELMToCanonicalHELM(helmString);
     System.out.println(canonicalNotation);
 
-    AssertJUnit.assertEquals("CHEM1{SMCC}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}$CHEM1,PEPTIDE1,1:R2-2:R3|CHEM1,RNA1,1:R1-1:R1$$$V2.0", canonicalNotation);
+    AssertJUnit.assertEquals("CHEM1{[SMCC]}|PEPTIDE1{[aaa].C.G.K.E.D.K.R}|RNA1{[am6]P.R(C)P.R(U)P.R(U)P.R(G)P.R(A)P.R(G)P.R(G)}$CHEM1,PEPTIDE1,1:R2-2:R3|CHEM1,RNA1,1:R1-1:R1$$$V2.0", canonicalNotation);
 
     xHELMRootElement = getXHELMRootElement("src/test/resources/org/helm/notation2/tools/resources/simple.xhelm");
     helmString = xHelmNotationParser.getHELMNotationString(xHELMRootElement);

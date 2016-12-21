@@ -49,9 +49,9 @@ public class SequenceConverterTest {
   @Test
   public void getNucleotideSequenceFromNotation() throws NucleotideLoadingException, MonomerLoadingException, NotationException, MonomerException, IOException, JDOMException,
       org.helm.notation2.parser.exceptionparser.NotationException, HELM2HandledException, ParserException, RNAUtilsException, ChemistryException {
-    String notation = "RNA1{R(T)P.R(G)P.R(U)}$$$$";
+    String notation = "RNA1{r(t)p.R(G)P.R(U)}$$$$";
     Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(HELM2NotationUtils.readNotation(notation)), "TGU");
-    notation = "RNA1{[dR](U)P.R(T)P.R(G)P.R(U)}$$$$";
+    notation = "RNA1{[dr](U)P.R(T)P.R(G)P.R(U)}$$$$";
     Assert.assertEquals(SequenceConverter.getNucleotideSequenceFromNotation(HELM2NotationUtils.readNotation(notation)), "dUTGU");
 
   }

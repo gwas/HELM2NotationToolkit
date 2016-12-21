@@ -432,6 +432,7 @@ public final class Validation {
 
     }
 
+    LOG.info("SMILES Check");
     /* SMILES Check */
     if (str.charAt(0) == '[' && str.charAt(str.length() - 1) == ']') {
       str = str.substring(1, str.length() - 1);

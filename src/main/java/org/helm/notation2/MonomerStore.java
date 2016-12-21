@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.helm.notation2.exception.MonomerException;
 import org.helm.notation2.tools.SMILES;
@@ -41,7 +42,7 @@ public class MonomerStore {
    *
    */
   public MonomerStore() {
-    monomerDB = new HashMap<String, Map<String, Monomer>>();
+    monomerDB = new TreeMap<String, Map<String, Monomer>>(String.CASE_INSENSITIVE_ORDER);
     smilesMonomerDB = new HashMap<String, Monomer>();
   }
 
@@ -99,7 +100,7 @@ public class MonomerStore {
     boolean hasSmilesString = (smilesString != null && smilesString.length() > 0);
 
     if (null == monomerMap) {
-      monomerMap = new HashMap<String, Monomer>();
+      monomerMap = new TreeMap<String, Monomer>(String.CASE_INSENSITIVE_ORDER);
       monomerDB.put(polymerType, monomerMap);
     }
 
@@ -148,6 +149,7 @@ public class MonomerStore {
    * @return the matching monomer
    */
   public Monomer getMonomer(String polymerType, String alternateId) {
+	Map<String, Monomer> map1 = monomerDB.get(polymerType);
     return monomerDB.get(polymerType).get(alternateId);
   }
 

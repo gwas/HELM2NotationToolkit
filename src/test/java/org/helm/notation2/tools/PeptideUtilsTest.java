@@ -44,7 +44,7 @@ public class PeptideUtilsTest {
 
   @Test
   public void getSequence() throws ParserException, JDOMException, HELM2HandledException, PeptideUtilsException, NotationException, ChemistryException {
-    String notation = "PEPTIDE1{K.C.C.C.W.K.[seC]}$$$$V2.0";
+    String notation = "PEPTIDE1{K.C.C.C.w.K.[seC]}$$$$V2.0";
 
     Assert.assertEquals(PeptideUtils.getSequence(HELM2NotationUtils.readNotation(notation).getListOfPolymers().get(0)), "KCCCWK[seC]");
 

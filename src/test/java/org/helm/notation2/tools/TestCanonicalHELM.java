@@ -136,7 +136,7 @@ public class TestCanonicalHELM {
 
   @Test
   public void testCanonicalHELMCHEM() throws HELM1FormatException, ChemistryException, ParserException, JDOMException {
-    String test = "CHEM1{MCC}$$$$V2.0";
+    String test = "CHEM1{[MCC]}$$$$V2.0";
     HELM1Utils.getCanonical(HELM2NotationUtils.readNotation(test));
 
   }
@@ -170,27 +170,27 @@ public class TestCanonicalHELM {
   @Test
   public void testOldExamples() throws ExceptionState, IOException, JDOMException, HELM1FormatException, CTKException, ValidationException, ChemistryException {
     String notation =
-        "PEPTIDE1{H.H.E.E.E}|CHEM1{SS3}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+        "PEPTIDE1{H.H.E.E.E}|CHEM1{[SS3]}|CHEM2{[EG]}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetStandard(notation);
 
     // change node order
     notation =
-        "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+        "CHEM1{[SS3]}|PEPTIDE1{H.H.E.E.E}|CHEM2{[EG]}$PEPTIDE1,CHEM2,5:R2-1:R2|CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetStandard(notation);
 
     // change edge order
     notation =
-        "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM2,5:R2-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+        "CHEM1{[SS3]}|PEPTIDE1{H.H.E.E.E}|CHEM2{[EG]}$CHEM2,CHEM1,1:R1-1:R2|PEPTIDE1,CHEM2,5:R2-1:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetStandard(notation);
 
     // change edge direction
     notation =
-        "CHEM1{SS3}|PEPTIDE1{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM1,1:R1-1:R2|CHEM2,PEPTIDE1,1:R2-5:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
+        "CHEM1{[SS3]}|PEPTIDE1{H.H.E.E.E}|CHEM2{[EG]}$CHEM2,CHEM1,1:R1-1:R2|CHEM2,PEPTIDE1,1:R2-5:R2|PEPTIDE1,CHEM1,1:R1-1:R1$$$";
     testGetStandard(notation);
 
     // change node id
     notation =
-        "CHEM4{SS3}|PEPTIDE2{H.H.E.E.E}|CHEM2{EG}$CHEM2,CHEM4,1:R1-1:R2|CHEM2,PEPTIDE2,1:R2-5:R2|PEPTIDE2,CHEM4,1:R1-1:R1$$$";
+        "CHEM4{[SS3]}|PEPTIDE2{H.H.E.E.E}|CHEM2{[EG]}$CHEM2,CHEM4,1:R1-1:R2|CHEM2,PEPTIDE2,1:R2-5:R2|PEPTIDE2,CHEM4,1:R1-1:R1$$$";
     testGetStandard(notation);
 
     // backbone cyclic peptide
@@ -199,7 +199,7 @@ public class TestCanonicalHELM {
 
     // annotated peptides
     notation =
-        "PEPTIDE1{K.A.A.G.K}|PEPTIDE2{K.A.A.G.K}|RNA1{R(A)P.R(G)}|CHEM1{Alexa}$PEPTIDE1,PEPTIDE1,1:R1-5:R2$$PEPTIDE1{hc}|PEPTIDE2{lc}$";
+        "PEPTIDE1{K.A.A.G.K}|PEPTIDE2{K.A.A.G.K}|RNA1{R(A)P.R(G)}|CHEM1{[Alexa]}$PEPTIDE1,PEPTIDE1,1:R1-5:R2$$PEPTIDE1{hc}|PEPTIDE2{lc}$";
     testGetStandard(notation);
 
     // chemical connection

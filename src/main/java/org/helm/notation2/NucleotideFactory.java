@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -228,7 +228,7 @@ public class NucleotideFactory {
 
   public static void initializeNucleotideTemplatesFromWebService()
       throws NucleotideLoadingException {
-    nucleotideTemplates = new HashMap<String, Map<String, String>>();
+    nucleotideTemplates = new TreeMap<String, Map<String, String>>(String.CASE_INSENSITIVE_ORDER);
     try {
       nucleotideTemplates.put("HELM Notation", new NucleotideWSLoader().loadNucleotideStore());
     } catch (IOException | URISyntaxException e) {
@@ -263,7 +263,7 @@ public class NucleotideFactory {
    */
   private static synchronized Map<String, String> getReverseNucleotideTemplateMap(
       String notationSource) {
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
     Map<String, String> normalMap = nucleotideTemplates.get(notationSource);
     if (normalMap != null) {
       Set<String> set = normalMap.keySet();

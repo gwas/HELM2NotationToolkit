@@ -358,6 +358,11 @@ public final class ChangeObjects {
   public final static void replaceMonomer(HELM2Notation helm2notation, String polymerType, String existingMonomerID, String newMonomerID) throws NotationException, IOException, JDOMException,
       MonomerException, ChemistryException, CTKException {
     validateMonomerReplacement(polymerType, existingMonomerID, newMonomerID);
+	  /*if(newMonomerID.length()> 1){
+		if( !( newMonomerID.startsWith("[") && newMonomerID.endsWith("]"))){
+			newMonomerID = "[" + newMonomerID + "]";
+		}
+	  }*/
     for (int i = 0; i < helm2notation.getListOfPolymers().size(); i++) {
       if (helm2notation.getListOfPolymers().get(i).getPolymerID().getType().equals(polymerType)) {
         for (int j = 0; j < helm2notation.getListOfPolymers().get(i).getPolymerElements().getListOfElements().size(); j++) {
@@ -830,6 +835,7 @@ public final class ChangeObjects {
     for (MonomerNotationGroupElement object : monomerNotationGroup.getListOfElements()) {
       String newID = ChangeObjects.produceID(object.getMonomerNotation().getUnit(), object.getMonomerNotation().getType());
       if (newID != null) {
+    	  newID = "[" + newID + "]";
         hasChanged = true;
         id = generateGroupElement(newID, object.getValue());
       } else {

@@ -22,8 +22,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -67,7 +67,7 @@ public class NucleotideWSLoader {
   public Map<String, String> loadNucleotideStore() throws IOException,
       URISyntaxException {
 
-    Map<String, String> nucleotides = new HashMap<String, String>();
+    Map<String, String> nucleotides = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
     LOG.debug("Loading nucleotide store by Webservice Loader");
     LOG.debug(MonomerStoreConfiguration.getInstance().toString());
     CloseableHttpResponse response = null;
@@ -118,7 +118,7 @@ public class NucleotideWSLoader {
    */
   private Map<String, String> deserializeNucleotideStore(JsonParser parser)
       throws JsonParseException, IOException {
-    Map<String, String> nucleotides = new HashMap<String, String>();
+    Map<String, String> nucleotides = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
     String currentNucleotideSymbol = "";
     String currentNucleotideNotation = "";
     boolean foundSymbol = false;

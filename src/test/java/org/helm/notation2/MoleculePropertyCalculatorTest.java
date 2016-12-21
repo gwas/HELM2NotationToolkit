@@ -128,7 +128,7 @@ public class MoleculePropertyCalculatorTest {
     Assert.assertEquals(MoleculePropertyCalculator.getMolecularFormular(HELM2NotationUtils.readNotation(newNotation)), "C495H611N191O359P50");
 
     // conjugate
-    newNotation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{MCC}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
+    newNotation = "PEPTIDE1{A.G.G.G.C.C.K.K.K.K}|CHEM1{[MCC]}$PEPTIDE1,CHEM1,10:R3-1:R1$$$";
     Assert.assertEquals(MoleculePropertyCalculator.getMolecularFormular(HELM2NotationUtils.readNotation(newNotation)), "C51H87N15O14S2");
 
   }

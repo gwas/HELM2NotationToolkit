@@ -28,10 +28,10 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -102,7 +102,7 @@ public class MonomerWSLoader {
 	 */
 	public Map<String, Monomer> loadMonomerStore(Map<String, Attachment> attachmentDB)
 			throws IOException, URISyntaxException, EncoderException {
-		Map<String, Monomer> monomers = new HashMap<String, Monomer>();
+		Map<String, Monomer> monomers = new TreeMap<String, Monomer>(String.CASE_INSENSITIVE_ORDER);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		// There is no need to provide user credentials
@@ -202,7 +202,7 @@ public class MonomerWSLoader {
 	 */
 	private Map<String, Monomer> deserializeMonomerStore(JsonParser parser, Map<String, Attachment> attachmentDB)
 			throws JsonParseException, IOException, EncoderException {
-		Map<String, Monomer> monomers = new HashMap<String, Monomer>();
+		Map<String, Monomer> monomers = new TreeMap<String, Monomer>(String.CASE_INSENSITIVE_ORDER);
 		Monomer currentMonomer = null;
 
 		parser.nextToken();

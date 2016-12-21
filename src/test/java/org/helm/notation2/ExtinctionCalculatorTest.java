@@ -242,7 +242,7 @@ public class ExtinctionCalculatorTest {
 		f = (float) 46200.004;
 		assertEquals(newResult, f);
 
-		input = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}|CHEM1{PEG2}|PEPTIDE1{A.G.G.W.E.E.E.E.E.W}|PEPTIDE2{A.G.G.W.E.Y.E.E.E.E.W}$$$$";
+		input = "RNA1{P.R(A)P.R([5meC])P.R(G)P.[mR](A)}|CHEM1{[PEG2]}|PEPTIDE1{A.G.G.W.E.E.E.E.E.W}|PEPTIDE2{A.G.G.W.E.Y.E.E.E.E.W}$$$$";
 		newResult = ExtinctionCoefficient.getInstance().calculate(HELM2NotationUtils.readNotation(input));
 
 		f = (float) 69.69;
