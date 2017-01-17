@@ -95,6 +95,13 @@ public class MolfileEncoder {
     /* First base64 decode the string */
     String result = null;
     byte[] bytes = Base64.decode(str);
+	  
+	  
+     if (bytes == null) {
+	    return str;
+      } 
+	  
+	  
     GZIPInputStream zi = null;
     try {
       zi = new GZIPInputStream(new ByteArrayInputStream(bytes));
@@ -113,7 +120,8 @@ public class MolfileEncoder {
       return molfile;
 
     } catch (IOException e) {
-      throw new EncoderException("Molfile could not be decompressed. " + str);
+	    e.printStackTrace();
+	    return str;
     } finally {
       IOUtils.closeQuietly(zi);
     }
